@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Touchline Manager</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b3b8c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Touchline">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<link rel="stylesheet" href="css/theme.css">
+<script>
+  // Collect uncaught errors so automated checks can read them from the DOM.
+  window.__errors = [];
+  const note = (msg) => {
+    window.__errors.push(String(msg));
+    document.documentElement.dataset.errors = window.__errors.join(' | ');
+  };
+  window.addEventListener('error', (e) => note(e.message));
+  window.addEventListener('unhandledrejection', (e) => note(e.reason && e.reason.message || e.reason));
+</script>
+</head>
+<body>
+<div id="rotate"><div class="phone"></div><b>Turn your phone sideways</b><span>Touchline Manager is played in landscape.</span></div>
+<div id="viewport">
+  <div id="stage">
+    <div id="screen"></div>
+    <div id="toast"></div>
+  </div>
+</div>
+<script type="module" src="src/ui/app.js"></script>
+<script>
+  // Installable app: offline support where the browser allows it (https or
+  // localhost). Skipped for automated dev checks.
+  if ('serviceWorker' in navigator && !location.search.includes('dev=')) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+    // On the first visit the game loaded before the worker existed: hand it
+    // the list of files so it can keep them for offline play.
+    window.addEventListener('load', () => navigator.serviceWorker.ready.then((reg) => setTimeout(() => {
+      const urls = performance.getEntriesByType('resource').map((r) => r.name).filter((u) => u.startsWith(location.origin));
+      reg.active?.postMessage({ cache: [location.href.split('?')[0], ...urls] });
+    }, 1500)));
+  }
+</script>
+</body>
+</html>

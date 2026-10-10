@@ -1,0 +1,328 @@
+{
+  "_about": "Real club histories for Italy, as of the end of the 2024/25 season. Keys are the in-game club names. Written in our own words; check and correct freely.",
+  "Milano Nerazzurri": {
+    "real": "Inter Milan (FC Internazionale Milano)",
+    "founded": 1908,
+    "nickname": "I Nerazzurri / Il Biscione",
+    "honours": { "league": 20, "cup": 9, "europe": ["European Cup / Champions League ×3 (1964, 1965, 2010)", "UEFA Cup ×3 (1991, 1994, 1998)"], "other": ["Supercoppa Italiana ×8", "Intercontinental Cup ×2", "FIFA Club World Cup 2010"] },
+    "history": "Formed by members who broke away from their city rivals to welcome foreign players, the club is the only Italian side never relegated from the top flight. It dominated Europe in the 1960s under Helenio Herrera and won a historic treble in 2010. Recent seasons brought a 20th title in 2024 and Champions League finals in 2023 and 2025.",
+    "best": ["Treble of league, cup and Champions League in 2010", "Back-to-back European Cups in 1964 and 1965", "Never relegated from Serie A"],
+    "uncertain": false
+  },
+  "Napoli Partenopei": {
+    "real": "SSC Napoli",
+    "founded": 1926,
+    "nickname": "Gli Azzurri / I Partenopei",
+    "honours": { "league": 4, "cup": 6, "europe": ["UEFA Cup 1989"], "other": ["Supercoppa Italiana ×2"] },
+    "history": "The club's golden era came with Diego Maradona, who led it to its first two league titles in 1987 and 1990 plus the 1989 UEFA Cup. After bankruptcy in 2004 it was relaunched in Serie C and climbed back to the elite. It won further titles in 2023 and again in 2025.",
+    "best": ["Maradona-era titles in 1987 and 1990", "1989 UEFA Cup", "Scudetti in 2023 and 2025"],
+    "uncertain": false
+  },
+  "Torino Bianconeri": {
+    "real": "Juventus",
+    "founded": 1897,
+    "nickname": "La Vecchia Signora",
+    "honours": { "league": 36, "cup": 15, "europe": ["European Cup / Champions League ×2 (1985, 1996)", "Cup Winners' Cup 1984", "UEFA Cup ×3 (1977, 1990, 1993)"], "other": ["Supercoppa Italiana ×9", "UEFA Super Cup ×2 (1984, 1996)", "Intercontinental Cup ×2"] },
+    "history": "Founded by Turin schoolboys and long associated with the Agnelli family, the club is the most successful in Italian football. It won nine consecutive league titles from 2012 to 2020. It was demoted to Serie B in 2006 after the Calciopoli scandal but returned to the top flight a year later.",
+    "best": ["Record 36 Italian league titles", "Nine straight Scudetti (2012-2020)", "Two European Cups"],
+    "uncertain": false
+  },
+  "Milano Rossoneri": {
+    "real": "AC Milan",
+    "founded": 1899,
+    "nickname": "I Rossoneri / Il Diavolo",
+    "honours": { "league": 19, "cup": 5, "europe": ["European Cup / Champions League ×7 (1963, 1969, 1989, 1990, 1994, 2003, 2007)", "Cup Winners' Cup ×2 (1968, 1973)"], "other": ["Supercoppa Italiana ×8", "UEFA Super Cup ×5", "Intercontinental Cup ×3", "FIFA Club World Cup 2007"] },
+    "history": "Founded by English and Italian enthusiasts, the club became a European power under Arrigo Sacchi and Fabio Capello in the late 1980s and 1990s. Its seven European Cups are second only to Real Madrid. It won its 19th league title in 2022 and the Supercoppa in January 2025.",
+    "best": ["Seven European Cups / Champions Leagues", "Unbeaten Serie A season in 1991-92", "Scudetto in 2022"],
+    "uncertain": false
+  },
+  "Bergamo Orobici": {
+    "real": "Atalanta",
+    "founded": 1907,
+    "nickname": "La Dea",
+    "honours": { "league": 0, "cup": 1, "europe": ["Europa League 2024"], "other": ["Coppa Italia 1963"] },
+    "history": "Renowned for its youth academy, the club spent decades moving between Serie A and Serie B. Under Gian Piero Gasperini from 2016 it became a regular in the Champions League. It beat Bayer Leverkusen 3-0 in the 2024 Europa League final, ending the German side's unbeaten season.",
+    "best": ["2024 Europa League", "1963 Coppa Italia", "Champions League quarter-final in 2020"],
+    "uncertain": false
+  },
+  "Roma Giallorossi": {
+    "real": "AS Roma",
+    "founded": 1927,
+    "nickname": "I Giallorossi / La Lupa",
+    "honours": { "league": 3, "cup": 9, "europe": ["Fairs Cup 1961", "Conference League 2022"], "other": ["Supercoppa Italiana ×2"] },
+    "history": "Created by the merger of several Roman clubs, the club won league titles in 1942, 1983 and 2001. Francesco Totti spent his entire career there. It reached the 1984 European Cup final and won the first Conference League in 2022 under José Mourinho.",
+    "best": ["Scudetto in 2001", "2022 Conference League", "1961 Fairs Cup"],
+    "uncertain": false
+  },
+  "Roma Biancocelesti": {
+    "real": "SS Lazio",
+    "founded": 1900,
+    "nickname": "I Biancocelesti / Le Aquile",
+    "honours": { "league": 2, "cup": 7, "europe": ["Cup Winners' Cup 1999"], "other": ["UEFA Super Cup 1999", "Supercoppa Italiana ×5"] },
+    "history": "The oldest club in the capital, it won its first Scudetto in 1974. Its peak came at the turn of the millennium under Sven-Göran Eriksson, with the 1999 Cup Winners' Cup and the 2000 league and cup double. It shares the Stadio Olimpico with its city rival.",
+    "best": ["League and cup double in 2000", "1999 Cup Winners' Cup", "First Scudetto in 1974"],
+    "uncertain": false
+  },
+  "Firenze Viola": {
+    "real": "ACF Fiorentina",
+    "founded": 1926,
+    "nickname": "La Viola",
+    "honours": { "league": 2, "cup": 6, "europe": ["Cup Winners' Cup 1961"], "other": ["Supercoppa Italiana 1996"] },
+    "history": "The club won league titles in 1956 and 1969 and lifted the first Cup Winners' Cup in 1961. After bankruptcy in 2002 it restarted in Serie C2 and quickly returned to Serie A. It reached Conference League finals in 2023 and 2024.",
+    "best": ["1961 Cup Winners' Cup", "Scudetti in 1956 and 1969", "Back-to-back Conference League finals"],
+    "uncertain": false
+  },
+  "Bologna Rossoblù": {
+    "real": "Bologna FC 1909",
+    "founded": 1909,
+    "nickname": "I Rossoblù",
+    "honours": { "league": 7, "cup": 3, "europe": [], "other": ["Mitropa Cup ×2 (1932, 1934)", "Intertoto Cup 1998"] },
+    "history": "The club was one of Italy's strongest sides between the wars, said to have 'made the world tremble'. Its last league title came in 1964 after a play-off with Inter. In 2024 it returned to the Champions League, and in 2025 it beat Milan to win the Coppa Italia.",
+    "best": ["Seven league titles, the last in 1964", "2025 Coppa Italia", "Two Mitropa Cups in the 1930s"],
+    "uncertain": false
+  },
+  "Como Lariani": {
+    "real": "Como 1907",
+    "founded": 1907,
+    "nickname": "I Lariani",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Serie B ×3 (1948-49, 1979-80, 2001-02)"] },
+    "history": "Based on the shores of Lake Como, the club had several Serie A spells in the 1980s before bankruptcies sent it into the lower leagues. New Indonesian owners funded a rapid rise, and it returned to Serie A in 2024 after 21 years away. Under Cesc Fàbregas it finished tenth in 2024/25.",
+    "best": ["Return to Serie A in 2024", "Serie B title in 1980", "Tenth place in 2024/25"],
+    "uncertain": false
+  },
+  "Torino Granata": {
+    "real": "Torino FC",
+    "founded": 1906,
+    "nickname": "Il Toro / I Granata",
+    "honours": { "league": 7, "cup": 5, "europe": [], "other": ["Mitropa Cup 1991"] },
+    "history": "The 'Grande Torino' side won five straight titles in the 1940s before almost the whole team died in the 1949 Superga air disaster. The club won its last Scudetto in 1976 and reached the 1992 UEFA Cup final. It has spent most recent seasons in mid-table in Serie A.",
+    "best": ["Five consecutive titles with the Grande Torino", "Scudetto in 1976", "1992 UEFA Cup final"],
+    "uncertain": false
+  },
+  "Udine Friulani": {
+    "real": "Udinese Calcio",
+    "founded": 1896,
+    "nickname": "I Friulani / Le Zebrette",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Intertoto Cup 2000", "Mitropa Cup 1980"] },
+    "history": "One of Italy's oldest clubs, it finished second in Serie A in 1955. Since the mid-1990s it has been a stable top-flight side known for its worldwide scouting network. It reached the Champions League group stage in 2005.",
+    "best": ["Serie A runners-up in 1954-55", "Champions League group stage in 2005-06", "2000 Intertoto Cup"],
+    "uncertain": false
+  },
+  "Genova Grifone": {
+    "real": "Genoa CFC",
+    "founded": 1893,
+    "nickname": "Il Grifone / Il Vecchio Balordo",
+    "honours": { "league": 9, "cup": 1, "europe": [], "other": ["Coppa Italia 1937", "Anglo-Italian Cup 1996"] },
+    "history": "Italy's oldest active football club was founded by English expatriates and won nine national titles, the last in 1924. It reached the UEFA Cup semi-finals in 1992. After several spells in Serie B it returned to Serie A in 2023.",
+    "best": ["Nine Italian championships", "1992 UEFA Cup semi-final", "Win at Anfield against Liverpool in 1992"],
+    "uncertain": false
+  },
+  "Cagliari Isolani": {
+    "real": "Cagliari Calcio",
+    "founded": 1920,
+    "nickname": "I Rossoblù / Gli Isolani",
+    "honours": { "league": 1, "cup": 0, "europe": [], "other": ["Serie B 2015-16"] },
+    "history": "The leading club of Sardinia won a famous Scudetto in 1970, inspired by striker Gigi Riva. It reached the UEFA Cup semi-finals in 1994. It has moved between Serie A and Serie B since, returning to the top flight in 2023.",
+    "best": ["1970 Scudetto with Gigi Riva", "1994 UEFA Cup semi-final"],
+    "uncertain": false
+  },
+  "Parma Crociati": {
+    "real": "Parma Calcio 1913",
+    "founded": 1913,
+    "nickname": "I Crociati / I Gialloblù",
+    "honours": { "league": 0, "cup": 3, "europe": ["Cup Winners' Cup 1993", "UEFA Cup ×2 (1995, 1999)"], "other": ["UEFA Super Cup 1993", "Supercoppa Italiana 1999"] },
+    "history": "Backed by the Parmalat dairy company, the club enjoyed a spectacular run of cup successes in the 1990s. It collapsed financially twice, the second time in 2015, and was refounded in Serie D. Three promotions in a row followed, and it returned to Serie A again in 2024 as Serie B champions.",
+    "best": ["Two UEFA Cups", "1993 Cup Winners' Cup", "Three straight promotions from Serie D"],
+    "uncertain": false
+  },
+  "Lecce Salentini": {
+    "real": "US Lecce",
+    "founded": 1908,
+    "nickname": "I Giallorossi / I Salentini",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Serie B ×2 (2009-10, 2021-22)", "Anglo-Italian Cup (semi-professional) 1976"] },
+    "history": "The main club of the Salento peninsula first reached Serie A in 1985. It has frequently moved between divisions since, including drops into Serie C. Since winning Serie B in 2022 it has stayed in the top flight.",
+    "best": ["First Serie A season in 1985-86", "Serie B titles in 2010 and 2022"],
+    "uncertain": false
+  },
+  "Verona Scaligeri": {
+    "real": "Hellas Verona",
+    "founded": 1903,
+    "nickname": "Gli Scaligeri / I Gialloblù",
+    "honours": { "league": 1, "cup": 0, "europe": [], "other": [] },
+    "history": "Under coach Osvaldo Bagnoli the club won a surprise Scudetto in 1985, one of the great shocks in Italian football. It reached the European Cup second round the following season. It has alternated between Serie A and Serie B since, staying up in 2024/25.",
+    "best": ["1985 Scudetto", "Three Coppa Italia finals in the 1970s and 1980s"],
+    "uncertain": false
+  },
+  "Sassuolo Neroverdi": {
+    "real": "US Sassuolo",
+    "founded": 1920,
+    "nickname": "I Neroverdi",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Serie B ×2 (2012-13, 2024-25)"] },
+    "history": "A small-town club backed by the Mapei group, it rose from the amateur leagues to reach Serie A for the first time in 2013. It qualified for the Europa League in 2016. After relegation in 2024 it won Serie B at the first attempt in 2025.",
+    "best": ["First Serie A promotion in 2013", "Europa League group stage 2016-17", "Immediate return as 2024-25 Serie B champions"],
+    "uncertain": false
+  },
+  "Pisa Nerazzurri": {
+    "real": "Pisa SC",
+    "founded": 1909,
+    "nickname": "I Nerazzurri",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Mitropa Cup ×2 (1986, 1988)"] },
+    "history": "The club enjoyed several Serie A seasons in the 1980s under president Romeo Anconetani, winning two Mitropa Cups. Financial troubles later sent it down the divisions. It finished second in Serie B in 2024/25 under Filippo Inzaghi, earning a return to Serie A after 34 years.",
+    "best": ["Two Mitropa Cups", "Promotion to Serie A in 2025"],
+    "uncertain": false
+  },
+  "Cremona Grigiorossi": {
+    "real": "US Cremonese",
+    "founded": 1903,
+    "nickname": "I Grigiorossi",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Anglo-Italian Cup 1993"] },
+    "history": "The club spent several seasons in Serie A in the 1980s and 1990s and won the Anglo-Italian Cup at Wembley in 1993. After years in lower divisions it returned to Serie A in 2022. It was promoted again in 2025 by winning the Serie B play-offs.",
+    "best": ["1993 Anglo-Italian Cup at Wembley", "Serie B play-off winners in 2025"],
+    "uncertain": false
+  },
+  "Venezia Lagunari": {
+    "real": "Venezia FC",
+    "founded": 1907,
+    "nickname": "I Lagunari / Gli Arancioneroverdi",
+    "honours": { "league": 0, "cup": 1, "europe": [], "other": ["Coppa Italia 1941"] },
+    "history": "The club won the Coppa Italia in 1941 with a side featuring Valentino Mazzola. It has gone bankrupt and been refounded several times. It reached Serie A in 2021 and again in 2024, but was relegated at the end of 2024/25.",
+    "best": ["1941 Coppa Italia", "Serie A promotions in 2021 and 2024"],
+    "uncertain": false
+  },
+  "Empoli Azzurri": {
+    "real": "Empoli FC",
+    "founded": 1920,
+    "nickname": "Gli Azzurri",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Serie B ×3 (2004-05, 2017-18, 2020-21)"] },
+    "history": "A small Tuscan club with a respected youth system, it has had many spells in Serie A since the 1980s. It qualified for the UEFA Cup in 2007. It was relegated to Serie B at the end of 2024/25, the same season it reached the Coppa Italia semi-finals.",
+    "best": ["UEFA Cup qualification in 2007", "Three Serie B titles", "2025 Coppa Italia semi-final"],
+    "uncertain": false
+  },
+  "Monza Brianzoli": {
+    "real": "AC Monza",
+    "founded": 1912,
+    "nickname": "I Brianzoli / I Biancorossi",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Coppa Italia Serie C ×4"] },
+    "history": "For decades the club was a nearly-team in Serie B, never reaching the top flight. After Silvio Berlusconi bought it in 2018 it rose from Serie C and won promotion to Serie A for the first time in 2022. It was relegated after finishing bottom in 2024/25.",
+    "best": ["First Serie A promotion in 2022"],
+    "uncertain": false
+  },
+  "Palermo Rosanero": {
+    "real": "Palermo FC",
+    "founded": 1900,
+    "nickname": "I Rosanero / Le Aquile",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Serie B ×5 (1931-32, 1947-48, 1967-68, 2003-04, 2013-14)", "Coppa Italia Serie C 1993"] },
+    "history": "The main club of Sicily reached three Coppa Italia finals and enjoyed a strong Serie A spell in the 2000s, qualifying for Europe several times. It went bankrupt in 2019 and restarted in Serie D. Since 2022 it has been in Serie B under City Football Group ownership.",
+    "best": ["Three Coppa Italia finals", "UEFA Cup campaigns in the 2000s"],
+    "uncertain": true,
+    "check": "Serie B count: the club and Italian sources list five titles, but some lists count only four because 1947-48 was won as one of three regional groups"
+  },
+  "Genova Blucerchiati": {
+    "real": "UC Sampdoria",
+    "founded": 1946,
+    "nickname": "La Samp / I Blucerchiati",
+    "honours": { "league": 1, "cup": 4, "europe": ["Cup Winners' Cup 1990"], "other": ["Supercoppa Italiana 1991"] },
+    "history": "Formed by a merger of two Genoese clubs, it peaked under Vujadin Boskov with Vialli and Mancini, winning the 1991 Scudetto and reaching the 1992 European Cup final. Relegated in 2023, it narrowly avoided a drop to Serie C in 2025 by winning a play-out.",
+    "best": ["1991 Scudetto", "1990 Cup Winners' Cup", "1992 European Cup final"],
+    "uncertain": false
+  },
+  "Bari Galletti": {
+    "real": "SSC Bari",
+    "founded": 1908,
+    "nickname": "I Galletti / I Biancorossi",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Mitropa Cup 1990"] },
+    "history": "The club has had numerous Serie A seasons and plays at the large San Nicola stadium built for the 1990 World Cup. After bankruptcy in 2018 it was refounded by the De Laurentiis family. It lost the 2023 Serie B play-off final in the last minute.",
+    "best": ["1990 Mitropa Cup", "Serie A seasons in the 1990s and 2009-11"],
+    "uncertain": false
+  },
+  "Spezia Aquilotti": {
+    "real": "Spezia Calcio",
+    "founded": 1906,
+    "nickname": "Le Aquile / Gli Aquilotti",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["1944 wartime Alta Italia championship (honorary recognition)"] },
+    "history": "The club won a wartime championship in 1944, later honoured by the federation but not counted as an official Scudetto. It reached Serie A for the first time in 2020 and stayed for three seasons. It lost the 2025 Serie B play-off final to Cremonese.",
+    "best": ["1944 wartime championship", "First Serie A promotion in 2020"],
+    "uncertain": false
+  },
+  "Modena Canarini": {
+    "real": "Modena FC",
+    "founded": 1912,
+    "nickname": "I Canarini / I Gialloblù",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "One of the older clubs of Emilia, it has had a number of Serie A spells, the last in 2003-04. It went bankrupt in 2017 and was refounded. It won promotion back to Serie B in 2022.",
+    "best": ["Serie A seasons in the early 2000s", "Return to Serie B in 2022"],
+    "uncertain": false
+  },
+  "Catanzaro Aquile": {
+    "real": "US Catanzaro",
+    "founded": 1929,
+    "nickname": "Le Aquile / I Giallorossi",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The leading club of Calabria played seven seasons in Serie A between 1971 and 1983 and reached the 1966 Coppa Italia final. It later fell to the lower divisions. A record-breaking Serie C campaign brought promotion to Serie B in 2023.",
+    "best": ["1966 Coppa Italia final", "Seven Serie A seasons", "Record Serie C season in 2022-23"],
+    "uncertain": false
+  },
+  "Cesena Cavallucci": {
+    "real": "Cesena FC",
+    "founded": 1940,
+    "nickname": "I Cavallucci Marini / I Bianconeri",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The club reached Serie A in 1973 and played in the UEFA Cup in 1976-77. It went bankrupt in 2018 and was refounded in Serie D. It returned to Serie B in 2024.",
+    "best": ["1976-77 UEFA Cup campaign", "Several Serie A spells"],
+    "uncertain": false
+  },
+  "Frosinone Ciociari": {
+    "real": "Frosinone Calcio",
+    "founded": 1928,
+    "nickname": "I Ciociari / I Canarini",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Serie B 2022-23"] },
+    "history": "A provincial club from southern Lazio, it first reached Serie A in 2015 and returned in 2018 and 2023, when it won Serie B. It was relegated again in 2024 and narrowly avoided the drop to Serie C in 2025.",
+    "best": ["Serie B champions 2022-23", "Three Serie A promotions"],
+    "uncertain": false
+  },
+  "Salerno Granata": {
+    "real": "US Salernitana 1919",
+    "founded": 1919,
+    "nickname": "I Granata / L'Ippocampo",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The club has had short Serie A stays, including 1998-99 and a run from 2021 to 2024. It has been refounded several times after financial collapse. Relegated from Serie A in 2024, it lost the 2025 Serie B play-out to Sampdoria and dropped to Serie C.",
+    "best": ["Serie A return in 2021 after 22 years away", "Great escape from relegation in 2021-22"],
+    "uncertain": false
+  },
+  "Reggio Teste Quadre": {
+    "real": "AC Reggiana 1919",
+    "founded": 1919,
+    "nickname": "Le Teste Quadre / I Granata",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The club had Serie A spells in the 1990s and owns the distinction of opening the first privately owned stadium in Italy in 1995. After bankruptcy in 2018 it was refounded and rose back to Serie B, where it has played since 2023.",
+    "best": ["Serie A seasons in the 1990s", "Return to Serie B in 2023"],
+    "uncertain": false
+  },
+  "Brescia Rondinelle": {
+    "real": "Brescia Calcio",
+    "founded": 1911,
+    "nickname": "Le Rondinelle",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Serie B ×4 (1964-65, 1991-92, 1996-97, 2018-19)", "Anglo-Italian Cup 1994"] },
+    "history": "The club had many Serie A seasons, most famously with Roberto Baggio and a young Andrea Pirlo around 2000-04. A four-point penalty for unpaid taxes and contributions, imposed after the 2024/25 Serie B season had ended, dropped it into the relegation places. It then failed to secure a Serie C licence and was excluded from professional football in July 2025, with a club relocated from Lake Garda taking over at the Rigamonti stadium.",
+    "best": ["Baggio era in Serie A", "1994 Anglo-Italian Cup", "Intertoto Cup final in 2001"],
+    "uncertain": false
+  },
+  "Padova Biancoscudati": {
+    "real": "Calcio Padova",
+    "founded": 1910,
+    "nickname": "I Biancoscudati",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "Under coach Nereo Rocco the club finished third in Serie A in 1958. It had further top-flight spells in the 1990s. After years in the lower leagues, it won its Serie C group in 2025 to return to Serie B.",
+    "best": ["Third in Serie A in 1957-58", "Serie C title and promotion in 2025"],
+    "uncertain": false
+  },
+  "Bolzano Altoatesini": {
+    "real": "FC Südtirol",
+    "founded": 1974,
+    "nickname": "Gli Altoatesini / I Biancorossi",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Serie C 2021-22"] },
+    "history": "Based in South Tyrol and playing at Bolzano's small Druso stadium, the club spent years climbing through the lower divisions. It won promotion to Serie B for the first time in 2022 and reached the play-offs in its first season there.",
+    "best": ["First Serie B promotion in 2022", "Serie B play-offs in 2022-23"],
+    "uncertain": false
+  }
+}

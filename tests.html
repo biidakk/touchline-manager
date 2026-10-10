@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Touchline Manager tests</title>
+<style>
+  body { font: 14px/1.5 Consolas, monospace; background: #0b1730; color: #dfe8ff; margin: 24px; }
+  h1 { font: 700 20px 'Segoe UI', sans-serif; }
+  .pass { color: #5be38a; }
+  .fail { color: #ff6b6b; font-weight: bold; }
+  #summary { font-size: 18px; margin: 12px 0 18px; }
+  pre { background: #12224a; padding: 12px; border-radius: 6px; }
+</style>
+<script>
+  window.addEventListener('error', (e) => {
+    document.documentElement.dataset.errors = (document.documentElement.dataset.errors || '') + e.message + ' | ';
+  });
+</script>
+</head>
+<body>
+<h1>Touchline Manager: simulation tests</h1>
+<div id="summary">Running…</div>
+<div id="results"></div>
+<h1>Statistics</h1>
+<pre id="info"></pre>
+<script type="module" src="src/tests/run.js"></script>
+</body>
+</html>

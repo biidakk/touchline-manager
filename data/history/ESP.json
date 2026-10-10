@@ -1,0 +1,327 @@
+{
+  "_about": "Real club histories for Spain, as of the end of the 2024/25 season. Keys are the in-game club names. Written in our own words; check and correct freely.",
+  "Madrid Blancos": {
+    "real": "Real Madrid",
+    "founded": 1902,
+    "nickname": "Los Blancos / Los Merengues",
+    "honours": { "league": 36, "cup": 20, "europe": ["European Cup / Champions League ×15 (last 2024)", "UEFA Cup ×2 (1985, 1986)"], "other": ["Supercopa de España ×13", "UEFA Super Cup ×6"] },
+    "history": "The club dominated the early years of the European Cup, winning the first five editions from 1956. It has remained the most decorated side in continental history, adding a run of three straight Champions League wins from 2016 and further titles in 2022 and 2024.",
+    "best": ["Five consecutive European Cups (1956-1960)", "Record 15 European Cups", "Three straight Champions Leagues (2016-2018)"],
+    "uncertain": false
+  },
+  "Barcelona Blaugrana": {
+    "real": "FC Barcelona",
+    "founded": 1899,
+    "nickname": "Barça / Blaugrana / Culés",
+    "honours": { "league": 28, "cup": 32, "europe": ["Champions League ×5 (last 2015)", "Cup Winners' Cup ×4", "Fairs Cup ×3"], "other": ["Supercopa de España ×15"] },
+    "history": "Founded by a group led by Swiss businessman Joan Gamper, the club became a symbol of Catalan identity. Its academy and possession style produced the great sides of the Cruyff and Guardiola eras, including a historic treble in 2009. It won the domestic league and cup double in 2024/25.",
+    "best": ["First Spanish treble (2009)", "Record 32 Copa del Rey titles", "Second treble (2015)"],
+    "uncertain": false
+  },
+  "Atlético Madrileño": {
+    "real": "Atlético de Madrid",
+    "founded": 1903,
+    "nickname": "Los Colchoneros / Rojiblancos",
+    "honours": { "league": 11, "cup": 10, "europe": ["Europa League ×3 (2010, 2012, 2018)", "Cup Winners' Cup ×1 (1962)"], "other": ["Supercopa de España ×2", "UEFA Super Cup ×3", "Intercontinental Cup 1974"] },
+    "history": "Started by Basque students as an offshoot of Athletic Bilbao, the club grew into the capital's second force. Under Diego Simeone from 2011 it became a regular contender, winning league titles in 2014 and 2021 and reaching two Champions League finals.",
+    "best": ["League and cup double (1996)", "League titles in 2014 and 2021", "Three Europa League wins"],
+    "uncertain": false
+  },
+  "Bilbao Leones": {
+    "real": "Athletic Club (Bilbao)",
+    "founded": 1898,
+    "nickname": "Los Leones",
+    "honours": { "league": 8, "cup": 24, "europe": [], "other": ["Supercopa de España ×3"] },
+    "history": "The club is famous for fielding only players born or trained in the Basque region, a policy it has kept for over a century. A founding member of La Liga, it has never been relegated. Its 2024 cup win ended a 40-year wait to lift the Copa del Rey.",
+    "best": ["Never relegated from the top flight", "Back-to-back leagues and a double (1983, 1984)", "Copa del Rey win in 2024"],
+    "uncertain": false
+  },
+  "Villarreal Submarino": {
+    "real": "Villarreal CF",
+    "founded": 1923,
+    "nickname": "El Submarino Amarillo",
+    "honours": { "league": 0, "cup": 0, "europe": ["Europa League ×1 (2021)"], "other": ["UEFA Intertoto Cup ×2 (2003, 2004)"] },
+    "history": "A club from a town of around 50,000 people, it first reached the top flight in 1998. Backed by the Roig family, it became a regular in Europe, reaching a Champions League semi-final in 2006 and again in 2022.",
+    "best": ["Europa League win (2021)", "Champions League semi-finals (2006, 2022)", "League runners-up (2008)"],
+    "uncertain": false
+  },
+  "Donostia Txuri-Urdin": {
+    "real": "Real Sociedad",
+    "founded": 1909,
+    "nickname": "Txuri-Urdin / La Real",
+    "honours": { "league": 2, "cup": 3, "europe": [], "other": ["Supercopa de España ×1 (1982)"] },
+    "history": "The San Sebastián club won back-to-back league titles in 1981 and 1982 with a squad built largely from Basque talent. It narrowly missed another title in 2003 and won the delayed 2020 cup final against its Basque rival from Bilbao.",
+    "best": ["Back-to-back league titles (1981, 1982)", "Copa del Rey win over Athletic (2020 final, played 2021)", "League runners-up (2003)"],
+    "uncertain": false
+  },
+  "Betis Sevilla": {
+    "real": "Real Betis",
+    "founded": 1907,
+    "nickname": "Los Verdiblancos / Béticos",
+    "honours": { "league": 1, "cup": 3, "europe": [], "other": [] },
+    "history": "The green-and-white side of Seville won its only league title in 1935. It has lifted the Copa del Rey three times, most recently in 2022, and reached its first European final in the 2025 Conference League, losing to Chelsea.",
+    "best": ["League champions (1935)", "Copa del Rey wins in 1977, 2005 and 2022", "Conference League final (2025)"],
+    "uncertain": false
+  },
+  "Sevilla Nervión": {
+    "real": "Sevilla FC",
+    "founded": 1890,
+    "nickname": "Los Nervionenses / Sevillistas",
+    "honours": { "league": 1, "cup": 5, "europe": ["UEFA Cup / Europa League ×7 (last 2023)"], "other": ["UEFA Super Cup ×1 (2006)", "Supercopa de España ×1"] },
+    "history": "One of Spain's oldest football clubs, it won the league in 1946. Its modern identity is built on the Europa League, a competition it has won a record seven times between 2006 and 2023 without losing a final.",
+    "best": ["Record seven UEFA Cup / Europa League titles", "Back-to-back UEFA Cups (2006, 2007)", "League champions (1946)"],
+    "uncertain": false
+  },
+  "Valencia Che": {
+    "real": "Valencia CF",
+    "founded": 1919,
+    "nickname": "Los Che / Murciélagos",
+    "honours": { "league": 6, "cup": 8, "europe": ["UEFA Cup ×1 (2004)", "Cup Winners' Cup ×1 (1980)", "Fairs Cup ×2 (1962, 1963)"], "other": ["UEFA Super Cup ×2", "Supercopa de España ×1 (1999)"] },
+    "history": "The club enjoyed a golden era around the turn of the millennium, reaching two consecutive Champions League finals in 2000 and 2001. It won the league in 2002 and 2004, adding the UEFA Cup in 2004, and lifted its eighth Copa del Rey in 2019.",
+    "best": ["League and UEFA Cup double (2004)", "Champions League finals (2000, 2001)", "Two Fairs Cups (1962, 1963)"],
+    "uncertain": false
+  },
+  "Vigo Celestes": {
+    "real": "RC Celta de Vigo",
+    "founded": 1923,
+    "nickname": "Os Celestes",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["UEFA Intertoto Cup (2000)"] },
+    "history": "Formed by the merger of two Vigo clubs, it has spent most of its history in the top flight. Its best period came around 2000, when it beat several European giants, and it reached a Europa League semi-final in 2017.",
+    "best": ["Europa League semi-final (2017)", "Champions League last 16 (2004)", "Copa del Rey finals (1948, 1994, 2001)"],
+    "uncertain": false
+  },
+  "Girona Blanquivermells": {
+    "real": "Girona FC",
+    "founded": 1930,
+    "nickname": "Blanquivermells",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The Catalan club spent decades in the lower leagues before first reaching La Liga in 2017. Its 2023/24 season was a surprise, finishing third and earning a Champions League debut in 2024/25.",
+    "best": ["Third in La Liga (2023/24)", "Champions League debut (2024/25)", "First top-flight promotion (2017)"],
+    "uncertain": false
+  },
+  "Pamplona Rojillos": {
+    "real": "CA Osasuna",
+    "founded": 1920,
+    "nickname": "Los Rojillos",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The Navarrese club is member-owned and known for its intense home atmosphere at El Sadar. It reached a UEFA Cup semi-final in 2007 and has played two Copa del Rey finals, in 2005 and 2023.",
+    "best": ["UEFA Cup semi-final (2007)", "Copa del Rey finals (2005, 2023)", "Fourth in La Liga (2006)"],
+    "uncertain": false
+  },
+  "Getafe Azulones": {
+    "real": "Getafe CF",
+    "founded": 1983,
+    "nickname": "Los Azulones",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "Based in the southern suburbs of Madrid, the club first reached La Liga in 2004. It reached consecutive Copa del Rey finals in 2007 and 2008 and a UEFA Cup quarter-final in 2008.",
+    "best": ["Copa del Rey finals (2007, 2008)", "UEFA Cup quarter-final (2008)", "Europa League last 16 (2020)"],
+    "uncertain": false
+  },
+  "Vallecas Rayo": {
+    "real": "Rayo Vallecano",
+    "founded": 1924,
+    "nickname": "Los Franjirrojos",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Segunda División champions (2018)"] },
+    "history": "A working-class club from Madrid's Vallecas district, recognisable by the red sash on its shirt. It reached a UEFA Cup quarter-final in 2001 and in 2024/25 finished eighth, qualifying for European football again.",
+    "best": ["UEFA Cup quarter-final (2001)", "European qualification (2025)", "Segunda División title (2018)"],
+    "uncertain": false
+  },
+  "Mallorca Bermellones": {
+    "real": "RCD Mallorca",
+    "founded": 1916,
+    "nickname": "Los Bermellones",
+    "honours": { "league": 0, "cup": 1, "europe": [], "other": ["Supercopa de España ×1 (1998)"] },
+    "history": "The island club enjoyed its best years around 2000, reaching the 1999 Cup Winners' Cup final and finishing third in La Liga in 2001. It won the Copa del Rey in 2003 and reached another final in 2024.",
+    "best": ["Copa del Rey win (2003)", "Cup Winners' Cup final (1999)", "Third in La Liga (2001)"],
+    "uncertain": false
+  },
+  "Barcelona Periquitos": {
+    "real": "RCD Espanyol",
+    "founded": 1900,
+    "nickname": "Periquitos",
+    "honours": { "league": 0, "cup": 4, "europe": [], "other": [] },
+    "history": "Barcelona's second club was founded by Spanish university students and has spent most seasons in the top flight. It has won four Copa del Rey titles and lost two UEFA Cup finals on penalties, in 1988 and 2007.",
+    "best": ["Copa del Rey wins (2000, 2006)", "UEFA Cup finals (1988, 2007)", "Four Copa del Rey titles"],
+    "uncertain": false
+  },
+  "Vitoria Babazorros": {
+    "real": "Deportivo Alavés",
+    "founded": 1921,
+    "nickname": "Babazorros / El Glorioso",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The Vitoria-Gasteiz club is best remembered for its 2001 UEFA Cup final, lost 5-4 to Liverpool to a golden goal. It also reached the Copa del Rey final in 2017.",
+    "best": ["UEFA Cup final (2001)", "Copa del Rey final (2017)"],
+    "uncertain": false
+  },
+  "Valencia Granotes": {
+    "real": "Levante UD",
+    "founded": 1909,
+    "nickname": "Granotes",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Segunda División champions ×3 (last 2025)", "Copa de la España Libre (1937)"] },
+    "history": "Valencia's oldest surviving club has moved between the top two divisions for much of its history. It reached the Europa League last 16 in 2013 and won the Segunda División in 2024/25 to return to La Liga.",
+    "best": ["Europa League last 16 (2013)", "Segunda División title (2025)", "Sixth in La Liga (2012)"],
+    "uncertain": false
+  },
+  "Gran Canaria Amarillos": {
+    "real": "UD Las Palmas",
+    "founded": 1949,
+    "nickname": "Los Amarillos",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "Created by merging five Gran Canaria clubs, it had its peak in the late 1960s, finishing second in La Liga in 1969. It reached the Copa del Rey final in 1978 and was relegated from the top flight in 2025.",
+    "best": ["La Liga runners-up (1969)", "Copa del Rey final (1978)"],
+    "uncertain": false
+  },
+  "Valladolid Pucela": {
+    "real": "Real Valladolid",
+    "founded": 1928,
+    "nickname": "Pucela / Blanquivioletas",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Copa de la Liga (1984)"] },
+    "history": "The Castilian club has often moved between the top two divisions. It won the short-lived league cup in 1984 and played in the Cup Winners' Cup after reaching the 1989 Copa del Rey final. It was relegated from La Liga in 2025.",
+    "best": ["Copa de la Liga win (1984)", "Copa del Rey finals (1950, 1989)"],
+    "uncertain": false
+  },
+  "Leganés Pepineros": {
+    "real": "CD Leganés",
+    "founded": 1928,
+    "nickname": "Los Pepineros",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Segunda División champions (2024)"] },
+    "history": "From a suburb south of Madrid, the club first reached La Liga in 2016 and stayed four seasons. It won the Segunda División in 2024 but went back down after one top-flight season.",
+    "best": ["First top-flight promotion (2016)", "Copa del Rey semi-final (2018)", "Segunda División title (2024)"],
+    "uncertain": false
+  },
+  "Oviedo Carbayones": {
+    "real": "Real Oviedo",
+    "founded": 1926,
+    "nickname": "Los Carbayones",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The Asturian club fell to the fourth tier in the 2000s after financial collapse and was rescued by a fan share drive. It won the 2025 promotion play-offs to return to La Liga after 24 years away.",
+    "best": ["Third in La Liga (1935, 1936, 1963)", "UEFA Cup participation (1991/92)", "Promotion to La Liga (2025)"],
+    "uncertain": false
+  },
+  "Gijón Rojiblancos": {
+    "real": "Real Sporting de Gijón",
+    "founded": 1905,
+    "nickname": "Rojiblancos",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "Known for its Mareo academy, the club had its best years around 1980, finishing second in La Liga in 1979. It also reached two consecutive Copa del Rey finals in 1981 and 1982.",
+    "best": ["La Liga runners-up (1979)", "Copa del Rey finals (1981, 1982)", "Mareo academy"],
+    "uncertain": false
+  },
+  "Santander Racing": {
+    "real": "Real Racing Club de Santander",
+    "founded": 1913,
+    "nickname": "Racinguistas",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "A founding member of La Liga in 1929, the Cantabrian club finished second in 1931. Its best modern season was 2007/08, when it qualified for the UEFA Cup and reached the cup semi-finals. It later fell as far as the third tier before returning to Segunda.",
+    "best": ["La Liga founding member (1929)", "League runners-up (1931)", "UEFA Cup qualification (2008)"],
+    "uncertain": false
+  },
+  "Zaragoza Maños": {
+    "real": "Real Zaragoza",
+    "founded": 1932,
+    "nickname": "Los Maños / Blanquillos",
+    "honours": { "league": 0, "cup": 6, "europe": ["Cup Winners' Cup ×1 (1995)", "Fairs Cup ×1 (1964)"], "other": ["Supercopa de España ×1 (2004)"] },
+    "history": "The Aragonese club built a strong cup record, winning six Copa del Rey titles. Its most famous night came in 1995, when a long-range shot in the last minute of extra time beat Arsenal in the Cup Winners' Cup final.",
+    "best": ["Cup Winners' Cup win (1995)", "Fairs Cup win (1964)", "Six Copa del Rey titles"],
+    "uncertain": false
+  },
+  "Coruña Turcos": {
+    "real": "RC Deportivo de La Coruña",
+    "founded": 1906,
+    "nickname": "Dépor / Turcos",
+    "honours": { "league": 1, "cup": 2, "europe": [], "other": ["Supercopa de España ×3"] },
+    "history": "The Galician club rose to prominence in the 1990s, winning its only league title in 2000. It beat Real Madrid at the Bernabéu in the 2002 cup final and reached a Champions League semi-final in 2004. After a long decline it returned to Segunda in 2024.",
+    "best": ["League champions (2000)", "Copa del Rey win at the Bernabéu (2002)", "Champions League semi-final (2004)"],
+    "uncertain": false
+  },
+  "Málaga Boquerones": {
+    "real": "Málaga CF",
+    "founded": 1948,
+    "nickname": "Los Boquerones / Albicelestes",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["UEFA Intertoto Cup (2002)"] },
+    "history": "The club began in 1948 as the reserve side of the city's old team, survived that club's insolvency in 1992 and took its present name in 1994. With heavy investment it reached the Champions League quarter-finals in 2013. Financial trouble followed, and it returned to Segunda in 2024 after a season in the third tier.",
+    "best": ["Champions League quarter-final (2013)", "UEFA Cup quarter-final (2003)", "Intertoto Cup win (2002)"],
+    "uncertain": false
+  },
+  "Granada Nazaríes": {
+    "real": "Granada CF",
+    "founded": 1931,
+    "nickname": "Nazaríes / Rojiblancos",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The Andalusian club reached the Copa del Rey final in 1959. After back-to-back promotions in the early 2010s it became a top-flight side again, reaching the Europa League quarter-finals in 2021.",
+    "best": ["Europa League quarter-final (2021)", "Copa del Rey final (1959)", "Seventh in La Liga (2020)"],
+    "uncertain": false
+  },
+  "Cádiz Amarillos": {
+    "real": "Cádiz CF",
+    "founded": 1910,
+    "nickname": "Submarino Amarillo",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The club from one of Europe's oldest cities is known for its festive supporters. It first reached La Liga in 1977 and has had several spells there since, the longest from 1985 to 1993 and the most recent from 2020 until relegation in 2024.",
+    "best": ["Eight straight La Liga seasons (1985-1993)", "Twelfth in La Liga (1988, 2021)", "Promotion to La Liga (2020)"],
+    "uncertain": false
+  },
+  "Almería Indálicos": {
+    "real": "UD Almería",
+    "founded": 1989,
+    "nickname": "Indálicos / Rojiblancos",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Segunda División champions (2022)"] },
+    "history": "A young club that first reached La Liga in 2007 and finished eighth in its debut season. It returned as Segunda champions in 2022 and was relegated again in 2024.",
+    "best": ["Eighth in debut La Liga season (2008)", "Copa del Rey semi-final (2011)", "Segunda División title (2022)"],
+    "uncertain": false
+  },
+  "Eibar Armeros": {
+    "real": "SD Eibar",
+    "founded": 1940,
+    "nickname": "Armeros",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "From a Basque town of under 30,000 people, the club made its La Liga debut in 2014 and stayed seven seasons with one of the smallest stadiums and budgets in the division.",
+    "best": ["Seven straight La Liga seasons (2014-2021)", "Ninth in La Liga (2018)"],
+    "uncertain": false
+  },
+  "Huesca Azulgranas": {
+    "real": "SD Huesca",
+    "founded": 1960,
+    "nickname": "Azulgranas",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Segunda División champions (2020)"] },
+    "history": "The Aragonese club rose quickly from the regional tiers, making its La Liga debut in 2018. It returned as Segunda champions in 2020 for a second top-flight season.",
+    "best": ["La Liga debut (2018)", "Segunda División title (2020)"],
+    "uncertain": false
+  },
+  "Burgos Blanquinegros": {
+    "real": "Burgos CF",
+    "founded": 1985,
+    "nickname": "Blanquinegros",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The current club was formed in the 1980s after the original Burgos CF folded, inheriting its colours and El Plantío ground. Its predecessor had several top-flight seasons in the 1970s. It returned to Segunda in 2021.",
+    "best": ["Return to Segunda División (2021)"],
+    "uncertain": false
+  },
+  "Albacete Manchegos": {
+    "real": "Albacete Balompié",
+    "founded": 1940,
+    "nickname": "Queso Mecánico / Alba",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The club from Castilla-La Mancha shot from the third tier to La Liga in two years, finishing seventh in its 1991/92 debut. That side earned the nickname 'mechanical cheese'.",
+    "best": ["Seventh in debut La Liga season (1992)", "Copa del Rey semi-final (1995)"],
+    "uncertain": false
+  },
+  "Tenerife Blanquiazules": {
+    "real": "CD Tenerife",
+    "founded": 1922,
+    "nickname": "Blanquiazules / Chicharreros",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The island club enjoyed its peak in the 1990s, twice denying Real Madrid the league title on the final day and reaching the UEFA Cup semi-finals in 1997. It was relegated to the third tier in 2025.",
+    "best": ["UEFA Cup semi-final (1997)", "Fifth in La Liga (1993, 1996)"],
+    "uncertain": false
+  },
+  "Elche Franjiverdes": {
+    "real": "Elche CF",
+    "founded": 1923,
+    "nickname": "Franjiverdes / Ilicitanos",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The club's best era came in the 1960s, when it finished fifth in La Liga and reached the 1969 Copa del Rey final. It has moved between the top two divisions since and earned promotion back to La Liga in 2025.",
+    "best": ["Copa del Rey final (1969)", "Fifth in La Liga (1964)", "Promotion to La Liga (2025)"],
+    "uncertain": false
+  }
+}

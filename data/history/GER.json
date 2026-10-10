@@ -1,0 +1,327 @@
+{
+  "_about": "Real club histories for Germany, as of the end of the 2024/25 season. Keys are the in-game club names. Written in our own words; check and correct freely.",
+  "München Rot": {
+    "real": "FC Bayern München",
+    "founded": 1900,
+    "nickname": "Die Roten",
+    "honours": { "league": 34, "cup": 20, "europe": ["European Cup/Champions League x6 (1974, 1975, 1976, 2001, 2013, 2020)", "Cup Winners' Cup 1967", "UEFA Cup 1996"], "other": ["Includes the 1932 pre-Bundesliga championship"] },
+    "history": "Founded by members of a Munich gymnastics club, the club joined the Bundesliga in 1965 and soon dominated, winning three straight European Cups in the 1970s. It has been the leading force in German football ever since, including a run of eleven consecutive titles from 2013 to 2023, and regained the title in 2025.",
+    "best": ["Three European Cups in a row, 1974-76", "Continental treble in 2013 and 2020", "Eleven straight league titles, 2013-23"],
+    "uncertain": false
+  },
+  "Dortmund Borussen": {
+    "real": "Borussia Dortmund",
+    "founded": 1909,
+    "nickname": "Die Schwarzgelben",
+    "honours": { "league": 8, "cup": 5, "europe": ["Champions League 1997", "Cup Winners' Cup 1966"], "other": ["Includes pre-Bundesliga titles 1956, 1957 and 1963"] },
+    "history": "Formed by young men breaking away from a church youth group, the club became the first German side to win a European trophy in 1966. After near financial collapse in the mid-2000s it rebuilt into a title winner again in 2011 and 2012, and is famed for the huge standing terrace known as the Yellow Wall.",
+    "best": ["Champions League winners 1997", "First German European trophy, 1966", "League and cup double 2012"],
+    "uncertain": false
+  },
+  "Leverkusen Werkself": {
+    "real": "Bayer 04 Leverkusen",
+    "founded": 1904,
+    "nickname": "Die Werkself",
+    "honours": { "league": 1, "cup": 2, "europe": ["UEFA Cup 1988"], "other": [] },
+    "history": "Created as the works club of the Bayer chemical company, the club reached the top flight in 1979 and won the UEFA Cup in 1988. Long mocked for near misses, it finally broke through in 2023/24 by winning the league unbeaten and adding the cup.",
+    "best": ["Unbeaten league champions 2024", "UEFA Cup winners 1988", "Champions League finalists 2002"],
+    "uncertain": false
+  },
+  "Leipzig Rasenball": {
+    "real": "RB Leipzig",
+    "founded": 2009,
+    "nickname": "Die Roten Bullen",
+    "honours": { "league": 0, "cup": 2, "europe": [], "other": [] },
+    "history": "Set up with backing from Red Bull after taking over a fifth-tier licence, the club climbed four divisions in seven years to reach the Bundesliga in 2016. It quickly became a regular Champions League participant and won back-to-back German cups.",
+    "best": ["DFB-Pokal winners 2022 and 2023", "Champions League semi-finalists 2020", "Bundesliga runners-up 2017 and 2021"],
+    "uncertain": false
+  },
+  "Frankfurt Adler": {
+    "real": "Eintracht Frankfurt",
+    "founded": 1899,
+    "nickname": "Die Adler",
+    "honours": { "league": 1, "cup": 5, "europe": ["UEFA Cup 1980", "Europa League 2022"], "other": ["German champions 1959 (pre-Bundesliga)"] },
+    "history": "A founding member of the Bundesliga, the club had already won the national title in 1959 and reached the 1960 European Cup final. It has a strong cup tradition and celebrated a famous Europa League triumph in Seville in 2022.",
+    "best": ["Europa League winners 2022", "UEFA Cup winners 1980", "European Cup finalists 1960"],
+    "uncertain": false
+  },
+  "Stuttgart Schwaben": {
+    "real": "VfB Stuttgart",
+    "founded": 1893,
+    "nickname": "Die Schwaben",
+    "honours": { "league": 5, "cup": 4, "europe": [], "other": ["Includes pre-Bundesliga titles 1950 and 1952", "2. Bundesliga champions 1977 and 2017"] },
+    "history": "One of the most decorated clubs in the south-west, it won two titles in the early 1950s and three more in the Bundesliga era, the latest in 2007. After two relegations it returned strongly, finishing second in 2024 and lifting the German cup in 2025.",
+    "best": ["Bundesliga champions 2007", "DFB-Pokal winners 2025", "UEFA Cup finalists 1989"],
+    "uncertain": false
+  },
+  "Freiburg Breisgauer": {
+    "real": "SC Freiburg",
+    "founded": 1904,
+    "nickname": "Breisgau-Brasilianer",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["2. Bundesliga champions 1993, 2003, 2009, 2016"] },
+    "history": "A modest club from the edge of the Black Forest, it first reached the Bundesliga in 1993 and became known for stable leadership and long-serving coaches. It has become an established top-flight side, regularly qualifying for Europe in recent seasons.",
+    "best": ["DFB-Pokal finalists 2022", "Third in the Bundesliga 1995", "Four 2. Bundesliga titles"],
+    "uncertain": false
+  },
+  "Wolfsburg Wölfe": {
+    "real": "VfL Wolfsburg",
+    "founded": 1945,
+    "nickname": "Die Wölfe",
+    "honours": { "league": 1, "cup": 1, "europe": [], "other": [] },
+    "history": "Formed in the town built around the Volkswagen factory, the club reached the Bundesliga in 1997 and has stayed there since. Backed by the carmaker, it won a surprise league title in 2009 and followed it with the cup in 2015.",
+    "best": ["Bundesliga champions 2009", "DFB-Pokal winners 2015", "Champions League quarter-finalists 2016"],
+    "uncertain": false
+  },
+  "Gladbach Fohlen": {
+    "real": "Borussia Mönchengladbach",
+    "founded": 1900,
+    "nickname": "Die Fohlen",
+    "honours": { "league": 5, "cup": 3, "europe": ["UEFA Cup x2 (1975, 1979)"], "other": [] },
+    "history": "Under coach Hennes Weisweiler a young, attacking side earned the nickname Foals and dominated the 1970s alongside Bayern. The club won five titles in that decade and reached the 1977 European Cup final.",
+    "best": ["Five Bundesliga titles in the 1970s", "Two UEFA Cups", "European Cup finalists 1977"],
+    "uncertain": false
+  },
+  "Hoffenheim Kraichgauer": {
+    "real": "TSG 1899 Hoffenheim",
+    "founded": 1899,
+    "nickname": "Die Kraichgauer",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "A village club from the Kraichgau, it was transformed by investment from software billionaire and former player Dietmar Hopp. It rose from the lower leagues to the Bundesliga in 2008 and reached the Champions League group stage in 2018/19.",
+    "best": ["Rise from amateur football to the Bundesliga", "Third place in 2018", "Champions League group stage 2018/19"],
+    "uncertain": false
+  },
+  "Mainz Nullfünfer": {
+    "real": "1. FSV Mainz 05",
+    "founded": 1905,
+    "nickname": "Die Nullfünfer",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "Long a second-division club, it first reached the Bundesliga in 2004 under Jürgen Klopp, later coached by Thomas Tuchel. It has been a top-flight fixture for most of the time since and finished sixth in 2024/25 to return to Europe.",
+    "best": ["First promotion to the Bundesliga 2004", "Fifth place in 2011", "Sixth place and European qualification 2025"],
+    "uncertain": false
+  },
+  "Berlin Eiserne": {
+    "real": "1. FC Union Berlin",
+    "founded": 1966,
+    "nickname": "Die Eisernen",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["East German FDGB-Pokal 1968"] },
+    "history": "Based in Köpenick, the club was seen as an underdog in East German football and is famous for fans who rebuilt its stadium themselves. It reached the Bundesliga in 2019 and rose to the Champions League group stage in 2023/24.",
+    "best": ["Champions League group stage 2023/24", "Fourth in the Bundesliga 2023", "DFB-Pokal finalists 2001"],
+    "uncertain": false
+  },
+  "Bremen Grün-Weiß": {
+    "real": "SV Werder Bremen",
+    "founded": 1899,
+    "nickname": "Die Grün-Weißen",
+    "honours": { "league": 4, "cup": 6, "europe": ["Cup Winners' Cup 1992"], "other": [] },
+    "history": "A Bundesliga founder member, the club enjoyed its best era under Otto Rehhagel in the late 1980s and early 1990s, including European success in 1992. It won a league and cup double in 2004 and returned to the top flight in 2022 after one season down.",
+    "best": ["League and cup double 2004", "Cup Winners' Cup winners 1992", "UEFA Cup finalists 2009"],
+    "uncertain": false
+  },
+  "Augsburg Fuggerstädter": {
+    "real": "FC Augsburg",
+    "founded": 1907,
+    "nickname": "Die Fuggerstädter",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The club spent decades in the lower leagues before winning promotion to the Bundesliga in 2011. It has stayed in the top flight ever since and reached the Europa League round of 32 in 2015/16.",
+    "best": ["Promotion to the Bundesliga 2011", "Fifth place in 2015", "Europa League knockout stage 2016"],
+    "uncertain": false
+  },
+  "Köln Geißböcke": {
+    "real": "1. FC Köln",
+    "founded": 1948,
+    "nickname": "Die Geißböcke",
+    "honours": { "league": 3, "cup": 4, "europe": [], "other": ["Includes 1962 pre-Bundesliga title", "First Bundesliga champions 1964", "2. Bundesliga champions 2000, 2005, 2014, 2019, 2025"] },
+    "history": "Formed by a merger after the Second World War, the club became the first Bundesliga champion in 1964 and won a double in 1978. It has yo-yoed between divisions in recent decades and won the 2. Bundesliga again in 2024/25.",
+    "best": ["First Bundesliga champions 1964", "League and cup double 1978", "UEFA Cup finalists 1986"],
+    "uncertain": false
+  },
+  "Hamburg Rothosen": {
+    "real": "Hamburger SV",
+    "founded": 1887,
+    "nickname": "Die Rothosen",
+    "honours": { "league": 6, "cup": 3, "europe": ["European Cup 1983", "Cup Winners' Cup 1977"], "other": ["Includes pre-Bundesliga titles 1923, 1928 and 1960"] },
+    "history": "The club was the only side to have played every Bundesliga season until its first relegation in 2018. Its peak came under Ernst Happel, winning the European Cup in 1983, and after seven seasons in the second tier it won promotion back in 2024/25.",
+    "best": ["European Cup winners 1983", "Cup Winners' Cup winners 1977", "Bundesliga champions 1979, 1982, 1983"],
+    "uncertain": false
+  },
+  "Hamburg Kiezkicker": {
+    "real": "FC St. Pauli",
+    "founded": 1910,
+    "nickname": "Kiezkicker",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["2. Bundesliga champions 1977 (Nord) and 2024"] },
+    "history": "Rooted in Hamburg's harbour and nightlife district, the club is known worldwide for its left-leaning fan culture and skull-and-crossbones symbol. Mostly a second-tier side, it won the 2. Bundesliga in 2024 and stayed up in its 2024/25 return to the top flight.",
+    "best": ["2. Bundesliga champions 2024", "Beat Bayern in 2002 as reigning world club champions", "DFB-Pokal semi-finalists 2006"],
+    "uncertain": false
+  },
+  "Heidenheim Brenzer": {
+    "real": "1. FC Heidenheim 1846",
+    "founded": 2007,
+    "nickname": "FCH",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["2. Bundesliga champions 2023"] },
+    "history": "The football section split from the town's old sports club (dating to 1846) in 2007, with coach Frank Schmidt in charge from that year. It climbed from regional amateur football to the Bundesliga in 2023, reached the Conference League knockout play-offs in 2024/25 and survived relegation via play-off.",
+    "best": ["2. Bundesliga champions 2023", "Eighth in its first Bundesliga season", "Conference League knockout play-offs 2025"],
+    "uncertain": false
+  },
+  "Gelsenkirchen Knappen": {
+    "real": "FC Schalke 04",
+    "founded": 1904,
+    "nickname": "Die Knappen",
+    "honours": { "league": 7, "cup": 5, "europe": ["UEFA Cup 1997"], "other": ["All seven titles pre-Bundesliga (1934-1958)", "2. Bundesliga champions 1982, 1991, 2022"] },
+    "history": "A club of the Ruhr mining community, it dominated German football in the 1930s and 1940s with its short-passing style. It won the UEFA Cup in 1997 and was a regular title challenger, but has spent recent seasons in the second division after relegation in 2023.",
+    "best": ["Six German titles between 1934 and 1942", "UEFA Cup winners 1997", "Champions League semi-finalists 2011"],
+    "uncertain": false
+  },
+  "Berlin Alte Dame": {
+    "real": "Hertha BSC",
+    "founded": 1892,
+    "nickname": "Die Alte Dame",
+    "honours": { "league": 2, "cup": 0, "europe": [], "other": ["German champions 1930 and 1931", "2. Bundesliga champions 1990, 2011, 2013"] },
+    "history": "The capital's biggest club won back-to-back national titles in 1930 and 1931 and plays at the Olympiastadion. It reached the Champions League second group stage in 1999/2000 but has yo-yoed since, dropping to the second tier again in 2023.",
+    "best": ["German champions 1930 and 1931", "Champions League second group stage 2000", "Third in the Bundesliga 1999"],
+    "uncertain": false
+  },
+  "Hannover Roten": {
+    "real": "Hannover 96",
+    "founded": 1896,
+    "nickname": "Die Roten",
+    "honours": { "league": 2, "cup": 1, "europe": [], "other": ["German champions 1938 and 1954"] },
+    "history": "Champions of Germany in 1938 and 1954, the club made history in 1992 by winning the DFB-Pokal as a second-division side. It reached the Europa League quarter-finals in 2012 and has played in the 2. Bundesliga since 2019.",
+    "best": ["German champions 1938 and 1954", "DFB-Pokal winners 1992 as a second-tier club", "Europa League quarter-finalists 2012"],
+    "uncertain": false
+  },
+  "Nürnberg Club": {
+    "real": "1. FC Nürnberg",
+    "founded": 1900,
+    "nickname": "Der Club",
+    "honours": { "league": 9, "cup": 4, "europe": [], "other": ["Eight titles before the Bundesliga (1920-1961), ninth in 1968", "2. Bundesliga champions 1980 (Süd), 1985, 2001, 2004"] },
+    "history": "The dominant German club of the 1920s, it held the record for most national titles for decades. It won its ninth championship in 1968 but was relegated the following season, and has since been a frequent mover between the top two divisions.",
+    "best": ["Nine German championships", "Dominant side of the 1920s", "DFB-Pokal winners 2007"],
+    "uncertain": false
+  },
+  "Düsseldorf Flingeraner": {
+    "real": "Fortuna Düsseldorf",
+    "founded": 1895,
+    "nickname": "Flingeraner",
+    "honours": { "league": 1, "cup": 2, "europe": [], "other": ["German champions 1933"] },
+    "history": "The club won its only national title in 1933 and enjoyed a strong spell around 1980, lifting two straight German cups. It has since moved between the divisions, with Bundesliga spells as recently as 2018-2020.",
+    "best": ["German champions 1933", "DFB-Pokal winners 1979 and 1980", "Cup Winners' Cup finalists 1979"],
+    "uncertain": false
+  },
+  "Kaiserslautern Betze": {
+    "real": "1. FC Kaiserslautern",
+    "founded": 1900,
+    "nickname": "Die Roten Teufel",
+    "honours": { "league": 4, "cup": 2, "europe": [], "other": ["Includes 1951 and 1953 pre-Bundesliga titles", "2. Bundesliga champions 1997 and 2010"] },
+    "history": "Home club of Fritz Walter and the core of West Germany's 1954 World Cup winners, it plays on the steep Betzenberg hill. In 1998 it became the only side to win the Bundesliga straight after promotion, and later fell as low as the third tier.",
+    "best": ["Bundesliga champions 1998 as a promoted side", "Champions 1951, 1953 and 1991", "DFB-Pokal finalists 2024"],
+    "uncertain": false
+  },
+  "Karlsruhe Wildpark": {
+    "real": "Karlsruher SC",
+    "founded": 1894,
+    "nickname": "Die Blau-Weißen",
+    "honours": { "league": 1, "cup": 2, "europe": [], "other": ["1909 title won by predecessor club Phönix Karlsruhe", "DFB-Pokal 1955 and 1956", "2. Bundesliga champions 1975 (Süd), 1984, 2007"] },
+    "history": "Formed in 1952 from a merger whose roots go back to the 1890s, the club won consecutive German cups in the mid-1950s. Its best modern run came in 1993/94, reaching the UEFA Cup semi-finals after a famous 7-0 win over Valencia.",
+    "best": ["DFB-Pokal winners 1955 and 1956", "UEFA Cup semi-finalists 1994", "7-0 win over Valencia in 1993"],
+    "uncertain": false
+  },
+  "Paderborn Ostwestfalen": {
+    "real": "SC Paderborn 07",
+    "founded": 1907,
+    "nickname": "SCP",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The club in its current form came from a 1985 merger, with roots going back to 1907. It reached the Bundesliga for the first time in 2014 and briefly topped the table, and returned for a second top-flight season in 2019/20.",
+    "best": ["First Bundesliga season 2014/15", "Briefly top of the Bundesliga in 2014", "Back-to-back promotions 2018 and 2019"],
+    "uncertain": false
+  },
+  "Darmstadt Lilien": {
+    "real": "SV Darmstadt 98",
+    "founded": 1898,
+    "nickname": "Die Lilien",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["2. Bundesliga Süd champions 1978 and 1981"] },
+    "history": "A small Hesse club with short Bundesliga spells around 1980, it made a remarkable rise from the third tier to the top flight in 2015. It returned to the Bundesliga again in 2023/24 but went straight back down.",
+    "best": ["Back-to-back promotions to the Bundesliga 2014-15", "Five Bundesliga seasons", "2. Bundesliga Süd champions 1978"],
+    "uncertain": false
+  },
+  "Bochum Blau-Weiß": {
+    "real": "VfL Bochum",
+    "founded": 1848,
+    "nickname": "Die Unabsteigbaren",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["2. Bundesliga champions 1994, 1996, 2006, 2021"] },
+    "history": "Tracing its roots to a 19th-century gymnastics club, it spent 1971 to 1993 in the Bundesliga without relegation, earning the nickname 'the unrelegatable'. It qualified for the UEFA Cup twice and was relegated from the top flight again in 2024/25.",
+    "best": ["22 straight Bundesliga seasons 1971-93", "DFB-Pokal finalists 1968 and 1988", "UEFA Cup qualification 1997 and 2004"],
+    "uncertain": false
+  },
+  "Kiel Störche": {
+    "real": "Holstein Kiel",
+    "founded": 1900,
+    "nickname": "Die Störche",
+    "honours": { "league": 1, "cup": 0, "europe": [], "other": ["German champions 1912"] },
+    "history": "Germany's northernmost professional club won the national title in 1912 but then waited over a century for top-flight football. It finally reached the Bundesliga for 2024/25 and was relegated after one season.",
+    "best": ["German champions 1912", "First Bundesliga season 2024/25", "DFB-Pokal semi-finalists 2021"],
+    "uncertain": false
+  },
+  "Magdeburg Elbkicker": {
+    "real": "1. FC Magdeburg",
+    "founded": 1965,
+    "nickname": "Der FCM",
+    "honours": { "league": 0, "cup": 0, "europe": ["Cup Winners' Cup 1974"], "other": ["East German champions 1972, 1974, 1975", "FDGB-Pokal x7"] },
+    "history": "One of East Germany's strongest sides, the club won three league titles and became the only DDR team to lift a European trophy, beating AC Milan in 1974. After reunification it fell to the lower leagues before returning to the 2. Bundesliga.",
+    "best": ["Cup Winners' Cup winners 1974", "Three East German titles", "Seven East German cups"],
+    "uncertain": false
+  },
+  "Fürth Kleeblatt": {
+    "real": "SpVgg Greuther Fürth",
+    "founded": 1903,
+    "nickname": "Kleeblatt",
+    "honours": { "league": 3, "cup": 0, "europe": [], "other": ["German champions 1914, 1926, 1929 (as SpVgg Fürth)", "2. Bundesliga champions 2012"] },
+    "history": "In its early years the club was a major power of German football with three titles. After merging with the football section of TSV Vestenbergsgreuth in 1996 it became a second-tier mainstay, with Bundesliga seasons in 2012/13 and 2021/22.",
+    "best": ["Three German championships", "2. Bundesliga champions 2012", "DFB-Pokal semi-finalists 2012"],
+    "uncertain": false
+  },
+  "Braunschweig Löwen": {
+    "real": "Eintracht Braunschweig",
+    "founded": 1895,
+    "nickname": "Die Löwen",
+    "honours": { "league": 1, "cup": 0, "europe": [], "other": [] },
+    "history": "A Bundesliga founder member, the club won a surprise championship in 1967. In 1973 it became the first German team to carry a shirt sponsor, and its most recent top-flight season was 2013/14.",
+    "best": ["Bundesliga champions 1967", "First shirt sponsorship in Germany, 1973", "European Cup quarter-finalists 1968"],
+    "uncertain": false
+  },
+  "Bielefeld Arminen": {
+    "real": "DSC Arminia Bielefeld",
+    "founded": 1905,
+    "nickname": "Die Arminen",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["2. Bundesliga champions 1978 and 1980 (Nord), 1999, 2020", "3. Liga champions 2025"] },
+    "history": "A frequent mover between divisions, the club has had several Bundesliga spells, most recently 2020-2022. After falling to the third tier it won the 3. Liga in 2024/25 and reached the German cup final the same season.",
+    "best": ["DFB-Pokal finalists 2025 as a third-tier side", "Four 2. Bundesliga titles", "3. Liga champions 2025"],
+    "uncertain": false
+  },
+  "Dresden SG": {
+    "real": "SG Dynamo Dresden",
+    "founded": 1953,
+    "nickname": "Dynamo",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["East German champions x8", "FDGB-Pokal x7"] },
+    "history": "One of the most successful clubs in East Germany, it won eight DDR titles and seven cups and was a regular in Europe. It played four Bundesliga seasons after reunification and won promotion back to the 2. Bundesliga in 2024/25.",
+    "best": ["Eight East German championships", "Seven East German cups", "UEFA Cup semi-finalists 1989"],
+    "uncertain": false
+  },
+  "Münster Preußen": {
+    "real": "SC Preußen Münster",
+    "founded": 1906,
+    "nickname": "Die Adler",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["German championship finalists 1951"] },
+    "history": "The club reached the national championship final in 1951 and was a founding member of the Bundesliga in 1963, though it lasted only one season. After decades in the lower leagues it returned to the 2. Bundesliga in 2024 and stayed up.",
+    "best": ["Founding member of the Bundesliga 1963", "German championship finalists 1951", "Return to the 2. Bundesliga 2024"],
+    "uncertain": false
+  },
+  "Elversberg Saarländer": {
+    "real": "SV 07 Elversberg",
+    "founded": 1907,
+    "nickname": "SVE",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["3. Liga champions 2023"] },
+    "history": "From a small community in the Saarland, the club rose with back-to-back promotions to reach the 2. Bundesliga in 2023. In 2024/25 it finished third and came close to the Bundesliga, losing the promotion play-off to Heidenheim.",
+    "best": ["3. Liga champions 2023", "Third in the 2. Bundesliga 2025", "Back-to-back promotions 2022 and 2023"],
+    "uncertain": false
+  }
+}

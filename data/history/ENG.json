@@ -1,0 +1,329 @@
+{
+  "_about": "Real club histories for England, as of the end of the 2024/25 season. Keys are the in-game club names. Written in our own words; check and correct freely.",
+  "Manchester Blue": {
+    "real": "Manchester City",
+    "founded": 1880,
+    "nickname": "The Citizens",
+    "honours": { "league": 10, "cup": 7, "europe": ["European Cup / Champions League 2023", "Cup Winners' Cup 1970"], "other": ["League Cup ×8"] },
+    "history": "The club began as a church side in east Manchester and enjoyed spells of success in the 1930s and late 1960s. After a takeover in 2008 it became the dominant force in English football, winning four straight league titles from 2021 to 2024.",
+    "best": ["Treble of league, FA Cup and Champions League 2022/23", "Four consecutive league titles 2021–2024", "100-point league season 2017/18"],
+    "uncertain": false
+  },
+  "Merseyside Red": {
+    "real": "Liverpool",
+    "founded": 1892,
+    "nickname": "The Reds",
+    "honours": { "league": 20, "cup": 8, "europe": ["European Cup / Champions League 1977", "European Cup / Champions League 1978", "European Cup / Champions League 1981", "European Cup / Champions League 1984", "European Cup / Champions League 2005", "European Cup / Champions League 2019", "UEFA Cup 1973", "UEFA Cup 1976", "UEFA Cup 2001"], "other": ["League Cup ×10"] },
+    "history": "Formed after a dispute over the use of Anfield, the club became England's most successful side of the 1970s and 1980s. A long wait for a league title ended in 2020, and a twentieth championship followed in 2024/25.",
+    "best": ["Six European Cups", "Comeback win in the 2005 Champions League final", "Twentieth league title 2024/25"],
+    "uncertain": false
+  },
+  "North London Gunners": {
+    "real": "Arsenal",
+    "founded": 1886,
+    "nickname": "The Gunners",
+    "honours": { "league": 13, "cup": 14, "europe": ["Cup Winners' Cup 1994", "Fairs Cup 1970"], "other": ["League Cup ×2"] },
+    "history": "Founded by workers at the Royal Arsenal in Woolwich, the club moved north of the Thames in 1913. It dominated the 1930s, won doubles in 1971, 1998 and 2002, and holds the record for FA Cup wins.",
+    "best": ["Unbeaten league season 2003/04", "Record 14 FA Cups", "Three league and cup doubles"],
+    "uncertain": false
+  },
+  "West London Blue": {
+    "real": "Chelsea",
+    "founded": 1905,
+    "nickname": "The Blues",
+    "honours": { "league": 6, "cup": 8, "europe": ["European Cup / Champions League 2012", "European Cup / Champions League 2021", "Cup Winners' Cup 1971", "Cup Winners' Cup 1998", "UEFA Cup / Europa League 2013", "UEFA Cup / Europa League 2019", "Conference League 2025"], "other": ["League Cup ×5"] },
+    "history": "Created to fill an existing stadium, the club won its first title in 1955 but had to wait half a century for the next. Heavy investment from 2003 brought a golden era of league titles and European trophies.",
+    "best": ["Champions League winners 2012 and 2021", "95-point league season 2004/05, a record at the time", "Has won every major UEFA club trophy"],
+    "uncertain": false
+  },
+  "Manchester Red": {
+    "real": "Manchester United",
+    "founded": 1878,
+    "nickname": "The Red Devils",
+    "honours": { "league": 20, "cup": 13, "europe": ["European Cup / Champions League 1968", "European Cup / Champions League 1999", "European Cup / Champions League 2008", "Cup Winners' Cup 1991", "UEFA Cup / Europa League 2017"], "other": ["League Cup ×6"] },
+    "history": "Starting life as a railway works team, the club rebuilt after the 1958 Munich air disaster to become European champions a decade later. Under a long-serving Scottish manager it won 13 league titles between 1993 and 2013.",
+    "best": ["Treble of league, FA Cup and Champions League 1998/99", "First English European Cup winners 1968", "13 Premier League titles"],
+    "uncertain": false
+  },
+  "London Lilywhites": {
+    "real": "Tottenham Hotspur",
+    "founded": 1882,
+    "nickname": "Spurs",
+    "honours": { "league": 2, "cup": 8, "europe": ["Cup Winners' Cup 1963", "UEFA Cup 1972", "UEFA Cup 1984", "UEFA Cup / Europa League 2025"], "other": ["League Cup ×4"] },
+    "history": "Founded by schoolboys in north London, the club won the FA Cup as a non-league side in 1901. It completed the first double of the 20th century in 1961 and ended a long trophy drought with the 2025 Europa League.",
+    "best": ["League and FA Cup double 1960/61", "First British club to win a European trophy 1963", "Europa League winners 2025"],
+    "uncertain": false
+  },
+  "Tyneside Magpies": {
+    "real": "Newcastle United",
+    "founded": 1892,
+    "nickname": "The Magpies",
+    "honours": { "league": 4, "cup": 6, "europe": ["Fairs Cup 1969"], "other": ["League Cup ×1"] },
+    "history": "Formed from a merger of two Tyneside clubs, the side won three titles in the 1900s and three FA Cups in the 1950s. After decades without a major domestic trophy, it lifted the League Cup in 2025.",
+    "best": ["Three league titles 1905–1909", "Fairs Cup winners 1969", "League Cup winners 2025"],
+    "uncertain": false
+  },
+  "Aston Claret": {
+    "real": "Aston Villa",
+    "founded": 1874,
+    "nickname": "The Villans",
+    "honours": { "league": 7, "cup": 7, "europe": ["European Cup / Champions League 1982"], "other": ["League Cup ×5"] },
+    "history": "Founded by members of a Birmingham church cricket team, the club was a founder member of the Football League in 1888. It dominated the Victorian era and became European champions in 1982.",
+    "best": ["European Cup winners 1982", "League and FA Cup double 1896/97", "League champions 1980/81"],
+    "uncertain": false
+  },
+  "Brighton Seagulls": {
+    "real": "Brighton & Hove Albion",
+    "founded": 1901,
+    "nickname": "The Seagulls",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["FA Cup runners-up 1983"] },
+    "history": "The club spent most of its history in the lower divisions and nearly went out of the league in the late 1990s. A new stadium at Falmer in 2011 led to promotion to the Premier League in 2017 and a first European campaign in 2023/24.",
+    "best": ["FA Cup final 1983", "Promotion to the Premier League 2017", "Europa League qualification 2023"],
+    "uncertain": false
+  },
+  "East London Irons": {
+    "real": "West Ham United",
+    "founded": 1895,
+    "nickname": "The Hammers",
+    "honours": { "league": 0, "cup": 3, "europe": ["Cup Winners' Cup 1965", "Conference League 2023"], "other": [] },
+    "history": "Born as a works team of the Thames Ironworks shipyard, the club became known for producing home-grown talent, including three of England's 1966 World Cup winners. It moved to the former Olympic Stadium in 2016.",
+    "best": ["Cup Winners' Cup winners 1965", "Conference League winners 2023", "FA Cup winners 1964, 1975, 1980"],
+    "uncertain": false
+  },
+  "Nottingham Reds": {
+    "real": "Nottingham Forest",
+    "founded": 1865,
+    "nickname": "Forest",
+    "honours": { "league": 1, "cup": 2, "europe": ["European Cup / Champions League 1979", "European Cup / Champions League 1980"], "other": ["League Cup ×4"] },
+    "history": "One of the oldest league clubs, the side was transformed by a famous managerial partnership in the late 1970s. Fresh from promotion, it won the league and then back-to-back European Cups.",
+    "best": ["Back-to-back European Cups 1979 and 1980", "League title the season after promotion 1977/78", "42-match unbeaten league run"],
+    "uncertain": false
+  },
+  "Bournemouth Cherries": {
+    "real": "AFC Bournemouth",
+    "founded": 1899,
+    "nickname": "The Cherries",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Second-tier champions 2015"] },
+    "history": "A lower-league club for most of its existence, the side was close to folding in 2008. A rapid rise followed, taking it from the fourth tier to the Premier League in 2015 while playing at one of the smallest grounds in the top flight.",
+    "best": ["Championship title 2014/15", "Rise from fourth tier to top flight in six years", "Club-record 56 Premier League points 2024/25"],
+    "uncertain": false
+  },
+  "Brentford Bees": {
+    "real": "Brentford",
+    "founded": 1889,
+    "nickname": "The Bees",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Second Division champions 1935"] },
+    "history": "The club enjoyed its best era in the 1930s, finishing fifth in the top flight. After decades in the lower leagues, a data-driven approach and a move to a new stadium in 2020 were followed by promotion to the Premier League in 2021.",
+    "best": ["Fifth in the top flight 1935/36", "Promotion to the Premier League 2021", "First top-flight season in 74 years"],
+    "uncertain": false
+  },
+  "Fulham Cottagers": {
+    "real": "Fulham",
+    "founded": 1879,
+    "nickname": "The Cottagers",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Second-tier champions ×3", "Intertoto Cup 2002"] },
+    "history": "London's oldest professional club plays at a historic riverside ground. It rose from the fourth tier to the Premier League between 1997 and 2001 and reached the Europa League final in 2010.",
+    "best": ["Europa League final 2010", "FA Cup final 1975", "Three promotions in five seasons up to 2001"],
+    "uncertain": false
+  },
+  "South London Eagles": {
+    "real": "Crystal Palace",
+    "founded": 1905,
+    "nickname": "The Eagles",
+    "honours": { "league": 0, "cup": 1, "europe": [], "other": ["Full Members' Cup 1991"] },
+    "history": "Named after the Crystal Palace exhibition grounds where it was formed, the club has moved between the top two divisions for decades. Its best league finish came in 1991, and it won its first major trophy with the 2025 FA Cup.",
+    "best": ["FA Cup winners 2025", "Third in the top flight 1990/91", "FA Cup final 1990"],
+    "uncertain": true,
+    "check": "Founding year: the professional club was formed in 1905, but since 2022 the club's crest uses 1861, linking it to the original amateur club at the Crystal Palace"
+  },
+  "Merseyside Blue": {
+    "real": "Everton",
+    "founded": 1878,
+    "nickname": "The Toffees",
+    "honours": { "league": 9, "cup": 5, "europe": ["Cup Winners' Cup 1985"], "other": [] },
+    "history": "Founded as a church team, the club was a Football League founder member and has spent more seasons in the top flight than any other side. Its finest modern era came in the mid-1980s; 2024/25 was its final season at Goodison Park.",
+    "best": ["League title and Cup Winners' Cup 1984/85", "Nine league titles", "Record number of top-flight seasons"],
+    "uncertain": false
+  },
+  "Wolverhampton Wolves": {
+    "real": "Wolverhampton Wanderers",
+    "founded": 1877,
+    "nickname": "Wolves",
+    "honours": { "league": 3, "cup": 4, "europe": [], "other": ["League Cup ×2", "UEFA Cup runners-up 1972"] },
+    "history": "A Football League founder member, the club was England's leading side in the 1950s and helped pioneer European club football with floodlit friendlies. It later fell to the fourth tier before returning to the top flight.",
+    "best": ["Three league titles in the 1950s", "Four FA Cups", "UEFA Cup final 1972"],
+    "uncertain": false
+  },
+  "Leeds Whites": {
+    "real": "Leeds United",
+    "founded": 1919,
+    "nickname": "The Whites",
+    "honours": { "league": 3, "cup": 1, "europe": ["Fairs Cup 1968", "Fairs Cup 1971"], "other": ["League Cup ×1", "Second-tier champions ×5"] },
+    "history": "Formed after a previous city club was expelled from the league, the side became a powerhouse in the late 1960s and early 1970s. It won the last old First Division title in 1992 and won promotion back to the Premier League in 2025.",
+    "best": ["Two Fairs Cups", "League champions 1991/92", "European Cup final 1975"],
+    "uncertain": false
+  },
+  "Burnley Clarets": {
+    "real": "Burnley",
+    "founded": 1882,
+    "nickname": "The Clarets",
+    "honours": { "league": 2, "cup": 1, "europe": [], "other": ["Second-tier champions ×4"] },
+    "history": "A Football League founder member from a small Lancashire town, the club won league titles in 1921 and 1960. It nearly dropped out of the league in 1987, later returned to the top flight, and won promotion again in 2025.",
+    "best": ["League champions 1959/60", "FA Cup winners 1914", "30-match unbeaten league run 1920/21"],
+    "uncertain": false
+  },
+  "Wearside Reds": {
+    "real": "Sunderland",
+    "founded": 1879,
+    "nickname": "The Black Cats",
+    "honours": { "league": 6, "cup": 2, "europe": [], "other": ["Second-tier champions ×5"] },
+    "history": "A dominant force in the 1890s, the club won six league titles before 1937. Its 1973 FA Cup win as a second-tier side remains famous; after falling to the third tier it won promotion back to the Premier League via the 2025 play-offs.",
+    "best": ["Six league titles", "FA Cup win as a second-tier side 1973", "Play-off promotion 2025"],
+    "uncertain": false
+  },
+  "Leicester Foxes": {
+    "real": "Leicester City",
+    "founded": 1884,
+    "nickname": "The Foxes",
+    "honours": { "league": 1, "cup": 1, "europe": [], "other": ["League Cup ×3"] },
+    "history": "Long a side moving between the top two divisions, the club produced one of sport's great upsets by winning the 2015/16 Premier League. It added a first FA Cup in 2021 and was relegated from the top flight in 2025.",
+    "best": ["Premier League champions 2015/16", "FA Cup winners 2021", "Champions League quarter-final 2017"],
+    "uncertain": false
+  },
+  "Southampton Saints": {
+    "real": "Southampton",
+    "founded": 1885,
+    "nickname": "The Saints",
+    "honours": { "league": 0, "cup": 1, "europe": [], "other": ["League runners-up 1984"] },
+    "history": "Formed by a church youth group, the club beat Manchester United as a second-tier side to win the 1976 FA Cup. It is known for its youth academy and was relegated from the Premier League in 2025.",
+    "best": ["FA Cup winners 1976", "League runners-up 1983/84", "Renowned youth academy"],
+    "uncertain": false
+  },
+  "Ipswich Blues": {
+    "real": "Ipswich Town",
+    "founded": 1878,
+    "nickname": "The Tractor Boys",
+    "honours": { "league": 1, "cup": 1, "europe": ["UEFA Cup 1981"], "other": ["Second-tier champions ×3"] },
+    "history": "Only elected to the Football League in 1938, the club won the league title in 1962 at its first attempt in the top flight. Further success under a future England manager brought the 1978 FA Cup and the 1981 UEFA Cup.",
+    "best": ["League title in first top-flight season 1961/62", "UEFA Cup winners 1981", "FA Cup winners 1978"],
+    "uncertain": false
+  },
+  "Sheffield Blades": {
+    "real": "Sheffield United",
+    "founded": 1889,
+    "nickname": "The Blades",
+    "honours": { "league": 1, "cup": 4, "europe": [], "other": [] },
+    "history": "Created by the cricket club at Bramall Lane, the club enjoyed its best years around the turn of the 20th century. It has moved between divisions since, including Premier League spells as recently as 2023/24.",
+    "best": ["League champions 1897/98", "Four FA Cups", "Ninth in the Premier League 2019/20"],
+    "uncertain": false
+  },
+  "Sheffield Owls": {
+    "real": "Sheffield Wednesday",
+    "founded": 1867,
+    "nickname": "The Owls",
+    "honours": { "league": 4, "cup": 3, "europe": [], "other": ["League Cup ×1"] },
+    "history": "One of the world's oldest professional clubs, it grew out of a cricket club that played on Wednesdays. It won four league titles before 1930 and lifted the League Cup in 1991 while in the second tier.",
+    "best": ["Back-to-back league titles 1903–04 and 1929–30", "Three FA Cups", "League Cup winners 1991"],
+    "uncertain": false
+  },
+  "Teesside Boro": {
+    "real": "Middlesbrough",
+    "founded": 1876,
+    "nickname": "Boro",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["League Cup ×1", "UEFA Cup runners-up 2006", "Second-tier champions ×4"] },
+    "history": "The club came close to extinction in 1986 before rebuilding at a new riverside stadium. It won its first major trophy, the League Cup, in 2004 and reached the UEFA Cup final two years later.",
+    "best": ["League Cup winners 2004", "UEFA Cup final 2006", "FA Cup final 1997"],
+    "uncertain": false
+  },
+  "Norwich Canaries": {
+    "real": "Norwich City",
+    "founded": 1902,
+    "nickname": "The Canaries",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["League Cup ×2", "Second-tier champions ×5"] },
+    "history": "The club finished third in the first Premier League season and famously knocked Bayern Munich out of the UEFA Cup in 1993. It has since moved regularly between the top two divisions.",
+    "best": ["Third in the Premier League 1992/93", "League Cup winners 1962 and 1985", "Win at Bayern Munich in the UEFA Cup 1993"],
+    "uncertain": false
+  },
+  "West Bromwich Baggies": {
+    "real": "West Bromwich Albion",
+    "founded": 1878,
+    "nickname": "The Baggies",
+    "honours": { "league": 1, "cup": 5, "europe": [], "other": ["League Cup ×1"] },
+    "history": "Founded by workers from a local spring factory, the club was a Football League founder member. It won the league in 1920 and five FA Cups, and has often moved between the top two divisions in the modern era.",
+    "best": ["League champions 1919/20", "Five FA Cups", "League Cup winners 1966"],
+    "uncertain": false
+  },
+  "Coventry Sky Blues": {
+    "real": "Coventry City",
+    "founded": 1883,
+    "nickname": "The Sky Blues",
+    "honours": { "league": 0, "cup": 1, "europe": [], "other": ["Second-tier champions 1967"] },
+    "history": "Begun as a works team of a cycle manufacturer, the club spent 34 consecutive seasons in the top flight from 1967 to 2001. It later fell to the fourth tier before rebuilding in the Championship.",
+    "best": ["FA Cup winners 1987", "34 straight top-flight seasons", "FA Cup semi-final 2023/24"],
+    "uncertain": false
+  },
+  "Watford Hornets": {
+    "real": "Watford",
+    "founded": 1881,
+    "nickname": "The Hornets",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["League runners-up 1983", "FA Cup runners-up 1984 and 2019"] },
+    "history": "Under the ownership of a famous rock musician and a long-serving manager, the club rose from the fourth tier to finish second in the top flight in 1983. It has had several Premier League spells since.",
+    "best": ["League runners-up 1982/83", "FA Cup finals 1984 and 2019", "Rise from fourth tier to top flight 1977–1982"],
+    "uncertain": false
+  },
+  "Stoke Potters": {
+    "real": "Stoke City",
+    "founded": 1863,
+    "nickname": "The Potters",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["League Cup ×1", "FA Cup runners-up 2011"] },
+    "history": "Tracing its roots to the 1860s, it is one of England's oldest league clubs and was a Football League founder member in 1888. Its only major trophy is the 1972 League Cup, and it spent ten seasons in the Premier League from 2008.",
+    "best": ["League Cup winners 1972", "FA Cup final 2011", "Ten straight Premier League seasons 2008–2018"],
+    "uncertain": true,
+    "check": "Founding year is disputed: the club officially uses 1863, but the first documented club (Stoke Ramblers) was formed in 1868"
+  },
+  "Hull Tigers": {
+    "real": "Hull City",
+    "founded": 1904,
+    "nickname": "The Tigers",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["FA Cup runners-up 2014"] },
+    "history": "The club first reached the top flight in 2008 after climbing from the fourth tier in five seasons. It reached the FA Cup final in 2014 and played in Europe the following season.",
+    "best": ["FA Cup final 2014", "First top-flight promotion 2008", "Europa League qualifying 2014/15"],
+    "uncertain": false
+  },
+  "Derby Rams": {
+    "real": "Derby County",
+    "founded": 1884,
+    "nickname": "The Rams",
+    "honours": { "league": 2, "cup": 1, "europe": [], "other": ["Second-tier champions ×4"] },
+    "history": "A Football League founder member, the club won its only FA Cup in 1946. Under a celebrated managerial partnership it won the title in 1972 and reached a European Cup semi-final, then added another championship in 1975 under a new manager.",
+    "best": ["League champions 1971/72 and 1974/75", "FA Cup winners 1946", "European Cup semi-final 1973"],
+    "uncertain": false
+  },
+  "Millwall Lions": {
+    "real": "Millwall",
+    "founded": 1885,
+    "nickname": "The Lions",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Second Division champions 1988", "FA Cup runners-up 2004"] },
+    "history": "Formed by workers at a canning and preserves factory on the Isle of Dogs, the club later moved south of the river. It reached the top flight for the only time in 1988 and played in the FA Cup final in 2004.",
+    "best": ["Second Division title 1987/88", "FA Cup final 2004", "Briefly top of the top flight 1988"],
+    "uncertain": false
+  },
+  "Bristol Robins": {
+    "real": "Bristol City",
+    "founded": 1894,
+    "nickname": "The Robins",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["League runners-up 1907", "FA Cup runners-up 1909"] },
+    "history": "Starting out as Bristol South End, the club finished second in the top flight in 1907 and reached the 1909 FA Cup final. It suffered three straight relegations in the early 1980s and has spent recent years in the Championship.",
+    "best": ["League runners-up 1906/07", "FA Cup final 1909", "League Cup semi-final 2018"],
+    "uncertain": false
+  },
+  "Queens Park Hoops": {
+    "real": "Queens Park Rangers",
+    "founded": 1882,
+    "nickname": "The Hoops",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["League Cup ×1", "League runners-up 1976"] },
+    "history": "The west London club won the 1967 League Cup as a third-tier side, the first such final at Wembley. It came within a point of the league title in 1976 and has had several Premier League spells.",
+    "best": ["League Cup winners 1967 as a third-tier side", "League runners-up 1975/76", "FA Cup final 1982"],
+    "uncertain": false
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "_help": [
+    "Your own names for the game world. Edit this file with any text editor (save it as UTF-8).",
+    "On the left is the name the game uses, on the right the name you want. Names are applied when a world is created and every time a career is loaded, so you can change them at any time.",
+    "Clubs can be a plain new name, or an object with any of: name, short, stadium, manager.",
+    "Players: \"Old Name\": \"New Name\" renames every player with that name. You can also rename players and clubs in the game (player card / Other Teams).",
+    "Sections starting with _ are ignored. Copy entries from _examples into the real sections to use them."
+  ],
+  "nations": {},
+  "leagues": {},
+  "cups": {},
+  "clubs": {},
+  "players": {},
+  "_examples": {
+    "leagues": { "Premier Division": "My Premier League" },
+    "clubs": {
+      "Manchester Blue": { "name": "My Club Name", "short": "My Club", "stadium": "My Stadium", "manager": "My Manager" },
+      "Leeds Whites": "Another Name"
+    },
+    "players": { "Harry Smith": "Henry Smithson" }
+  }
+}

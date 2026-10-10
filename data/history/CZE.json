@@ -1,0 +1,293 @@
+{
+  "_about": "Real club histories for the Czech Republic, as of the end of the 2024/25 season. Keys are the in-game club names. Written in our own words; check and correct freely.",
+  "SK Praha Eden": {
+    "real": "SK Slavia Praha",
+    "founded": 1892,
+    "nickname": "Sešívaní",
+    "honours": { "league": 8, "cup": 7, "europe": [], "other": ["Czechoslovak champions ×13", "Mitropa Cup 1938", "Champions League group stage appearances"] },
+    "history": "One of the oldest clubs in the country, the red-and-whites from Vršovice dominated the interwar era before decades of decline under communism. Revived by new investment from the mid-2010s, the club became the leading Czech side again, winning its eighth Czech title in 2024/25 with a record points total.",
+    "best": ["UEFA Cup semi-final 1995/96", "Europa League quarter-finals 2018/19 and 2020/21", "Czech champions 2024/25"],
+    "uncertain": false
+  },
+  "AC Praha Letná": {
+    "real": "AC Sparta Praha",
+    "founded": 1893,
+    "nickname": "Rudí",
+    "honours": { "league": 14, "cup": 8, "europe": [], "other": ["Czechoslovak champions ×21", "Czechoslovak Cup ×8", "Mitropa Cup 1927, 1935, 1964"] },
+    "history": "The most decorated club in the country, based at Letná in Prague and famous for its deep-red shirts. The club ruled the early years of the independent Czech league with a long run of titles, and ended a lean spell by winning back-to-back championships in 2022/23 and 2023/24.",
+    "best": ["Runners-up behind Barcelona in their European Cup group 1991/92", "Cup Winners' Cup semi-final 1972/73", "Record number of national titles"],
+    "uncertain": false
+  },
+  "FC Plzeň": {
+    "real": "FC Viktoria Plzeň",
+    "founded": 1911,
+    "nickname": "Viktorka",
+    "honours": { "league": 6, "cup": 1, "europe": [], "other": ["Czech Supercup winners", "Champions League group stage appearances"] },
+    "history": "The West Bohemian club spent most of the twentieth century without major silverware before a remarkable rise from 2010 onwards. Under coaches such as Pavel Vrba it won six league titles in just over a decade and became a regular in the Champions League group stage.",
+    "best": ["First league title in 2010/11", "Several Champions League group stage campaigns", "Conference League quarter-final 2023/24"],
+    "uncertain": false
+  },
+  "FC Ostrava": {
+    "real": "FC Baník Ostrava",
+    "founded": 1922,
+    "nickname": "Baníček",
+    "honours": { "league": 1, "cup": 1, "europe": [], "other": ["Czechoslovak champions ×3", "Czechoslovak Cup ×3", "Mitropa Cup 1988"] },
+    "history": "The miners' club of industrial Ostrava enjoyed its golden era in the late 1970s and early 1980s with three Czechoslovak titles. It added a Czech championship in 2003/04 and a cup the year after, and is known for one of the most passionate fan bases in the country. It finished third in 2024/25.",
+    "best": ["European Cup quarter-final 1980/81", "Czech champions 2003/04", "Three Czechoslovak titles"],
+    "uncertain": false
+  },
+  "Bohemka Praha": {
+    "real": "Bohemians Praha 1905",
+    "founded": 1905,
+    "nickname": "Klokani",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Czechoslovak champions 1982/83"] },
+    "history": "The green-and-white club from Vršovice carries a kangaroo on its badge, a souvenir of a 1927 tour of Australia. Its finest period came in the early 1980s, when it won the Czechoslovak title and reached a European semi-final. After financial collapse in the 2000s, the club was rebuilt by its supporters.",
+    "best": ["Czechoslovak champions 1982/83", "UEFA Cup semi-final 1982/83"],
+    "uncertain": false
+  },
+  "FK Mladá Boleslav": {
+    "real": "FK Mladá Boleslav",
+    "founded": 1902,
+    "nickname": "Bolka",
+    "honours": { "league": 0, "cup": 2, "europe": [], "other": [] },
+    "history": "The club from the home town of the Škoda car works spent most of its history in the lower leagues. Backed by local industry, it climbed into the top flight in 2004 and quickly became a regular contender, finishing runner-up and winning two Czech Cups.",
+    "best": ["League runners-up 2005/06", "Czech Cup winners 2011 and 2016", "UEFA Cup group stage 2006/07"],
+    "uncertain": false
+  },
+  "FK Jablonec": {
+    "real": "FK Jablonec",
+    "founded": 1945,
+    "nickname": null,
+    "honours": { "league": 0, "cup": 2, "europe": [], "other": [] },
+    "history": "Based in the North Bohemian jewellery town, the club has been a steady presence in the top flight since the mid-1990s. It has lifted the Czech Cup twice and often finishes in the upper half of the table, as in 2024/25 when it came fifth.",
+    "best": ["Czech Cup winners 1998 and 2013", "League runners-up 2009/10", "Europa League group stage 2018/19"],
+    "uncertain": false
+  },
+  "FC Liberec": {
+    "real": "FC Slovan Liberec",
+    "founded": 1958,
+    "nickname": null,
+    "honours": { "league": 3, "cup": 2, "europe": [], "other": [] },
+    "history": "Formed in the late 1950s, the club rose to prominence after the split of Czechoslovakia. It became the first club from outside Prague to win the Czech league, taking three titles between 2002 and 2012 and producing a string of national-team players.",
+    "best": ["Czech champions 2001/02, 2005/06 and 2011/12", "UEFA Cup quarter-final 2001/02", "Czech Cup winners 2000 and 2015"],
+    "uncertain": false
+  },
+  "SK Olomouc": {
+    "real": "SK Sigma Olomouc",
+    "founded": 1919,
+    "nickname": "Hanáci",
+    "honours": { "league": 0, "cup": 2, "europe": [], "other": ["Czech Supercup 2012"] },
+    "history": "The leading club of the Haná region is respected for its youth academy, which has produced many internationals. It has never won the league but came close in 1995/96, and it collected its second Czech Cup in 2024/25 by beating Sparta in the final.",
+    "best": ["UEFA Cup quarter-final 1991/92", "League runners-up 1995/96", "Czech Cup winners 2012 and 2025"],
+    "uncertain": false
+  },
+  "FC Hradec Králové": {
+    "real": "FC Hradec Králové",
+    "founded": 1905,
+    "nickname": "Votroci",
+    "honours": { "league": 0, "cup": 1, "europe": [], "other": ["Czechoslovak champions 1959/60"] },
+    "history": "The East Bohemian club produced one of the great surprises of Czechoslovak football by winning the 1959/60 title and then knocking out strong opposition in the European Cup. It won the first edition of the Czech Cup and moved into the new Malšovická aréna in 2023.",
+    "best": ["Czechoslovak champions 1959/60", "European Cup quarter-final 1960/61", "First Czech Cup winners 1995"],
+    "uncertain": false
+  },
+  "FK Teplice": {
+    "real": "FK Teplice",
+    "founded": 1945,
+    "nickname": "Skláři",
+    "honours": { "league": 0, "cup": 2, "europe": [], "other": [] },
+    "history": "The yellow-and-blue club from the spa town has spent most of the Czech era in the top flight. Its best years came around the turn of the millennium, with a runners-up finish, two Czech Cups and a memorable UEFA Cup run that knocked out German and Dutch opponents.",
+    "best": ["League runners-up 1998/99", "Czech Cup winners 2003 and 2009", "Beat Kaiserslautern and Feyenoord in the 2003/04 UEFA Cup"],
+    "uncertain": false
+  },
+  "FC Slovácko": {
+    "real": "1. FC Slovácko",
+    "founded": 1927,
+    "nickname": null,
+    "honours": { "league": 0, "cup": 1, "europe": [], "other": [] },
+    "history": "The club in its present form came from a 2000 merger of clubs from Staré Město and Uherské Hradiště. It became a fixture of the top flight, finished fourth twice and won its first major trophy, the Czech Cup, in 2022.",
+    "best": ["Czech Cup winners 2022", "Conference League group stage 2022/23", "Fourth place 2020/21 and 2021/22"],
+    "uncertain": false
+  },
+  "FC Zlín": {
+    "real": "FC Zlín",
+    "founded": 1919,
+    "nickname": "Ševci",
+    "honours": { "league": 0, "cup": 1, "europe": [], "other": ["Czechoslovak Cup 1970"] },
+    "history": "Founded in the shoe-making town shaped by the Baťa company, the club won the Czechoslovak Cup in 1970 while the city was called Gottwaldov. It added the Czech Cup in 2017, which led to a Europa League group stage, and returned to the top flight by winning the second division in 2024/25.",
+    "best": ["Czech Cup winners 2017", "Europa League group stage 2017/18", "Czechoslovak Cup winners 1970"],
+    "uncertain": false
+  },
+  "FK Pardubice": {
+    "real": "FK Pardubice",
+    "founded": 2008,
+    "nickname": null,
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "Created in 2008 out of a merger of local clubs, the club climbed quickly through the lower divisions. Promoted as second-division champions in 2020, it has stayed in the top flight since, surviving a 15th-place finish in 2024/25 by winning the relegation play-off.",
+    "best": ["Second-division champions 2019/20", "Promoted to the top flight in 2020"],
+    "uncertain": false
+  },
+  "MFK Karviná": {
+    "real": "MFK Karviná",
+    "founded": 2003,
+    "nickname": null,
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The club from the Silesian coal-mining town took its current form in 2003, though local football roots go back to 1919. After brief top-flight spells in the 1990s, it climbed back up and has been a top-flight side for most seasons since 2016, finishing tenth in 2024/25.",
+    "best": ["Second-division champions 2015/16 and 2022/23", "Returned to the top flight in 2023"],
+    "uncertain": false
+  },
+  "FK Praha Dejvice": {
+    "real": "FK Dukla Praha",
+    "founded": 1948,
+    "nickname": "Armádníci",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Czechoslovak champions ×11 (army club tradition)", "Czechoslovak Cup ×8 (army club tradition)"] },
+    "history": "The yellow-and-red army club was the powerhouse of Czechoslovak football in the 1950s and 1960s. When the senior side was merged into a club in Příbram in 1996, the youth teams stayed in Prague and grew into the present club, which carries on the name and traditions. It won the second division in 2023/24 and kept its top-flight place in 2024/25 through the relegation play-off.",
+    "best": ["European Cup semi-final 1966/67 (original army club)", "Eleven Czechoslovak titles (original army club)", "Second-division champions 2010/11 and 2023/24"],
+    "uncertain": true,
+    "check": "Current club is not the legal successor of the original army club; it claims 1948 (the army club's founding), while other sources give 1958 (Dukla Dejvice) or 1998 (current association). Historic honours are listed under 'other' as heritage only"
+  },
+  "FC Brno": {
+    "real": "FC Zbrojovka Brno",
+    "founded": 1913,
+    "nickname": "Flinta",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Czechoslovak champions 1977/78"] },
+    "history": "The biggest club in Moravia's capital won the Czechoslovak title in 1977/78 and drew huge crowds to the Lužánky stadium. It spent the whole of 1992–2011 in the top flight but has bounced between divisions since, playing in the second tier in 2024/25.",
+    "best": ["Czechoslovak champions 1977/78", "UEFA Cup quarter-final 1979/80"],
+    "uncertain": false
+  },
+  "SK České Budějovice": {
+    "real": "SK Dynamo České Budějovice",
+    "founded": 1900,
+    "nickname": null,
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The South Bohemian club spent most seasons of the Czech era in the top flight, winning the second division three times to return after relegations. Its 2024/25 campaign was historic for the wrong reasons: it became the first side in the league's history to go a whole season without a win, and it went down.",
+    "best": ["Sixth place 1993/94 and 1996/97", "Second-division champions 2001/02, 2013/14 and 2018/19"],
+    "uncertain": false
+  },
+  "FK Příbram": {
+    "real": "1. FK Příbram",
+    "founded": 1928,
+    "nickname": null,
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The club from the mining town of Příbram absorbed the senior side of the old army club Dukla in a 1996 merger and played under the Dukla name for several years. It spent over twenty seasons in the top flight before falling to the third tier in 2024, and returned to the second division in 2025 by taking over another club's licence.",
+    "best": ["Fourth place 2000/01", "Second-division champions 1996/97", "Czech Cup runners-up 1997"],
+    "uncertain": false
+  },
+  "FK Praha Žižkov": {
+    "real": "FK Viktoria Žižkov",
+    "founded": 1903,
+    "nickname": "Viktorka",
+    "honours": { "league": 0, "cup": 2, "europe": [], "other": ["Czechoslovak champions 1927/28", "Several early regional cup wins"] },
+    "history": "The working-class Prague club won the national title in 1927/28 and several early cup competitions. It enjoyed a revival in the 1990s and early 2000s, winning two Czech Cups and twice finishing third, but has mostly played in the second tier since 2012.",
+    "best": ["Czechoslovak champions 1927/28", "Czech Cup winners 1994 and 2001", "Third place 2001/02 and 2002/03"],
+    "uncertain": false
+  },
+  "SFC Opava": {
+    "real": "SFC Opava",
+    "founded": 1907,
+    "nickname": "Slezský",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "Founded in Silesian Opava, the club has had several top-flight spells, most recently from 2018 to 2021. It reached the Czech Cup final in 2017 and played the 2024/25 season in the second tier away from home after floods damaged its stadium.",
+    "best": ["Sixth place 1995/96", "Czech Cup runners-up 2017", "Second-division champions 2017/18"],
+    "uncertain": false
+  },
+  "FC Jihlava": {
+    "real": "FC Vysočina Jihlava",
+    "founded": 1948,
+    "nickname": null,
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The club from the Vysočina region reached the top flight for the first time in 2005 and returned for a six-season spell from 2012 to 2018. It has played in the second tier since.",
+    "best": ["Six straight top-flight seasons 2012–2018", "Eighth place 2013/14"],
+    "uncertain": false
+  },
+  "FC Vlašim": {
+    "real": "FC Sellier & Bellot Vlašim",
+    "founded": 1922,
+    "nickname": "Rytíři",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The small Central Bohemian club, sponsored by the local ammunition maker, has never played in the top flight. Since winning the Bohemian Football League in 2009 it has been a long-standing member of the second division, finishing runner-up there in 2021/22.",
+    "best": ["Second-division runners-up 2021/22", "Bohemian Football League champions 2008/09", "Long-serving second-division member"],
+    "uncertain": false
+  },
+  "MFK Chrudim": {
+    "real": "MFK Chrudim",
+    "founded": 1923,
+    "nickname": null,
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The present club was formed in 2011 when the town's two football clubs merged, and its roots reach back to the turn of the twentieth century. It won the third tier in 2012 but was refused promotion because of its stadium, finally stepping up to the second division in 2018. It finished runner-up there in 2024/25 but lost the promotion play-off.",
+    "best": ["Second-division runners-up 2024/25", "Bohemian Football League champions 2011/12 and 2017/18"],
+    "uncertain": true,
+    "check": "Both Wikipedias give 1923 for the club (football section split from SK Chrudim); predecessor AFK Chrudim dates from 1899 and SK Chrudim carries 1887 in its name"
+  },
+  "SK Prostějov": {
+    "real": "1. SK Prostějov",
+    "founded": 1904,
+    "nickname": "Eskáčko",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "One of the oldest Moravian clubs, it was a strong top-flight side in the 1930s and early 1940s, finishing runner-up to Slavia in 1941/42 and playing in the Mitropa Cup. It has been a second-division club for most seasons since 2018.",
+    "best": ["League runners-up 1941/42", "Mitropa Cup quarter-final 1936", "Moravian-Silesian League champions 2015/16 and 2017/18"],
+    "uncertain": false
+  },
+  "FC Táborsko": {
+    "real": "FC Silon Táborsko",
+    "founded": 2012,
+    "nickname": null,
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The club was formed in 2012 by merging the teams of Sezimovo Ústí and neighbouring Tábor. It has spent most seasons in the second division, apart from a spell in the third tier around 2020, and reached the promotion play-offs in 2024.",
+    "best": ["Third in the second division 2023/24", "Bohemian Football League champions 2009/10 (as Sezimovo Ústí)"],
+    "uncertain": false
+  },
+  "SK Líšeň": {
+    "real": "SK Líšeň",
+    "founded": 1924,
+    "nickname": null,
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The club from a Brno suburb spent decades in regional football before winning promotion to the second division in 2019. It has held its place there since, finishing mid-table in 2024/25.",
+    "best": ["Second-division runners-up 2020/21", "Moravian-Silesian League champions 2018/19"],
+    "uncertain": false
+  },
+  "FK Ústí nad Labem": {
+    "real": "FK Viagem Ústí nad Labem",
+    "founded": 1945,
+    "nickname": "Arma",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The North Bohemian club has had only brief top-flight appearances, the most recent in 2010/11. It won the second division in 2011/12 but could not go up because of its stadium, and it won the third tier in 2024/25 to return to the second division.",
+    "best": ["Top-flight season 2010/11", "Second-division champions 2011/12", "Third-tier champions 2024/25"],
+    "uncertain": false
+  },
+  "FC Třinec": {
+    "real": "FK Fotbal Třinec",
+    "founded": 1921,
+    "nickname": "Oceláři",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "Founded by the Polish community of the steel town of Třinec, the club played six seasons in the Czechoslovak top flight between the 1960s and 1970s. It later spent many years in the second division and played in the third tier in 2024/25.",
+    "best": ["Six Czechoslovak top-flight seasons", "Moravian-Silesian League champions 2012/13"],
+    "uncertain": false
+  },
+  "FK Varnsdorf": {
+    "real": "FK Varnsdorf",
+    "founded": 1938,
+    "nickname": null,
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The club from a small town on the German border was a second-division regular from 2010. It earned promotion to the top flight in 2015 but gave up its place because its stadium fell short of league rules, and it was relegated from the second division in 2024/25.",
+    "best": ["Earned promotion to the top flight in 2014/15"],
+    "uncertain": false
+  },
+  "FC Kroměříž": {
+    "real": "SK Hanácká Slavia Kroměříž",
+    "founded": 1919,
+    "nickname": "Hanáci",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The club from the historic town of Kroměříž has spent most of its modern history in the Moravian-Silesian third tier, with a short second-division spell in the mid-2000s. It went up again in 2023, finished last and dropped straight back, then won the third tier for a second time in three seasons to return in 2025.",
+    "best": ["Moravian-Silesian League champions 2003/04, 2022/23 and 2024/25", "Promoted to the second division again in 2025"],
+    "uncertain": false
+  },
+  "FK Sokolov": {
+    "real": "FK Baník Sokolov",
+    "founded": 1948,
+    "nickname": null,
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The miners' club from western Bohemia has never reached the top flight but spent fourteen seasons in the second division between 2006 and 2020. It has since dropped to the fourth tier.",
+    "best": ["Third in the second division 2011/12 and 2012/13", "Fourteen seasons in the second division"],
+    "uncertain": false
+  }
+}

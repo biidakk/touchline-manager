@@ -1,0 +1,16 @@
+# Never published:
+# screenshots of the commercial game (copyrighted, layout reference only)
+reference/
+# the original private brief
+PROMPT.md
+# exported save games
+touchline-*.json
+
+# Build output (the .exe is attached to GitHub Releases instead)
+app/
+build/
+*.spec
+__pycache__/
+
+# Scratch
+tests.html_

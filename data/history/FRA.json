@@ -1,0 +1,329 @@
+{
+  "_about": "Real club histories for France, as of the end of the 2024/25 season. Keys are the in-game club names. Written in our own words; check and correct freely.",
+  "Paris Rouge et Bleu": {
+    "real": "Paris Saint-Germain",
+    "founded": 1970,
+    "nickname": "Les Parisiens",
+    "honours": { "league": 13, "cup": 16, "europe": ["Cup Winners' Cup 1996", "Champions League 2025"], "other": ["Coupe de la Ligue 9"] },
+    "history": "Formed in 1970 through a merger to give the capital a major club, it became a force in the 1990s. Qatari ownership from 2011 turned it into the dominant side in France, and in 2025 it completed a domestic treble topped by a first European Cup.",
+    "best": ["Champions League winners 2025", "Cup Winners' Cup 1996", "Record 16 Coupe de France wins"],
+    "uncertain": false
+  },
+  "Marseille Olympiens": {
+    "real": "Olympique de Marseille",
+    "founded": 1899,
+    "nickname": "Les Phocéens",
+    "honours": { "league": 9, "cup": 10, "europe": ["Champions League 1993"], "other": ["Coupe de la Ligue 3"] },
+    "history": "One of the oldest and most passionately supported clubs in the country, based at the Vélodrome. It enjoyed a golden era in the early 1990s, crowned by the 1993 European Cup, though a match-fixing scandal cost it that year's league title.",
+    "best": ["First French winner of the Champions League (1993)", "Four straight league titles 1989-1992", "10 Coupe de France wins"],
+    "uncertain": false
+  },
+  "Monaco Monégasques": {
+    "real": "AS Monaco",
+    "founded": 1924,
+    "nickname": "Les Monégasques",
+    "honours": { "league": 8, "cup": 5, "europe": [], "other": ["Coupe de la Ligue 1"] },
+    "history": "Based in the principality but competing in the French league, the club has repeatedly punched above the size of its home. It reached the Cup Winners' Cup final in 1992 and the Champions League final in 2004, and won the 2017 title with a celebrated young side.",
+    "best": ["Champions League finalists 2004", "League champions 2017", "Cup Winners' Cup finalists 1992"],
+    "uncertain": false
+  },
+  "Lille Dogues": {
+    "real": "Lille OSC",
+    "founded": 1944,
+    "nickname": "Les Dogues",
+    "honours": { "league": 4, "cup": 6, "europe": [], "other": [] },
+    "history": "Created by a wartime merger of two local clubs, it dominated the cup in the late 1940s and early 1950s. After decades in the shadows, it won the double in 2011 and snatched the 2021 title ahead of a far richer Paris side.",
+    "best": ["League and cup double 2011", "League champions 2021", "Six Coupe de France wins"],
+    "uncertain": false
+  },
+  "Lyon Gones": {
+    "real": "Olympique Lyonnais",
+    "founded": 1950,
+    "nickname": "Les Gones",
+    "honours": { "league": 7, "cup": 5, "europe": [], "other": ["Coupe de la Ligue 1"] },
+    "history": "A modest club for most of its early life, it was transformed under long-time president Jean-Michel Aulas. It won seven consecutive league titles from 2002 to 2008 and reached Champions League semi-finals in 2010 and 2020.",
+    "best": ["Seven straight league titles 2002-2008", "Champions League semi-finals 2010 and 2020"],
+    "uncertain": false
+  },
+  "Nice Aiglons": {
+    "real": "OGC Nice",
+    "founded": 1904,
+    "nickname": "Les Aiglons",
+    "honours": { "league": 4, "cup": 3, "europe": [], "other": [] },
+    "history": "The Riviera club was one of the leading sides of the 1950s, winning four championships in that decade. Its last major trophy came in the 1997 cup, and in recent years it has been a regular contender for European places.",
+    "best": ["Four league titles in the 1950s", "Coupe de France 1997"],
+    "uncertain": false
+  },
+  "Lens Sang et Or": {
+    "real": "RC Lens",
+    "founded": 1906,
+    "nickname": "Les Sang et Or",
+    "honours": { "league": 1, "cup": 0, "europe": [], "other": ["Coupe de la Ligue 1"] },
+    "history": "Rooted in the mining communities of the north, the club is famous for the fervent crowds at the Stade Bollaert. It won its only league title in 1998 and returned to the Champions League after finishing runner-up in 2023.",
+    "best": ["League champions 1998", "League runners-up 2023", "Coupe de la Ligue 1999"],
+    "uncertain": false
+  },
+  "Rennes Rouge et Noir": {
+    "real": "Stade Rennais FC",
+    "founded": 1901,
+    "nickname": "Les Rouge et Noir",
+    "honours": { "league": 0, "cup": 3, "europe": [], "other": [] },
+    "history": "The leading club of Brittany, owned by the Pinault family since 1998, it has become a steady top-half side known for its youth academy. Its biggest modern success was beating Paris in the 2019 cup final.",
+    "best": ["Coupe de France 2019", "Coupe de France 1965 and 1971"],
+    "uncertain": false
+  },
+  "Strasbourg Alsaciens": {
+    "real": "RC Strasbourg Alsace",
+    "founded": 1906,
+    "nickname": "Le Racing",
+    "honours": { "league": 1, "cup": 3, "europe": [], "other": ["Coupe de la Ligue 3"] },
+    "history": "The Alsatian club won the title in 1979 but later fell as low as the fifth tier after financial collapse in 2011. A rapid climb back brought a league cup in 2019, and in 2024/25 a young side secured European qualification.",
+    "best": ["League champions 1979", "Rose from the fifth tier to the top flight", "Coupe de la Ligue 2019"],
+    "uncertain": false
+  },
+  "Brest Pirates": {
+    "real": "Stade Brestois 29",
+    "founded": 1950,
+    "nickname": "Les Pirates",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Division 2 1981"] },
+    "history": "A small club from the tip of Brittany that spent long spells outside the top flight. It surprised everyone by finishing third in 2023/24, then reached the knockout play-offs of its first Champions League campaign.",
+    "best": ["Third in the league 2024", "Champions League knockout play-offs 2025"],
+    "uncertain": false
+  },
+  "Toulouse Violets": {
+    "real": "Toulouse FC",
+    "founded": 1970,
+    "nickname": "Les Violets",
+    "honours": { "league": 0, "cup": 1, "europe": [], "other": ["Ligue 2 3"] },
+    "history": "The current club was founded in 1970 in a city better known for rugby. It has moved between the top two divisions, and won its first major trophy with the 2023 Coupe de France, a year after taking the Ligue 2 title.",
+    "best": ["Coupe de France 2023", "Ligue 2 champions 2022"],
+    "uncertain": false
+  },
+  "Nantes Canaris": {
+    "real": "FC Nantes",
+    "founded": 1943,
+    "nickname": "Les Canaris",
+    "honours": { "league": 8, "cup": 4, "europe": [], "other": [] },
+    "history": "Famous for its quick, collective passing style and a long line of academy graduates, the club won eight titles between 1965 and 2001. It reached the Champions League semi-finals in 1996 and won the cup again in 2022.",
+    "best": ["Eight league titles", "Champions League semi-finals 1996", "Coupe de France 2022"],
+    "uncertain": false
+  },
+  "Auxerre Bourguignons": {
+    "real": "AJ Auxerre",
+    "founded": 1905,
+    "nickname": "L'AJA",
+    "honours": { "league": 1, "cup": 4, "europe": [], "other": ["Ligue 2 2"] },
+    "history": "Under coach Guy Roux, who led it for over four decades, the small Burgundy club rose from amateur football to the top. It won the double in 1996 and was renowned for developing young talent; it returned to Ligue 1 as second-tier champions in 2024.",
+    "best": ["League and cup double 1996", "Four Coupe de France wins", "Ligue 2 champions 2024"],
+    "uncertain": false
+  },
+  "Angers Noir et Blanc": {
+    "real": "Angers SCO",
+    "founded": 1919,
+    "nickname": "Le SCO",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Division 2 2"] },
+    "history": "A provincial club from the Loire valley that has alternated between the top two divisions. It reached the Coupe de France final in 1957 and again in 2017, losing both times.",
+    "best": ["Coupe de France finalists 1957 and 2017"],
+    "uncertain": false
+  },
+  "Le Havre Ciel et Marine": {
+    "real": "Le Havre AC",
+    "founded": 1872,
+    "nickname": "Les Ciel et Marine",
+    "honours": { "league": 0, "cup": 1, "europe": [], "other": ["Ligue 2 6"] },
+    "history": "The Normandy port club claims 1872 as its founding date, making it the oldest in French football. It won the cup in 1959 as a second-tier side and holds a record six second-division titles, the latest in 2023.",
+    "best": ["Coupe de France 1959", "Record six second-division titles"],
+    "uncertain": false
+  },
+  "Lorient Merlus": {
+    "real": "FC Lorient",
+    "founded": 1926,
+    "nickname": "Les Merlus",
+    "honours": { "league": 0, "cup": 1, "europe": [], "other": ["Ligue 2 2"] },
+    "history": "A Breton club that rose from the amateur ranks to reach the top flight in the late 1990s. It won the cup in 2002 and bounced back from relegation by winning Ligue 2 in 2025.",
+    "best": ["Coupe de France 2002", "Ligue 2 champions 2020 and 2025"],
+    "uncertain": false
+  },
+  "Metz Grenats": {
+    "real": "FC Metz",
+    "founded": 1932,
+    "nickname": "Les Grenats",
+    "honours": { "league": 0, "cup": 2, "europe": [], "other": ["Coupe de la Ligue 1"] },
+    "history": "The Lorraine club won cups in 1984 and 1988 and came within a whisker of the title in 1998, finishing runner-up. It has since yo-yoed between divisions, regaining its top-flight place through the 2025 play-offs.",
+    "best": ["Coupe de France 1984 and 1988", "League runners-up 1998", "Coupe de la Ligue 1996"],
+    "uncertain": false
+  },
+  "Paris Ville": {
+    "real": "Paris FC",
+    "founded": 1969,
+    "nickname": "Le PFC",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "Founded in 1969, it briefly merged with what became Paris Saint-Germain before the two split in 1972. After decades in the lower leagues, new investment backed a return to the top flight as Ligue 2 runners-up in 2025.",
+    "best": ["Promoted to Ligue 1 in 2025"],
+    "uncertain": false
+  },
+  "Saint-Étienne Verts": {
+    "real": "AS Saint-Étienne",
+    "founded": 1919,
+    "nickname": "Les Verts",
+    "honours": { "league": 10, "cup": 6, "europe": [], "other": ["Coupe de la Ligue 1"] },
+    "history": "Joint record holders of French league titles, the club dominated from the late 1960s to 1981. Its run to the 1976 European Cup final made it a national symbol; it was relegated again in 2025, a year after winning promotion.",
+    "best": ["10 league titles", "European Cup finalists 1976", "Coupe de la Ligue 2013"],
+    "uncertain": false
+  },
+  "Montpellier Pailladins": {
+    "real": "Montpellier HSC",
+    "founded": 1974,
+    "nickname": "La Paillade",
+    "honours": { "league": 1, "cup": 2, "europe": [], "other": ["Intertoto Cup 1999"] },
+    "history": "Shaped by the long presidency of Louis Nicollin, the club rose quickly and won the cup in 1990. Its greatest moment was a surprise league title in 2012, but it finished bottom of Ligue 1 in 2025 and went down.",
+    "best": ["League champions 2012", "Coupe de France 1990"],
+    "uncertain": false
+  },
+  "Reims Rouges et Blancs": {
+    "real": "Stade de Reims",
+    "founded": 1931,
+    "nickname": "Les Rouges et Blancs",
+    "honours": { "league": 6, "cup": 2, "europe": [], "other": ["Ligue 2 2"] },
+    "history": "The great French side of the 1950s, it reached the first European Cup final in 1956 and another in 1959, both lost to Real Madrid. In 2025 it reached the cup final but was relegated after losing the play-off to Metz.",
+    "best": ["Six league titles", "European Cup finalists 1956 and 1959", "Coupe de France finalists 2025"],
+    "uncertain": false
+  },
+  "Caen Malherbe": {
+    "real": "Stade Malherbe Caen",
+    "founded": 1913,
+    "nickname": "Malherbe",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Ligue 2 2"] },
+    "history": "The Normandy club has had several spells in the top flight since 1988 and reached the 2005 league cup final. It finished bottom of Ligue 2 in 2024/25 and dropped to the third tier.",
+    "best": ["Coupe de la Ligue finalists 2005", "Ligue 2 champions 1996 and 2010"],
+    "uncertain": false
+  },
+  "Guingamp En Avant": {
+    "real": "En Avant Guingamp",
+    "founded": 1912,
+    "nickname": "En Avant",
+    "honours": { "league": 0, "cup": 2, "europe": [], "other": [] },
+    "history": "Representing one of the smallest towns ever to host a top-flight side, the Breton club has a record of cup giant-killing. It won the Coupe de France in 2009 while in the second tier, and again in 2014.",
+    "best": ["Coupe de France 2009 as a second-tier club", "Coupe de France 2014"],
+    "uncertain": false
+  },
+  "Bastia Turchini": {
+    "real": "SC Bastia",
+    "founded": 1905,
+    "nickname": "Les Turchini",
+    "honours": { "league": 0, "cup": 1, "europe": [], "other": ["Ligue 2 2"] },
+    "history": "The leading Corsican club reached the UEFA Cup final in 1978 and won the cup in 1981. Financial collapse in 2017 sent it down to the fifth tier, but it climbed back to Ligue 2 by 2021.",
+    "best": ["UEFA Cup finalists 1978", "Coupe de France 1981"],
+    "uncertain": false
+  },
+  "Amiens Licornes": {
+    "real": "Amiens SC",
+    "founded": 1901,
+    "nickname": "Les Licornes",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "A club from Picardy that spent most of its history in the lower divisions. It reached the Coupe de France final in 2001 and enjoyed its first top-flight spell from 2017 to 2020.",
+    "best": ["Coupe de France finalists 2001", "Ligue 1 seasons 2017-2020"],
+    "uncertain": false
+  },
+  "Grenoble Alpins": {
+    "real": "Grenoble Foot 38",
+    "founded": 1892,
+    "nickname": "GF38",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Division 2 2"] },
+    "history": "The Alpine club played in Ligue 1 from 2008 to 2010 before liquidation in 2011 dropped it to the fifth tier. It worked its way back and has been a Ligue 2 side since winning a play-off in 2018.",
+    "best": ["Ligue 1 seasons 2008-2010", "Second-division titles 1960 and 1962"],
+    "uncertain": true,
+    "check": "Founding year: the club and RSSSF trace football in the lineage to 1892, Wikipedia (EN/FR) gives 1911, and the current entity was formed by merger in 1997."
+  },
+  "Clermont Auvergne": {
+    "real": "Clermont Foot 63",
+    "founded": 1990,
+    "nickname": "Les Lanciers",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "Formed in its current guise in 1990, the club reached Ligue 1 for the first time in 2021 and finished eighth in 2023. It went back down in 2024 and only stayed in Ligue 2 by winning a relegation play-off in 2025.",
+    "best": ["First promotion to Ligue 1 in 2021", "Eighth in Ligue 1 in 2023"],
+    "uncertain": false
+  },
+  "Troyes Aubois": {
+    "real": "ES Troyes AC",
+    "founded": 1986,
+    "nickname": "Les Aubois",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["Ligue 2 2", "Intertoto Cup 2001"] },
+    "history": "Refounded in 1986 after earlier clubs in the city folded, it climbed quickly and won the Intertoto Cup in 2001. It has moved repeatedly between the top two divisions, winning Ligue 2 in 2015 and 2021.",
+    "best": ["Intertoto Cup 2001", "Ligue 2 champions 2015 and 2021"],
+    "uncertain": false
+  },
+  "Pau Béarnais": {
+    "real": "Pau FC",
+    "founded": 1959,
+    "nickname": "Les Maynats",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "With roots in a parish youth club from the 1920s, the Béarn side took shape as a football club in 1959 and was re-established in 1995, spending decades in the amateur leagues. In early 2020 it knocked a Ligue 1 side out of the cup 3-2 before a record crowd saw it lose to the capital's giants, and that summer it reached Ligue 2 for the first time.",
+    "best": ["First promotion to Ligue 2 in 2020", "3-2 cup win over Bordeaux in 2020"],
+    "uncertain": false
+  },
+  "Laval Tango": {
+    "real": "Stade Lavallois",
+    "founded": 1902,
+    "nickname": "Les Tango",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["National 2022"] },
+    "history": "Known for its orange kit, the club spent 13 straight seasons in the top flight from 1976 to 1989 and knocked Dynamo Kyiv out of the 1983-84 UEFA Cup. After dropping to the third tier, it returned to Ligue 2 as National champions in 2022.",
+    "best": ["13 top-flight seasons 1976-1989", "UEFA Cup 1983-84, beating Dynamo Kyiv"],
+    "uncertain": false
+  },
+  "Rodez Aveyron": {
+    "real": "Rodez Aveyron Football",
+    "founded": 1929,
+    "nickname": "Le RAF",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": ["National 2019"] },
+    "history": "A club from a small town in southern France that spent most of its life outside the professional game, apart from a second-tier spell from 1988 to 1993. During that spell it reached the cup semi-finals in 1991, losing in Marseille, and it returned to Ligue 2 as National champions in 2019.",
+    "best": ["Coupe de France semi-finals 1991", "National champions 2019"],
+    "uncertain": false
+  },
+  "Dunkerque Maritimes": {
+    "real": "USL Dunkerque",
+    "founded": 1909,
+    "nickname": "Les Maritimes",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The port club from the far north has spent most of its history in the second and third tiers. In 2024/25 it had its best season in years, reaching the Coupe de France semi-finals and the Ligue 2 promotion play-offs.",
+    "best": ["Coupe de France semi-finals 2025", "Ligue 2 play-offs 2025"],
+    "uncertain": false
+  },
+  "Annecy Lacustres": {
+    "real": "FC Annecy",
+    "founded": 1927,
+    "nickname": "Le FCA",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The Alpine lakeside club was dissolved and re-formed in 1993 after financial troubles, then climbed back from the amateur leagues. It reached Ligue 2 in 2022 and the following season made a run to the Coupe de France semi-finals, winning a shoot-out at the Vélodrome on the way.",
+    "best": ["Coupe de France semi-finals 2023", "Promoted to Ligue 2 in 2022"],
+    "uncertain": true,
+    "check": "No established nickname found in sources; 'Le FCA' is the common abbreviation. Founding year 1927 confirmed (1993 was a re-formation)."
+  },
+  "Nancy Chardons": {
+    "real": "AS Nancy-Lorraine",
+    "founded": 1967,
+    "nickname": "Les Chardons",
+    "honours": { "league": 0, "cup": 1, "europe": [], "other": ["Coupe de la Ligue 1", "Ligue 2 5"] },
+    "history": "The Lorraine club launched the career of Michel Platini, who captained it to the 1978 cup. It added a league cup in 2006 and, after a slide to the third tier, returned to Ligue 2 as National champions in 2025.",
+    "best": ["Coupe de France 1978", "Coupe de la Ligue 2006", "National champions 2025"],
+    "uncertain": false
+  },
+  "Saint-Ouen Étoile": {
+    "real": "Red Star FC",
+    "founded": 1897,
+    "nickname": "L'Étoile Rouge",
+    "honours": { "league": 0, "cup": 5, "europe": [], "other": ["Division 2 2"] },
+    "history": "Founded by Jules Rimet, the father of the World Cup, it is one of the oldest clubs in France. It won five Coupes de France between 1921 and 1942 and returned to Ligue 2 in 2024 as National champions.",
+    "best": ["Five Coupe de France wins", "Three straight cups 1921-1923"],
+    "uncertain": false
+  },
+  "Boulogne Côte d'Opale": {
+    "real": "US Boulogne Côte d'Opale",
+    "founded": 1898,
+    "nickname": "Les Boulonnais",
+    "honours": { "league": 0, "cup": 0, "europe": [], "other": [] },
+    "history": "The Channel coast club had a single top-flight season in 2009/10. After many years in the third tier, it finished third in the National in 2025 and was promoted to Ligue 2 when Ajaccio were relegated for financial reasons.",
+    "best": ["Ligue 1 season 2009-10", "Promoted to Ligue 2 in 2025"],
+    "uncertain": false
+  }
+}
