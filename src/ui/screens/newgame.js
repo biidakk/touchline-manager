@@ -57,9 +57,9 @@ export function render(root, ctx) {
       <h2 style="margin-top:22px">Real teams</h2>
       ${ctx.realPack ? `<label class="row" style="font-size:14px"><input type="checkbox" id="real" ${st.real ? 'checked' : ''}> Real clubs and players</label>
         <div class="muted" style="font-size:12.5px;margin-top:4px">${st.realInfo ? `${st.realInfo.players.toLocaleString('en-US')} players, ${st.realInfo.clubs} clubs` : 'File loaded'}${ctx.realPack.season ? ` (${esc(ctx.realPack.season)})` : ''}</div>
-        <div class="row" style="margin-top:6px"><button class="btn btn-small btn-blue" data-action="loadpack">Load file</button>${ctx.realPackSource === 'browser' ? '<button class="btn btn-small btn-blue" data-action="droppack">Remove</button>' : ''}</div>`
-        : `<div class="muted" style="font-size:12.5px">Fictional players. Load a real-teams file (realpack.json) to play with real clubs and players.</div>
-        <button class="btn btn-small btn-blue" style="margin-top:6px" data-action="loadpack">Load file</button>`}
+        <div class="row" style="margin-top:6px"><button class="btn btn-small btn-blue" data-action="loadpack">Load file</button><button class="btn btn-small btn-blue" data-action="code">Code</button>${ctx.realPackSource === 'browser' ? '<button class="btn btn-small btn-blue" data-action="droppack">Remove</button>' : ''}</div>`
+        : `<div class="muted" style="font-size:12.5px">Fictional players. Load a real-teams file, or enter the code you were given, to play with real clubs and players.</div>
+        <div class="row" style="margin-top:6px"><button class="btn btn-small btn-blue" data-action="loadpack">Load file</button><button class="btn btn-small btn-blue" data-action="code">Enter code</button></div>`}
     </div>
 
     <div class="panel" style="left:330px;top:92px;width:600px;height:604px;display:flex;flex-direction:column">
@@ -119,6 +119,18 @@ export function render(root, ctx) {
         ctx.toast(`Real teams loaded: ${st.realInfo.players.toLocaleString('en-US')} players`);
       } catch (e) {
         await ctx.confirm(`That file could not be used: ${e.message}`, { cancel: null });
+      }
+    },
+    code: async () => {
+      const code = await ctx.prompt('Enter the real-teams code (for example ABCDE-12345):', '', { ok: 'Unlock' });
+      if (!code || !code.trim()) return;
+      try {
+        await ctx.unlockRealPack(code);
+        st.real = true;
+        regenerate();
+        ctx.toast(`Real teams unlocked: ${st.realInfo.players.toLocaleString('en-US')} players`);
+      } catch (e) {
+        await ctx.confirm(`Could not unlock the real teams: ${e.message}`, { cancel: null });
       }
     },
     droppack: async () => {

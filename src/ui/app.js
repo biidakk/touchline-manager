@@ -233,6 +233,26 @@ const ctx = {
     this.realPackSource = 'browser';
     return pack;
   },
+  // The locked copy on the website (realpack.enc, made by tools/make_realpack.py):
+  // decrypted with the code from the shared link (#rp=CODE) or typed in.
+  async unlockRealPack(code) {
+    if (!crypto?.subtle) throw new Error('Unlocking needs the https:// web address of the game.');
+    const r = await fetch('realpack.enc', { cache: 'no-store' });
+    if (!r.ok) throw new Error('There are no locked real teams on this site.');
+    const box = await r.json();
+    const bytes = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+    const norm = String(code).toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(norm), 'PBKDF2', false, ['deriveKey']);
+    const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: bytes(box.salt), iterations: box.iter, hash: 'SHA-256' },
+      base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+    let plain;
+    try {
+      plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: bytes(box.iv) }, key, bytes(box.data));
+    } catch {
+      throw new Error('That code is not right.');
+    }
+    return this.storeRealPack(new TextDecoder().decode(plain));
+  },
   async forgetRealPack() {
     await storage.remove(PACK_KEY);
     await this.loadRealPack();
@@ -300,6 +320,20 @@ stage.addEventListener('click', (e) => {
 const qs = new URLSearchParams(location.search);
 await ctx.loadNames();
 await ctx.loadRealPack();
+// A shared link ending in #rp=CODE unlocks the real teams once; the code
+// leaves the address bar afterwards.
+const linkCode = /[#&]rp=([A-Za-z0-9-]+)/.exec(location.hash)?.[1];
+if (linkCode) {
+  history.replaceState(null, '', location.pathname + location.search);
+  if (!ctx.realPack) {
+    try {
+      const pack = await ctx.unlockRealPack(linkCode);
+      setTimeout(() => ctx.toast(`Real teams unlocked (${Object.keys(pack.clubs).length} clubs). Start a new career to play with them.`), 600);
+    } catch (e) {
+      setTimeout(() => ctx.toast(`Real teams: ${e.message}`), 600);
+    }
+  }
+}
 if (qs.get('dev')) {
   ctx.dev = true;
   const g = generateWorld({ seed: qs.get('seed') || 'dev', managerName: 'Dev' });

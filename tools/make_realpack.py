@@ -92,6 +92,45 @@ def main():
     for p in problems:
         print('  ' + p)
     print(f'Wrote {OUT}: {len(pack["clubs"])} clubs, {total} players, {os.path.getsize(OUT) // 1024} KB')
+    lock(pack)
+
+
+# The locked copy for the website: realpack.enc can only be read with the
+# code (kept in private/realpack-code.txt and reused). The game unlocks it from
+# a link ending in #rp=CODE, or from the code typed on the New Career screen.
+CODE_FILE = os.path.join(ROOT, 'private', 'realpack-code.txt')
+ENC = os.path.join(ROOT, 'realpack.enc')
+ITERATIONS = 200000
+
+
+def lock(pack):
+    try:
+        from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+    except ImportError:
+        print('(python -m pip install cryptography to also build the locked realpack.enc)')
+        return
+    import base64
+    import hashlib
+    import secrets
+    if os.path.exists(CODE_FILE):
+        code = open(CODE_FILE, encoding='utf-8').read().strip()
+    else:
+        alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+        raw = ''.join(secrets.choice(alphabet) for _ in range(10))
+        code = raw[:5] + '-' + raw[5:]
+        with open(CODE_FILE, 'w', encoding='utf-8') as f:
+            f.write(code)
+    norm = ''.join(ch for ch in code.upper() if ch.isalnum())
+    salt = secrets.token_bytes(16)
+    iv = secrets.token_bytes(12)
+    key = hashlib.pbkdf2_hmac('sha256', norm.encode(), salt, ITERATIONS, 32)
+    data = AESGCM(key).encrypt(iv, json.dumps(pack, ensure_ascii=False, separators=(',', ':')).encode('utf-8'), None)
+    b64 = lambda b: base64.b64encode(b).decode('ascii')
+    box = {'format': 'touchline-realpack-locked', 'iter': ITERATIONS, 'salt': b64(salt), 'iv': b64(iv), 'data': b64(data)}
+    with open(ENC, 'w', encoding='ascii') as f:
+        json.dump(box, f)
+    print(f'Wrote {ENC} ({os.path.getsize(ENC) // 1024} KB). Code: {code}')
+    print(f'Link: https://biidakk.github.io/touchline-manager/#rp={code}')
 
 
 if __name__ == '__main__':
