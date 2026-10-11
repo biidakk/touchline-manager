@@ -42,24 +42,24 @@ export function render(root, ctx) {
     <div class="panel" style="left:24px;top:92px;width:290px;height:604px">
       <label class="lbl">Manager name</label>
       <input class="field" id="mgr" style="width:100%" maxlength="28" value="${esc(st.manager)}">
-      <h2 style="margin-top:22px">Country</h2>
-      <ul class="menu-list">
+      <h2 class="ng-h">Country</h2>
+      <ul class="menu-list ng-countries">
         ${leagueNations.map((n) => `<li data-action="nation" data-id="${n.id}" style="${n.id === st.nationId ? 'background:var(--row-me)' : ''}">
           ${flag(n.flag, 26)} ${esc(n.name)}</li>`).join('')}
       </ul>
-      <h2 style="margin-top:22px">Division</h2>
+      <h2 class="ng-h">Division</h2>
       <div class="seg">
         ${g.nations[st.nationId].leagueIds.map((id) => {
           const c = g.competitions[id];
           return `<button class="${c.tier === st.tier ? 'on' : ''}" data-action="tier" data-tier="${c.tier}">${esc(c.name)}</button>`;
         }).join('')}
       </div>
-      <h2 style="margin-top:22px">Real teams</h2>
+      <h2 class="ng-h">Real teams</h2>
       ${ctx.realPack ? `<label class="row" style="font-size:14px"><input type="checkbox" id="real" ${st.real ? 'checked' : ''}> Real clubs and players</label>
         <div class="muted" style="font-size:12.5px;margin-top:4px">${st.realInfo ? `${st.realInfo.players.toLocaleString('en-US')} players, ${st.realInfo.clubs} clubs` : 'File loaded'}${ctx.realPack.season ? ` (${esc(ctx.realPack.season)})` : ''}</div>
         <div class="row" style="margin-top:6px"><button class="btn btn-small btn-blue" data-action="loadpack">Load file</button><button class="btn btn-small btn-blue" data-action="code">Code</button>${ctx.realPackSource === 'browser' ? '<button class="btn btn-small btn-blue" data-action="droppack">Remove</button>' : ''}</div>`
-        : `<div class="muted" style="font-size:12.5px">Fictional players. Load a real-teams file, or enter the code you were given, to play with real clubs and players.</div>
-        <div class="row" style="margin-top:6px"><button class="btn btn-small btn-blue" data-action="loadpack">Load file</button><button class="btn btn-small btn-blue" data-action="code">Enter code</button></div>`}
+        : `<div class="row" style="margin-top:2px"><button class="btn btn-small ng-btn" data-action="code">Enter code</button><button class="btn btn-small btn-blue ng-btn" data-action="loadpack">File</button></div>
+        <div class="muted" style="font-size:12.5px;margin-top:6px">Fictional players.<span class="phone-hide"> Enter the code you were given, or load a real-teams file, to play with real clubs and players.</span></div>`}
     </div>
 
     <div class="panel" style="left:330px;top:92px;width:600px;height:604px;display:flex;flex-direction:column">

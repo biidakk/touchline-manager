@@ -580,3 +580,8 @@ html.phone select.plan { height: 36px; font-size: 17px; }
 .pitch-q.q2 { background: #7d8f3a; }
 .pitch-q.q3 { background: #3f9a3a; }
 .pitch-q.q4 { background: #22a64a; }
+/* ---------- new career ---------- */
+.panel h2.ng-h { margin-top: 22px; }
+html.phone .panel h2.ng-h { margin-top: 12px; margin-bottom: 6px; }
+html.phone .ng-countries li { padding: 2px 6px; }
+.ng-btn { white-space: nowrap; padding: 0 10px; }
