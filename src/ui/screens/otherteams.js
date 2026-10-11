@@ -70,15 +70,15 @@ export function render(root, ctx, params = {}) {
         : st.tab === 'records' ? `<div class="scroll" style="flex:1">${recordsHtml(g, club)}</div>`
         : st.tab === 'seasons' ? `<div class="scroll" style="flex:1">${clubSeasonsHtml(g, club)}</div>`
         : `<div class="scroll" style="flex:1"><table class="data">
-        <thead><tr><th class="num">No</th><th>Player</th><th class="c">Pos</th><th class="num">Age</th><th>Nat</th><th class="num">Ht</th><th class="num">Skill</th><th class="num">Pot</th><th class="num">TEC</th><th class="num">PHY</th><th class="c">Form</th>
-          <th class="num">Apps</th><th class="num">Goals</th><th class="num">Value</th><th class="num">Contract</th></tr></thead>
+        <thead><tr><th class="num">No</th><th>Player</th><th class="c">Pos</th><th class="num">Age</th><th>Nat</th><th class="num phone-hide">Ht</th><th class="num">Skill</th><th class="num">Pot</th><th class="num phone-hide">TEC</th><th class="num phone-hide">PHY</th><th class="c">Form</th>
+          <th class="num">Apps</th><th class="num">Goals</th><th class="num">Value</th><th class="num phone-hide">Contract</th></tr></thead>
         <tbody>${ps.map((p) => `<tr class="click" data-action="player" data-id="${p.id}"><td class="num">${p.number}</td>
           <td><b>${esc(fullName(p))}</b>${p.listed ? ' <span class="badge list">$</span>' : ''}${p.injuryDays > 0 ? ' <span class="badge inj">+</span>' : ''}</td>
           <td class="c">${p.pos}</td><td class="num">${ageOf(p, year)}</td><td>${flag(g.nations[p.nationId].flag, 18)}</td>
-          <td class="num">${p.height}</td><td class="num">${skillMark(p)}</td><td class="num">${potText(g, p)}</td>
-          <td class="num">${attrText(g, p, 'tec')}</td><td class="num">${attrText(g, p, 'phy')}</td><td class="c">${formArrow(p.form)}</td>
+          <td class="num phone-hide">${p.height}</td><td class="num">${skillMark(p)}</td><td class="num">${potText(g, p)}</td>
+          <td class="num phone-hide">${attrText(g, p, 'tec')}</td><td class="num phone-hide">${attrText(g, p, 'phy')}</td><td class="c">${formArrow(p.form)}</td>
           <td class="num">${p.stats.season.apps}</td><td class="num">${p.stats.season.goals}</td><td class="num">${fmtMoneyShort(p.value)}</td>
-          <td class="num">${p.contractEnd}</td></tr>`).join('')}</tbody>
+          <td class="num phone-hide">${p.contractEnd}</td></tr>`).join('')}</tbody>
       </table></div>`}
     </div>
     <button class="btn btn-blue" style="position:absolute;left:1050px;top:648px;width:210px" data-action="back">Back</button>`;

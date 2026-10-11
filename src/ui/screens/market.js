@@ -120,7 +120,7 @@ export function render(root, ctx, params = {}) {
       }).join('') || '<tr><td class="empty">No offers at the moment. List players to attract bids (only during a transfer window).</td></tr>'}</table>
       <h2>Your players on the transfer list</h2>
       <table class="data">${listed.map((p) => `<tr><td><b>${esc(fullName(p))}</b></td><td class="c">${p.pos}</td><td class="num">${ageOf(p, year)}</td>
-        <td class="num">${p.skill}/${p.potential}</td><td class="num">asking <b>${fmtMoney(p.askingPrice)}</b></td><td class="muted">value ${fmtMoneyShort(p.value)}</td>
+        <td class="num">${p.skill}/${potText(g, p)}</td><td class="num">asking <b>${fmtMoney(p.askingPrice)}</b></td><td class="muted">value ${fmtMoneyShort(p.value)}</td>
         <td class="num"><button class="btn btn-small btn-blue" data-action="unlist" data-id="${p.id}">Remove</button></td></tr>`).join('')
         || '<tr><td class="empty">Nobody listed. Use the player card in My Team to put a player on the transfer list.</td></tr>'}</table>
       <h2 style="margin-top:14px">Loans</h2>

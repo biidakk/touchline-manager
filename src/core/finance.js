@@ -25,9 +25,21 @@ export function expectedWageBill(game, club) {
 // 6M wage bill.
 export const costScale = (game, club) => clamp(expectedWageBill(game, club) / 6e6, 0.1, 3);
 
-export function tvSponsorsPerYear(game, club) {
+// TV money and sponsorship of a club at this level (AI clubs get this).
+function baseTvSponsors(game, club) {
   const tier = game.competitions[club.compId].tier;
   return expectedWageBill(game, club) * (tier === 1 ? 0.92 : 0.82) + (tier === 1 ? 4e5 : 5e4);
+}
+
+// The main shirt sponsor's usual share of that; the user's club gets its
+// sponsor's actual contract instead (see commercial.js).
+export const SPONSOR_SHARE = 0.3;
+export const sponsorBase = (game, club) => baseTvSponsors(game, club) * SPONSOR_SHARE;
+
+export function tvSponsorsPerYear(game, club) {
+  const s = club.deals?.sponsor;
+  const base = baseTvSponsors(game, club);
+  return s ? base * (1 - SPONSOR_SHARE) + s.perYear : base;
 }
 
 export const costsPerYear = (game, club) => expectedWageBill(game, club) * 0.12 + club.stadium.capacity * 20;
@@ -59,8 +71,17 @@ export function loanedOutWages(game) {
 // Priced from the club's level and its natural crowd (not the stadium size),
 // so a season at a typical crowd brings in about half the expected wage bill.
 // A bigger stadium then earns more only while demand fills it.
-export const ticketPrice = (game, club) => Math.max(3, Math.round(
-  (expectedWageBill(game, club) * 0.5) / (19 * naturalCrowd(club) * 0.8)));
+// Ticket prices are set each summer (user club): cheaper tickets fill more
+// seats (and a full house lifts the team), dearer ones earn more per fan.
+export const TICKET_PLANS = {
+  low: { label: 'Low', price: 0.8, demand: 1.15 },
+  normal: { label: 'Normal', price: 1, demand: 1 },
+  high: { label: 'High', price: 1.3, demand: 0.82 },
+};
+const ticketPlan = (club) => TICKET_PLANS[club.deals?.ticket] || TICKET_PLANS.normal;
+
+export const ticketPrice = (game, club, plan = ticketPlan(club)) => Math.max(3, Math.round(
+  ((expectedWageBill(game, club) * 0.5) / (19 * naturalCrowd(club) * 0.8)) * plan.price));
 
 // How many people want to come: the club's natural crowd, moved by form,
 // the opponent and the competition.
@@ -72,7 +93,7 @@ export function demand(game, f) {
   const form = row ? row.form.slice(-5).reduce((a, x) => a + (x === 'W' ? 0.02 : x === 'L' ? -0.015 : 0), 0) : 0;
   const fill = clamp(0.3 + home.reputation / 200 + (away.reputation - 50) / 400 + form
     + (comp.type === 'cup' ? 0.08 : comp.type === 'continental' ? 0.2 : 0), 0.15, 1);
-  return Math.round(naturalCrowd(home) * 1.25 * fill);
+  return Math.round(naturalCrowd(home) * 1.25 * fill * ticketPlan(home).demand);
 }
 
 // Gate receipts for the home side of a fixture.

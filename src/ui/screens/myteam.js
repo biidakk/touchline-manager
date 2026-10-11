@@ -10,6 +10,7 @@ import { listPlayer, unlistPlayer, contractTerms, renewContract } from '../../co
 import { partnerOf, loanToPartner, listForLoan, unlistForLoan } from '../../core/loans.js';
 import { squadSummary, lineupSkill } from '../../core/ratings.js';
 import { ageOf } from '../../core/valuation.js';
+import { potText, potEstimate } from '../../core/scouting.js';
 import { pitch, formArrow, battery, skillMark } from '../components/pitch.js';
 import { flag, icon, stadiumArt } from '../components/svg.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
@@ -66,7 +67,7 @@ export function render(root, ctx) {
       return `<tr data-pid="${id}" data-drop="${drop}" draggable="true" class="${st.sel === id ? 'sel' : ''} ${un ? 'unavail' : ''}">
         <td class="num">${p.number}</td><td><b>${esc(fullName(p))}</b>${badges(p, roles)}</td><td class="c">${oop ? `<span class="oop-skill">${slotPos[si]}</span>` : p.pos}</td>
         <td class="num">${ageOf(p, year)}</td><td>${flag(g.nations[p.nationId].flag, 20)}</td>
-        <td class="num">${skillCell}</td><td class="num">${p.potential}</td><td class="c">${formArrow(p.form)}</td>
+        <td class="num">${skillCell}</td><td class="num">${potText(g, p, { short: true })}</td><td class="c">${formArrow(p.form)}</td>
         <td class="num">${Math.round(p.energy)}%</td></tr>`;
     };
     return [
@@ -88,7 +89,7 @@ export function render(root, ctx) {
       <div class="row" style="justify-content:space-between"><span class="big">${p.number}. ${esc(p.last)}</span>${flag(g.nations[p.nationId].flag, 26)}</div>
       <div class="muted">${esc(p.first)} · ${{ G: 'Goalkeeper', D: 'Defender', M: 'Midfielder', F: 'Forward' }[p.pos]} · ${ageOf(p, year)} years</div>
       <div class="fin-list" style="margin-top:6px;grid-template-columns:auto 1fr">
-        <span>Skill / potential</span><b>${p.skill} / ${p.potential} ${formArrow(p.form)}</b>
+        <span>Skill / potential</span><b>${p.skill} / ${potText(g, p)} ${formArrow(p.form)}</b>
         <span>TEC · PHY · height</span><b>${p.tec} · ${p.phy} · ${p.height} cm</b>
         <span>Morale</span><b><button class="linkbtn" data-action="talk" title="Talk to him">${moraleBadge(p, true)}</button></b>
         <span>Value · wage</span><b>${fmtMoneyShort(p.value)} · ${fmtMoneyShort(p.wage)}</b>
@@ -124,7 +125,7 @@ export function render(root, ctx) {
     return `
     <div class="panel scroll" style="left:16px;top:84px;width:384px;height:620px;padding:8px 6px">
       <table class="data squad-table">
-        <colgroup><col style="width:28px"><col><col style="width:22px"><col style="width:34px"><col style="width:32px"><col style="width:30px"><col style="width:32px"><col style="width:20px"><col style="width:46px"></colgroup>
+        <colgroup><col class="c-no" style="width:28px"><col><col style="width:22px"><col class="c-age" style="width:34px"><col class="c-nat" style="width:32px"><col class="c-sk" style="width:30px"><col class="c-pot" style="width:32px"><col class="c-form" style="width:20px"><col class="c-en" style="width:46px"></colgroup>
         <thead><tr><th class="num">No</th><th>Player</th><th class="c">P</th><th class="num">Age</th><th>Nat</th><th class="num">Sk</th><th class="num">Pot</th><th class="c">F</th><th class="num">En</th></tr></thead>
         <tbody>${squadRows(l, roles)}</tbody>
       </table>
@@ -132,7 +133,7 @@ export function render(root, ctx) {
 
     <div style="position:absolute;left:412px;top:84px;width:560px;height:432px">
       ${pitch({ game: g, lineup: l, colors: club.colors, editable: true, selected: st.sel, roles,
-        footer: `${lineupSkill(g, l).toFixed(1)} -${fmtMoneyShort(sum.value).replace(' €', '')} - ${sum.age.toFixed(1)} yrs` })}
+        footer: `Avg ${lineupSkill(g, l).toFixed(1)} · ${fmtMoneyShort(sum.value)} · ${sum.age.toFixed(1)} yrs` })}
       <div class="row" style="position:absolute;left:8px;top:8px;z-index:3">
         <select class="field" id="formation" style="height:30px;font-weight:800">${FORMATION_NAMES.map((f) => `<option ${f === l.formation ? 'selected' : ''}>${f}</option>`).join('')}</select>
         <button class="btn btn-small btn-blue" data-action="auto" title="Pick the best available XI">Auto pick</button>
@@ -163,13 +164,13 @@ export function render(root, ctx) {
 
     <div class="panel" style="left:984px;top:84px;width:280px;height:196px">
       <div class="fin-list">
-        <span>Money</span><b>${fmtMoney(club.budget)}</b>
-        <span>Wage bill / season</span><b>${fmtMoney(all.wages)}</b>
-        <span>Squad value</span><b>${fmtMoney(all.value)}</b>
-        <span>Ticket income</span><b>${fmtMoney(ledger.tickets)}</b>
-        <span>TV & sponsors</span><b>${fmtMoney(ledger.tvSponsors)}</b>
-        <span>Prize money</span><b>${fmtMoney(ledger.prizes)}</b>
-        <span>Wages paid</span><b>${fmtMoney(-ledger.wages)}</b>
+        <span>Money</span><b>${fmtMoneyShort(club.budget)}</b>
+        <span>Wage bill</span><b>${fmtMoneyShort(all.wages)}</b>
+        <span>Squad value</span><b>${fmtMoneyShort(all.value)}</b>
+        <span class="phone-hide">Ticket income</span><b class="phone-hide">${fmtMoney(ledger.tickets)}</b>
+        <span class="phone-hide">TV & sponsors</span><b class="phone-hide">${fmtMoney(ledger.tvSponsors)}</b>
+        <span class="phone-hide">Prize money</span><b class="phone-hide">${fmtMoney(ledger.prizes)}</b>
+        <span class="phone-hide">Wages paid</span><b class="phone-hide">${fmtMoney(-ledger.wages)}</b>
         <span>Transfers in / out</span><b>${fmtMoneyShort(-ledger.transfersIn)} / ${fmtMoneyShort(ledger.transfersOut)}</b>
       </div>
     </div>
@@ -191,7 +192,7 @@ export function render(root, ctx) {
   const COLS = [
     ['number', 'No', (p) => p.number, 'num'], ['name', 'Player', (p) => p.last], ['pos', 'Pos', (p) => POS_ORDER[p.pos] * 100 - p.skill, 'c'],
     ['age', 'Age', (p) => ageOf(p, year), 'num'], ['nat', 'Nat', (p) => p.nationId], ['skill', 'Skill', (p) => p.skill, 'num'],
-    ['pot', 'Pot', (p) => p.potential, 'num'], ['tec', 'TEC', (p) => p.tec, 'num'], ['phy', 'PHY', (p) => p.phy, 'num'],
+    ['pot', 'Pot', (p) => potEstimate(g, p) ?? 0, 'num'], ['tec', 'TEC', (p) => p.tec, 'num'], ['phy', 'PHY', (p) => p.phy, 'num'],
     ['height', 'Ht', (p) => p.height, 'num'], ['dev', '+/-', (p) => p.skill - (p.seasonStart ?? p.skill), 'num'],
     ['form', 'Form', (p) => p.form, 'c'], ['energy', 'Energy', (p) => p.energy, 'num'],
     ['morale', 'Morale', (p) => moraleOf(p), 'num'], ['pers', 'Personality', (p) => personalityOf(p)],
@@ -218,7 +219,7 @@ export function render(root, ctx) {
         case 'age': return ageOf(p, year);
         case 'nat': return flag(g.nations[p.nationId].flag, 20);
         case 'skill': return skillMark(p);
-        case 'pot': return p.potential;
+        case 'pot': return potText(g, p);
         case 'dev': {
           const d = p.skill - (p.seasonStart ?? p.skill);
           return d > 0 ? `<span class="good">+${d}</span>` : d < 0 ? `<span class="bad">${d}</span>` : '0';

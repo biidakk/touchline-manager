@@ -64,7 +64,7 @@ export function render(root, ctx, params = {}) {
       const e = t.energy ? t.energy[id] : p.energy;
       return `<div class="bshirt ${sel ? 'sel' : ''}" ${editable ? `data-pick="bench:${k}" draggable="true"` : ''} title="${esc(p.first + ' ' + p.last)}">
         <span class="posb">${p.pos}</span>${jersey({ colors: t.club.colors, number: t.club.numbers?.[id] ?? p.number, gk: p.pos === 'G', size: 40 })}
-        <div class="pname">${esc(p.last)}</div><div class="pinfo">${p.skill}/${potText(g, p)} ${formArrow(p.form)} ${battery(e)}</div></div>`;
+        <div class="pname">${esc(p.last)}</div><div class="pinfo">${p.skill}/${potText(g, p, { short: true })} ${formArrow(p.form)} ${battery(e)}</div></div>`;
     }).join('') || '<div class="dim" style="margin:auto">No substitutes left</div>'}</div>`;
   }
 
@@ -86,13 +86,14 @@ export function render(root, ctx, params = {}) {
   function draw() {
     const T = [team(0), team(1)];
     const C = T.map(compare);
-    const tile = (ic, key, label) => {
+    // Left number: the home side (left pitch), right: the away side; the better one is green.
+    const tile = (key, label, info) => {
       const [a, b] = [C[0][key], C[1][key]];
-      return `<div class="cmp" title="${label}">${icon(ic)}<b class="${a > b ? 'good' : ''}">${a}</b><b class="${b > a ? 'good' : ''}">${b}</b></div>`;
+      return `<div class="cmp" title="${info}"><span class="cmp-l">${label}</span><div class="cmp-v"><b class="${a > b ? 'good' : ''}">${a}</b><b class="${b > a ? 'good' : ''}">${b}</b></div></div>`;
     };
     const footer = (t) => {
       const s = squadSummary(g, t.club, t.lineup.slots.filter(Boolean));
-      return `${lineupSkill(g, t.lineup).toFixed(1)} - ${fmtMoneyShort(s.value).replace(' €', '')} - ${s.age.toFixed(1)} yrs`;
+      return `Avg ${lineupSkill(g, t.lineup).toFixed(1)} · ${fmtMoneyShort(s.value)} · ${s.age.toFixed(1)} yrs`;
     };
     const m = live ? ctx.match.m : null;
     const sel = (i) => (i === userSide && st.sel && st.sel.zone === 'slot' ? T[i].lineup.slots[st.sel.index] : null);
@@ -120,8 +121,9 @@ export function render(root, ctx, params = {}) {
       <div class="tac-ctl" style="left:${i === 0 ? 24 : 736}px">${controls(T[i], i)}</div>`).join('')}
     ${notice}
     <div class="cmp-col">
-      ${tile('flag', 'captain', 'Captain skill')}${tile('ball', 'setPieces', 'Set-piece taker skill')}
-      ${tile('team', 'teamwork', 'Teamwork')}${tile('trophy', 'keeper', 'Goalkeeper skill')}
+      <div class="cmp-head">Compare</div>
+      ${tile('captain', 'Captain', 'Skill of each captain')}${tile('setPieces', 'Set pieces', 'Skill of each set-piece taker')}
+      ${tile('teamwork', 'Teamwork', 'Teamwork: grows when the same players keep starting together')}${tile('keeper', 'Keeper', 'Skill of each goalkeeper')}
     </div>
     <div class="tac-actions">
       ${live ? `${subsInfo}<button class="btn" data-action="resume">Continue</button>`
@@ -129,7 +131,7 @@ export function render(root, ctx, params = {}) {
            <button class="btn btn-blue btn-small" data-action="instant">Instant result</button>
            <button class="btn btn-blue btn-small" data-action="editlineup">Edit lineup</button>`}
     </div>
-    <div class="hint" style="position:absolute;left:0;right:0;top:686px;text-align:center;pointer-events:none">${live
+    <div class="hint phone-hide" style="position:absolute;left:0;right:0;top:686px;text-align:center;pointer-events:none">${live
       ? 'Substitution: drag a substitute onto the player to replace (or click one, then the other). Drag between two players on the pitch to swap positions.'
       : 'Drag or click two of your players to swap them. Use Edit lineup for the full squad and formation.'}</div>`;
   }

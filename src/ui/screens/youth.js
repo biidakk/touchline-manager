@@ -5,6 +5,7 @@ import { promoteYouth, releasePlayer, ACADEMY_MAX_AGE } from '../../core/develop
 import { partnerCandidates, partnerOf, setPartner, loanToPartner, loanedOutBy } from '../../core/loans.js';
 import { openWindow } from '../../core/transfers.js';
 import { ageOf } from '../../core/valuation.js';
+import { potText, potEstimate } from '../../core/scouting.js';
 import { formArrow } from '../components/pitch.js';
 import { crest, flag, jersey } from '../components/svg.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
@@ -18,18 +19,18 @@ export function render(root, ctx) {
   function draw() {
     const partner = partnerOf(g);
     const windowOpen = !!openWindow(g);
-    const ps = (club.youth || []).map((id) => g.players[id]).sort((a, b) => b.potential - a.potential);
+    const ps = (club.youth || []).map((id) => g.players[id]).sort((a, b) => potEstimate(g, b) - potEstimate(g, a));
     const away = loanedOutBy(g, club.id);
     const firstTeamYoung = club.squad.map((id) => g.players[id]).filter((p) => ageOf(p, year) <= 21 && !p.loan)
-      .sort((a, b) => b.potential - a.potential);
+      .sort((a, b) => potEstimate(g, b) - potEstimate(g, a));
     const dev = (p) => (p.skill - p.seasonStart > 0 ? `<span class="good">+${p.skill - p.seasonStart}</span>` : '0');
     const row = (p) => {
       const age = ageOf(p, year);
       const last = age >= ACADEMY_MAX_AGE;
       return `<tr><td>${jersey({ colors: club.colors, number: '', gk: p.pos === 'G', size: 26 })}</td>
         <td><b>${esc(fullName(p))}</b>${last ? ' <span class="badge sus" title="Must be promoted this season or he leaves">LAST YEAR</span>' : ''}</td>
-        <td class="c">${p.pos}</td><td class="num">${age}</td><td>${flag(g.nations[p.nationId].flag, 20)}</td>
-        <td class="num">${p.skill}</td><td class="num"><b>${p.potential}</b></td><td class="c">${formArrow(p.form)}</td><td class="num">${dev(p)}</td>
+        <td class="c">${p.pos}</td><td class="num">${age}</td><td class="phone-hide">${flag(g.nations[p.nationId].flag, 20)}</td>
+        <td class="num">${p.skill}</td><td class="num"><b>${potText(g, p)}</b></td><td class="c phone-hide">${formArrow(p.form)}</td><td class="num">${dev(p)}</td>
         <td class="num academy-actions"><button class="btn btn-small" data-action="promote" data-id="${p.id}">Promote</button>
           ${partner ? `<button class="btn btn-small btn-blue" data-action="tob" data-id="${p.id}" ${windowOpen ? '' : 'disabled'} title="Loan to ${esc(partner.name)} until the end of the season">B-team</button>` : ''}
           <button class="btn btn-small btn-blue" data-action="release" data-id="${p.id}">Release</button></td></tr>`;
@@ -40,7 +41,7 @@ export function render(root, ctx) {
     <div class="panel" style="left:20px;top:92px;width:760px;height:540px;display:flex;flex-direction:column">
       <div class="panel-head"><h2>Academy (${ps.length})</h2><span class="muted" style="font-size:12.5px">New players arrive every summer. Promote them by age ${ACADEMY_MAX_AGE}, or they leave.</span></div>
       <div class="scroll" style="flex:1"><table class="data">
-        <thead><tr><th></th><th>Player</th><th class="c">Pos</th><th class="num">Age</th><th>Nat</th><th class="num">Skill</th><th class="num">Pot</th><th class="c">Form</th><th class="num">+Season</th><th></th></tr></thead>
+        <thead><tr><th></th><th>Player</th><th class="c">Pos</th><th class="num">Age</th><th class="phone-hide">Nat</th><th class="num">Skill</th><th class="num">Pot</th><th class="c phone-hide">Form</th><th class="num">+Season</th><th></th></tr></thead>
         <tbody>${ps.map(row).join('') || '<tr><td colspan="10" class="empty">The academy is empty. New players arrive at the start of next season.</td></tr>'}</tbody>
       </table></div>
     </div>
@@ -62,7 +63,7 @@ export function render(root, ctx) {
       <h2>Young first-team players</h2>
       <div class="scroll" style="flex:1"><table class="data compact">
         <tbody>${firstTeamYoung.map((p) => `<tr><td class="num">${p.number}</td><td><b>${esc(fullName(p))}</b></td><td class="c">${p.pos}</td><td class="num">${ageOf(p, year)}</td>
-          <td class="num">${p.skill}/${p.potential}</td><td class="num">${p.stats.season.apps} apps</td><td class="num">${dev(p)}</td></tr>`).join('') || '<tr><td class="empty">None</td></tr>'}</tbody>
+          <td class="num">${p.skill}/${potText(g, p)}</td><td class="num">${p.stats.season.apps} apps</td><td class="num">${dev(p)}</td></tr>`).join('') || '<tr><td class="empty">None</td></tr>'}</tbody>
       </table></div>
     </div>
     <button class="btn btn-blue" style="position:absolute;left:1050px;top:648px;width:210px" data-action="back">Back</button>`;

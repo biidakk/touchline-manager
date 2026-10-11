@@ -9,6 +9,8 @@ import { roleTakers } from './lineup.js';
 import { aerial, heightFactor } from './attributes.js';
 import { acwrRisk, physioDays } from './training.js';
 import { moraleFactor } from './morale.js';
+import { pitchOf, pitchTechnique, pitchInjury } from './stadium.js';
+import { demand } from './finance.js';
 
 // ---- tuning constants (checked by the calibration tests) ----
 const CHANCE_RATE = 0.24;      // chance probability per minute for an even side with all the ball
@@ -114,6 +116,13 @@ export function createMatch(game, fixture, opts = {}) {
     pens: null,
     keepEvents: opts.keepEvents ?? true,
   };
+  // The home club's ground: its pitch (technique and injuries, both sides) and
+  // the crowd (a full house lifts the home side a little).
+  const ground = !opts.homeClub && game.clubs[fixture.homeId];
+  m.pitch = ground ? pitchOf(ground) : 7;
+  const fill = ground && fixture.compId ? Math.min(1, demand(game, fixture) / ground.stadium.capacity) : 0.75;
+  m.homeEdge = HOME_CHANCE * (1 + 0.06 * (fill - 0.75));
+  for (const s of m.sides) s.pitchT = pitchTechnique(m.pitch);
   return m;
 }
 
@@ -125,7 +134,7 @@ function effAttrs(game, side, id, slotPos) {
   const pl = game.players[id];
   const fit = positionFit(pl.pos, slotPos) * (1 + 0.02 * (pl.form || 0)) * (side.mood?.[id] ?? 1);
   const e = side.energy[id] / 100;
-  return { t: (pl.tec ?? pl.skill) * fit * (0.86 + 0.14 * e), p: (pl.phy ?? pl.skill) * fit * (0.62 + 0.38 * e) };
+  return { t: (pl.tec ?? pl.skill) * fit * (0.86 + 0.14 * e) * (side.pitchT ?? 1), p: (pl.phy ?? pl.skill) * fit * (0.62 + 0.38 * e) };
 }
 
 // A shooter's finishing: mostly technique, some power.
@@ -426,7 +435,7 @@ function playMinute(game, m, rng) {
     const ratio = S[i].att / Math.max(1, S[1 - i].def);
     let rate = CHANCE_RATE * share[i] * Math.pow(ratio, CHANCE_EXP)
       * (1 + 0.32 * myI) * (1 + 0.22 * opI) * styleEdge(me.tactics.style, op.tactics.style);
-    if (i === 0) rate *= HOME_CHANCE;
+    if (i === 0) rate *= m.homeEdge ?? HOME_CHANCE;
     // Through-balls live on pace: fast forwards against slow defenders.
     if (me.tactics.style === 'through') rate *= 0.95 * Math.pow(S[i].pace / Math.max(1, S[1 - i].defPace), 0.6);
     if (rng.next() < rate) chance(game, m, rng, i, S);
@@ -460,7 +469,7 @@ function playMinute(game, m, rng) {
     // Injuries: overloaded and less robust players are more at risk.
     const onField = me.slots.filter(Boolean);
     const risk = onField.length ? onField.reduce((s, id) => s + (me.injRisk?.[id] ?? 1), 0) / onField.length : 1;
-    if (rng.next() < INJURY_RATE * risk) {
+    if (rng.next() < INJURY_RATE * risk * pitchInjury(m.pitch ?? 7)) {
       const id = rng.weighted(onField, (x) => (me.injRisk?.[x] ?? 1) * (game.players[x].pos === 'G' ? 0.5 : 1));
       if (id) handleInjury(game, m, i, id, rng);
     }

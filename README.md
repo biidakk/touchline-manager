@@ -30,10 +30,10 @@ The app and the browser keep separate saves. To move a career between them, use 
 - **Try it at home:** run **`start-phone.bat`** on the PC. It shows an address such as `http://192.168.1.20:8765`; type it on a phone on the same Wi-Fi, **including `http://`**, and turn the phone sideways. The first time, Windows asks whether Python may use the network: allow it on private networks.
 - **"Can't open the page":** the phone probably switched to a secure `https://` address, which a home server can't offer (the PC window then prints a hint). Type `http://` explicitly; in Chrome tap "Continue to site" or turn off *Settings → Privacy and security → Security → Always use secure connections*; on an iPhone turn off *Settings → Apps → Safari → Not Secure Connection Warning*.
 - **Add to Home Screen** (Safari's share menu on iPhone, Chrome's menu on Android) gives it an icon and a full screen.
-- **Offline play and a proper install** need the game on a secure (https) website; the game is ready for that (it is an installable web app with an offline cache), but it isn't published anywhere yet.
+- **Offline play and a proper install:** use the published site (https://biidakk.github.io/touchline-manager/): after the first visit it works offline, and "Add to Home Screen" installs it.
 - **Saves** on the phone are separate from the PC's: move a career with Export / Import.
 - **Touch:** tap two players to swap them (drag-and-drop needs a mouse); double-tap a player for his career.
-- **Bigger text on phones:** small screens switch to larger text automatically (about 20–25 % bigger, small print the most), and a few desktop-only hints are hidden. Held upright, the game asks you to turn the phone sideways.
+- **Bigger text on phones:** small screens switch to much larger text automatically (the 1280×720 screen is shown at about half size on a phone). To make room, phones show fewer rows (three fixtures on the hub, five transfers a page) and hide low-value columns and hints. The search box doesn't pop up the keyboard by itself. Held upright, the game asks you to turn the phone sideways.
 
 ## Your own names
 `names.json` (in the game folder, or next to `TouchlineManager.exe`) maps the game's names to yours, for example `"clubs": { "Manchester Blue": { "name": "...", "short": "...", "stadium": "...", "manager": "..." } }`. It also covers nations, leagues, cups and players ("Old Name": "New Name").
@@ -46,8 +46,8 @@ The app and the browser keep separate saves. To move a career between them, use 
 1. **New career:** enter your name (every new career gets a freshly generated world), browse the six countries and their two divisions, and choose a club. The board tells you what it expects.
 2. **Hub:**
    - **Menu:** My Team, Other Teams, Season Schedule, My Career, Search, Transfer Market, Training, Finances, plus your league and cup.
-   - **Panels:** upcoming fixtures, news, the transfer ticker, your club card and the season table.
-   - **CONTINUE** plays the calendar up to your next match. It also stops when the winter transfer window opens, and at the end of the season.
+   - **Panels:** your last result and next three fixtures (Full schedule for the rest), news, the transfer ticker, your club card and the season table.
+   - **CONTINUE** plays the calendar up to your next match. It also stops when the winter transfer window opens, and at the end of the season. At the start of a season (and after taking over a club) it reads **PREPARE SEASON** first: see Season preparations below.
 3. **My Team:**
    - **Picking the team:** drag players between the squad list and the pitch, or click two players to swap them. Choose a formation (4-4-2, 4-3-3, 4-5-1, 3-5-2, 5-3-2) or use **Auto pick**.
    - **Out of position:** a player outside his natural position plays at 70 % of his skill, and at 25 % in or out of goal.
@@ -58,7 +58,7 @@ The app and the browser keep separate saves. To move a career between them, use 
    - **Lineups A/B/C:** save (↓), load (letter) or delete (x).
    - **Youth:** promote academy players to the first team, or release them.
 4. **Match day:**
-   - **Pre-match screen:** both teams side by side with a comparison column.
+   - **Pre-match screen:** both teams side by side. The middle column compares the two captains, set-piece takers, teamwork and goalkeepers (left number: home team, right: away team; the better one is green). Under each pitch: average skill of the eleven, their market value and average age.
    - **Live 2D match:** passing moves, corners, free kicks with a wall, penalties, commentary, speed 1×/2×/4×, pause, and **Instant result**.
    - **Tactics & subs** is available at any time, and opens automatically at half-time and when one of your players is injured. Drag a substitute onto a player to bring him on.
 5. **Transfers:**
@@ -76,15 +76,20 @@ The app and the browser keep separate saves. To move a career between them, use 
      - Loans to the partner are free, the partner pays the wages and plays your youngsters regularly. A 16-year-old sent there typically plays about 30 matches and gains around +8 in a season.
      - Academy players can be sent there too; they come back to the academy afterwards.
 7. **Scouting** (Transfer Market → Scouting):
-   - Other clubs' **potential is hidden ("?")** until you scout a player; your own players and academy are always exact.
+   - Other clubs' **potential is hidden ("?")** until you scout a player. For your own players and academy you see your staff's **estimate**, a range such as "74-79" that contains the true potential (on the pitch and in lists the middle of it, such as "~76"). A better youth coach or assistant manager narrows it (8 points wide with neither, 3 at 5★), so you never know exactly when a player has reached his limit.
    - Click **Scout** on a player (market or player dialog). After some days you get a range such as "78–84" that contains his true potential.
    - Choose your **scouting staff level** (None / Basic / Good / Excellent). Better staff cost more per season but scout more players at once, report faster and give narrower ranges. Prices scale with the club, so a small club pays far less than a giant.
    - Reports expire after two seasons. The potential filter in the market works on scouted players only.
 8. **Stadium** (My Team → Stadium, or Finances):
    - **Demand:** crowds depend on reputation, form, the opponent and the competition, not just on seats.
-   - **Expansion:** build +2,000, +5,000 or +10,000 seats, paid up front and ready after a few months. The screen shows the extra ticket income you'd get at current demand and how long the expansion takes to pay back.
-   - AI clubs with packed stadiums expand too.
-9. **Finances:** tickets (crowds depend on reputation, form and the opponent), TV & sponsors, prize money, wages, running costs and transfers, shown season to date and for past seasons.
+   - **Ground plan:** a ground has up to eight stands: the main stand and side stand along the touchlines, two ends behind the goals and four corners. Smaller grounds miss some (shown dashed). **Build a missing stand** (a corner needs both stands next to it); it is sized to match the rest of the ground.
+   - **More seats:** enlarge all stands by +2,000, +5,000 or +10,000 seats. Building work is paid up front, takes a few months and only one project runs at a time. The table shows the extra ticket income at current demand.
+   - **Pitch** (quality 1–10): wears by a point every season (two after a hard winter). A poor pitch blunts technical football for both teams and causes more injuries. Re-lay it to any better level; the top levels cost the most.
+   - AI clubs with packed stadiums expand too, and re-lay worn pitches when they can afford it.
+9. **Finances:** tickets (crowds depend on reputation, form and the opponent), TV & sponsors, prize money, player and staff wages, running costs, building work and transfers, shown season to date and for past seasons, plus your current deals.
+   - **Season preparations** (before the first match of each season, and after taking over a club):
+     - **Ticket prices:** Low, Normal or High for the season. Low fills more seats (a full house gives the home side a small lift), High earns more per fan but fewer come unless you sell out anyway. The screen estimates the crowd and the season's league ticket income for each.
+     - **Main shirt sponsor** (when the old contract has run out): three companies offer a 1-, 3- or 5-season deal. The short deal pays the most per season; longer deals pay less but lock the money in (useful before a hard season) and come with a signing bonus. Offers follow your club's level when you sign.
 10. **Continental Champions Cup:**
    - **Entry:** the top of each first division qualifies: England, Spain, Italy and Germany 3 each, France and the Czech Republic 2 each (by reputation in the first season).
    - **Group stage:** 4 groups of 4 in autumn, drawn from seeding pots, home and away on Tuesday nights.
@@ -129,6 +134,7 @@ The app and the browser keep separate saves. To move a career between them, use 
     - **Getting sacked:** below 30 the board issues an ultimatum. If confidence then drops below 20 (after at least 8 league matches) you are sacked. At the end of the season the board judges the whole season. You can also be sacked for a very poor finish, or for relegation when relegation wasn't expected.
     - **Reputation:** grows with finishes above the target, trophies, promotions and managing bigger clubs. It shrinks with failures, relegations and sackings. It decides which clubs want you.
     - **Jobs:** AI clubs that do badly sack their managers. The board can act at any point of the season: after any league match once a club is well below its target, and again in the summer. Your own board also checks after every match and at its monthly look at the finances. Vacancies appear under Jobs, where you can **apply**; whether they say yes depends on your reputation against theirs. Clubs of your level may also make **offers**, which last two weeks.
+    - **Asking the board for money** (Board panel → Ask for money, once a season): for transfers or for the stadium (new stands, more seats, the pitch), in three sizes. The board says yes, no, or yes **if you promise a better finish** than the target (the bigger the request, the bigger the promise). A promise becomes your target for the season, and missing it gets you sacked at the end of the season. Stadium money is kept in a stadium fund and can only be spent there.
     - **Moving on:** taking a job hands your old club to the AI. Its academy joins its first team, and your staff, training plans and players' moods stay behind. You keep your scouting reports. At the new club you start with fresh staff at its usual level and a new academy intake. You can also **resign** (the Resign button on the Board panel).
     - **Out of work:** after a sacking or resignation you always get at least three offers from clubs a little below your level. Pick one to carry on.
     - **Records:** My Career shows the season-by-season record (target met or missed) and every club you've managed, with matches, wins and how you left.
@@ -162,6 +168,7 @@ With the server running, open http://localhost:8765/tests.html. The page title s
 - **Board and career:** a new manager starts with the board's patience. A normal season with auto lineups keeps the manager in his job. A wrecked title favourite gets an ultimatum and then the sack, followed by at least three offers. Taking a new job hands the old club to the AI cleanly, and the season and save carry on. Applications depend on reputation. Older saves are upgraded.
 - **Two-legged ties:** second legs are played at the other ground a week or two later, aggregates add up, level ties go to extra time and penalties, first legs never decide anything, the final stays one match, and no club ever has two matches on one day.
 - **National team job:** federations want managers of their level (U21 jobs are easier). As head coach your squad picks are called up, your formation is played, the calendar stops for your internationals, and the season ends with the federation's verdict. Older saves are upgraded.
+- **Club and season decisions:** small grounds miss stands and corners need their neighbours; a new stand and the stadium fund; pitch costs, wear and match effects; ticket prices move price and demand; sponsor offers (short pays more, long has a bonus) are paid and saved; asking the board works once a season and a broken promise means the sack.
 - **History and records:** skill-change marks last two matches; a mid-season transfer splits a player's season into two rows; departed players stay in club records; biggest wins, record crowd, national team scorers and caps; the Ballon d'Or and Golden Shoe podiums; federations only approach a manager who is doing well or out of work; old saves are upgraded.
 - **A full season.**
 - **A 20-season career run:** league sizes, squads, ages and league strength stay stable, the countries keep their character, club money stays healthy, the run takes about 25–45 s depending on the machine, and the save is about 9 MB (of which about 1.5 MB is history and records).

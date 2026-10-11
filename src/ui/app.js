@@ -26,11 +26,12 @@ import * as stadium from './screens/stadium.js';
 import * as national from './screens/national.js';
 import * as training from './screens/training.js';
 import * as natteam from './screens/natteam.js';
+import * as deals from './screens/deals.js';
 import { esc } from './util.js';
 import { showPlayer } from './components/playercard.js';
 
 const SCREENS = { title, newgame, hub, tables, soon, schedule, myteam, tactics, match, review, youth, career, cup, market,
-  finances, otherteams, search, stadium, national, training, natteam };
+  finances, otherteams, search, stadium, national, training, natteam, deals };
 const SAVE_KEY = 'career';
 
 const stage = document.getElementById('stage');

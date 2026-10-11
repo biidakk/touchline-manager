@@ -11,8 +11,8 @@ import { emptyLedger, boardExpectation } from './worldgen.js';
 import { settleSeason, expectedWageBill, wageBill } from './finance.js';
 import { executeTransfer } from './transfers.js';
 import { closeContinental } from './continental.js';
-import { aiExpansions } from './stadium.js';
-import { ageReports } from './scouting.js';
+import { aiExpansions, seasonEndPitches } from './stadium.js';
+import { ageReports, potText, potEstimate } from './scouting.js';
 import { returnLoans } from './loans.js';
 import { closeNational } from './national.js';
 import { seasonEndStaff } from './training.js';
@@ -239,6 +239,7 @@ export function endSeason(game) {
   // ---- finances: pay the rest of the year, then archive the season ledger ----
   settleSeason(game);
   aiExpansions(game, rng);
+  seasonEndPitches(game, rng);
   ageReports(game);
   seasonEndStaff(game, nextYear);
   seasonEndMorale(game);
@@ -295,8 +296,8 @@ export function endSeason(game) {
     }
   }
 
-  const best = game.players[summary.youthUser.slice().sort((a, b) => game.players[b].potential - game.players[a].potential)[0]];
-  addNews(game, `${summary.youthUser.length} new players have joined the youth academy${best ? `; the most promising is ${best.first} ${best.last} (potential ${best.potential})` : ''}. Promote them from the Youth screen.`, 'youth');
+  const best = game.players[summary.youthUser.slice().sort((a, b) => potEstimate(game, game.players[b]) - potEstimate(game, game.players[a]))[0]];
+  addNews(game, `${summary.youthUser.length} new players have joined the youth academy${best ? `; the most promising is ${best.first} ${best.last} (potential ${potText(game, best)})` : ''}. Promote them from the Youth screen.`, 'youth');
   if (summary.releasedUser.length) addNews(game, `Left the academy (too old, not promoted): ${summary.releasedUser.join(', ')}.`, 'youth');
   if (summary.retiredUser.length) addNews(game, `Retired: ${summary.retiredUser.map((r) => r.name).join(', ')}.`, 'club');
   addNews(game, `The board expects you to: ${boardExpectation(game, user).toLowerCase()}.`, 'board');

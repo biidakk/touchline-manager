@@ -37,10 +37,10 @@ export function render(root, ctx) {
     <div class="panel" style="left:20px;top:92px;width:380px;height:600px;display:flex;flex-direction:column">
       <div class="seg">${[['senior', 'Senior'], ['u21', 'Under 21']].map(([k, l]) => `<button class="${st.level === k ? 'on' : ''}" data-action="level" data-v="${k}">${l}</button>`).join('')}</div>
       <h2 style="margin:12px 0 6px">${esc(comp.name)}</h2>
-      <table class="data"><thead><tr><th></th><th>Team</th><th class="num">P</th><th class="num">W</th><th class="num">D</th><th class="num">L</th><th class="num">Goals</th><th class="num">Pts</th></tr></thead>
+      <table class="data"><thead><tr><th></th><th>Team</th><th class="num">P</th><th class="num">W</th><th class="num">D</th><th class="num">L</th><th class="num phone-hide">Goals</th><th class="num">Pts</th></tr></thead>
         <tbody>${rows.map((r, i) => `<tr class="click ${(managed ? r.clubId === managed.id : T(r.clubId).nationId === user.nationId) ? 'me' : ''}" data-action="nation" data-v="${T(r.clubId).nationId}">
           <td>${i + 1}.</td><td>${flag(g.nations[T(r.clubId).nationId].flag, 20)} ${esc(T(r.clubId).name)}</td><td class="num">${r.p}</td><td class="num">${r.w}</td>
-          <td class="num">${r.d}</td><td class="num">${r.l}</td><td class="num">${r.gf}:${r.ga}</td><td class="num"><b>${r.pts}</b></td></tr>`).join('')}</tbody></table>
+          <td class="num">${r.d}</td><td class="num">${r.l}</td><td class="num phone-hide">${r.gf}:${r.ga}</td><td class="num"><b>${r.pts}</b></td></tr>`).join('')}</tbody></table>
       <h2 style="margin:14px 0 4px;font-size:15px">Top scorers</h2>
       <table class="data compact">${scorers.map((s) => {
         const p = g.players[s.id];

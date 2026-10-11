@@ -25,6 +25,8 @@ import { freeNumber, startAcademy } from './development.js';
 import { initUserStaff, defaultTraining } from './training.js';
 import { DAY_MS } from './calendar.js';
 import { nationalOffersWhenFree } from './nationaljob.js';
+import { clearDeals } from './commercial.js';
+import { naturalCrowd } from './stadium.js';
 
 export const SACK_AT = 20;
 export const ULTIMATUM_AT = 30;
@@ -156,6 +158,82 @@ export function resign(game) {
   return { ok: true, message: 'You have resigned. Choose your next club.' };
 }
 
+// ---- asking the board for money (once a season) ----
+//
+// The board answers from its confidence, the club's finances and the size of
+// the request: yes, no, or yes if the manager promises a better finish than
+// the target. A broken promise gets him sacked at the end of the season.
+
+export const MONEY_ASKS = [
+  { key: 'small', label: 'A little', share: 0.1, strict: 1, doubt: 0 },
+  { key: 'medium', label: 'A fair amount', share: 0.2, strict: 2, doubt: 12 },
+  { key: 'large', label: 'A lot', share: 0.35, strict: 3, doubt: 25 },
+];
+export const BOARD_PURPOSE = { transfers: 'transfers', stadium: 'the stadium' };
+
+export const askAmount = (game, size) => {
+  const a = MONEY_ASKS.find((x) => x.key === size);
+  return Math.max(50000, Math.round((expectedWageBill(game, game.clubs[game.userClubId]) * a.share) / 50000) * 50000);
+};
+
+export const promiseText = (maxPos) => (maxPos === 1 ? 'Win the league' : `Finish ${maxPos}. or better`);
+
+export function canAskBoard(game) {
+  const m = game.manager;
+  if (m.sacked || !m.board) return { ok: false, message: 'You are not employed.' };
+  if (m.board.askedYear === game.season.year) return { ok: false, message: 'You have already asked the board this season. Try again next season.' };
+  if (game.season.phase !== 'season') return { ok: false, message: 'The season is over. Ask again next season.' };
+  return { ok: true };
+}
+
+export function askBoard(game, purpose, size) {
+  const can = canAskBoard(game);
+  if (!can.ok) return can;
+  const a = MONEY_ASKS.find((x) => x.key === size);
+  if (!a || !BOARD_PURPOSE[purpose]) return { ok: false, message: 'Unknown request.' };
+  const m = game.manager;
+  const club = game.clubs[game.userClubId];
+  const amount = askAmount(game, size);
+  m.board.askedYear = game.season.year;
+  const rng = rngFor(game, `ask:${purpose}:${size}`);
+  let score = confidence(game) - a.doubt + (club.budget > amount ? 10 : club.budget < 0 ? -15 : 0) + rng.int(-8, 8);
+  if (purpose === 'stadium' && naturalCrowd(club) > club.stadium.capacity) score += 8; // fans who can't get in
+  const t = m.target || targetFor(game, club);
+  let offer;
+  if (score >= 72) offer = { verdict: 'yes' };
+  else if (score >= 42 && t.maxPos > 1) offer = { verdict: 'promise', maxPos: Math.max(1, t.maxPos - a.strict) };
+  else offer = { verdict: 'no' };
+  Object.assign(offer, { purpose, amount, year: game.season.year });
+  m.board.offer = offer.verdict === 'no' ? null : offer;
+  const what = `${amount.toLocaleString('en-US')} € for ${BOARD_PURPOSE[purpose]}`;
+  const message = offer.verdict === 'yes' ? `The board agrees to give you ${what}.`
+    : offer.verdict === 'promise' ? `The board will give you ${what}, but only if you promise: ${promiseText(offer.maxPos).toLowerCase()} (instead of: ${t.text.toLowerCase()}). Miss it and you will be sacked at the end of the season.`
+      : `The board turns you down: there is no money for ${BOARD_PURPOSE[purpose]} this season.`;
+  return { ok: true, offer, message };
+}
+
+export function acceptBoardOffer(game) {
+  const m = game.manager;
+  const o = m.board?.offer;
+  if (!o || o.year !== game.season.year) return { ok: false, message: 'There is no offer from the board.' };
+  const club = game.clubs[game.userClubId];
+  if (o.purpose === 'stadium') club.stadium.fund = (club.stadium.fund || 0) + o.amount;
+  else club.budget += o.amount;
+  club.finance.season.board = (club.finance.season.board || 0) + o.amount;
+  if (o.verdict === 'promise') {
+    m.board.pledge = { year: game.season.year, maxPos: o.maxPos };
+    m.target = { ...(m.target || targetFor(game, club)), text: promiseText(o.maxPos), maxPos: o.maxPos, pledge: true };
+    m.board.table = tableScore(game, club).v;
+  }
+  m.board.offer = null;
+  addNews(game, `The board has given ${o.amount.toLocaleString('en-US')} € for ${BOARD_PURPOSE[o.purpose]}${o.verdict === 'promise' ? `. Your promise: ${promiseText(o.maxPos).toLowerCase()}` : ''}.`, 'board');
+  return { ok: true, message: o.purpose === 'stadium' ? 'The money is set aside for the stadium (see Stadium).' : 'The money is in the transfer budget.' };
+}
+
+export function declineBoardOffer(game) {
+  if (game.manager.board) game.manager.board.offer = null;
+}
+
 // Out of work: a few clubs a little below the manager's level are always
 // interested, so the career goes on.
 function emergencyOffers(game) {
@@ -268,6 +346,7 @@ function leaveClub(game, club) {
   delete club.staff;
   delete club.training;
   delete club.scouting;
+  clearDeals(club);
   club.lineup = autoLineup(game, club);
   club.manager = makeManager(game, club.nationId, `${club.id}:${game.day}`);
   game.offers = [];
@@ -391,7 +470,11 @@ export function seasonEndBoard(game, summary, finalTables, trophies) {
   const conf = confidence(game);
   const met = gap >= 0;
   summary.user.board = { target: t.text, met, confidence: conf };
-  if (conf < SACK_AT || (relegated && !expectedDown && conf < 45)) {
+  const broken = b.pledge?.year === game.season.year && pos > b.pledge.maxPos;
+  if (broken) {
+    sack(game, `after finishing ${pos}. (you promised the board: ${t.text.toLowerCase()})`);
+    summary.user.sacked = true;
+  } else if (conf < SACK_AT || (relegated && !expectedDown && conf < 45)) {
     sack(game, `after finishing ${pos}. (the target was to ${t.text.toLowerCase()})`);
     summary.user.sacked = true;
   } else {

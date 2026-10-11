@@ -3,7 +3,7 @@
 // the cached copy. Every file the game loads is cached as it is fetched; the
 // whole game is loaded at start-up, so one visit online is enough.
 
-const CACHE = 'touchline-v1';
+const CACHE = 'touchline-v2';
 const SHELL = ['./', './index.html', './css/theme.css', './src/ui/app.js', './manifest.webmanifest', './names.json',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 

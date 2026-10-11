@@ -62,7 +62,7 @@ export function pitch({ game, lineup, colors, editable = false, selected = null,
       ${oop ? '<span class="oop-flag">!</span>' : ''}
       ${jersey({ colors, number: numbers?.[id] ?? p.number, gk: role === 'GK', size: 46 })}
       <div class="pname">${esc(p.last)}</div>
-      <div class="pinfo">${oop ? `<span class="oop-skill">${slotSkill(p, ROLE_POS[role])}</span>` : skillMark(p)}/${potText(game, p)} ${formArrow(p.form)} ${battery(e)}</div>
+      <div class="pinfo">${oop ? `<span class="oop-skill">${slotSkill(p, ROLE_POS[role])}</span>` : skillMark(p)}/${potText(game, p, { short: true })} ${formArrow(p.form)} ${battery(e)}</div>
     </div>`;
   }).join('');
   return `<div class="pitch">${LINES}${shirts}${footer ? `<div class="pitch-foot">${footer}</div>` : ''}</div>`;

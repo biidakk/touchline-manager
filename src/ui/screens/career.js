@@ -5,6 +5,7 @@
 import { crest, flag, icon } from '../components/svg.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
 import { confidence, confidenceLevel, boardReasons, reputationLevel, takeJob, applyForJob, declineOffer, resign,
+  canAskBoard, askBoard, acceptBoardOffer, declineBoardOffer, askAmount, MONEY_ASKS,
   SACK_AT, ULTIMATUM_AT } from '../../core/board.js';
 import { boardTarget } from '../../core/worldgen.js';
 import { nationalRanking, nationalRequirement, applyNational, declineNational, acceptNational, resignNational, welcomeByFederations } from '../../core/nationaljob.js';
@@ -84,7 +85,7 @@ export function render(root, ctx) {
           <span class="${confCls}" style="font-size:20px;font-weight:900">${confLabel} (${conf})</span></div>
         <div class="bar conf-bar" style="margin:6px 0 4px"><i style="width:${conf}%;${conf < ULTIMATUM_AT ? 'background:linear-gradient(180deg,#e05050,#b8312f)' : ''}"></i>
           <span class="mark" style="left:${SACK_AT}%" title="Sacking line"></span></div>
-        <div class="muted" style="font-size:13px">Target: <b>${esc(m.target?.text || '-')}</b></div>
+        <div class="muted" style="font-size:13px">Target: <b>${esc(m.target?.text || '-')}</b>${m.target?.pledge ? ' <span class="warn">(your promise to the board: miss it and you are sacked)</span>' : ''}</div>
         <ul class="advice" style="margin-top:8px">${boardReasons(g).map((r) => `<li class="${r.v > 0 ? 'good' : 'bad'}">${r.v > 0 ? '+' : ''}${r.v} ${esc(r.text)}</li>`).join('')
           || '<li class="dim">Nothing to report yet.</li>'}</ul>
         ${conf < ULTIMATUM_AT ? '<div class="bad" style="font-size:13px;font-weight:800;margin-top:6px">The board has run out of patience: improve quickly or you will be sacked.</div>' : ''}`;
@@ -127,7 +128,9 @@ export function render(root, ctx) {
         : '<div class="empty">No trophies yet.</div>'}</div>
     </div>
     <div class="panel" style="left:376px;top:92px;width:420px;height:300px;display:flex;flex-direction:column">
-      <div class="panel-head"><h2>Board</h2>${sacked ? '' : '<button class="btn btn-small btn-blue" data-action="resign" title="Leave the club and look for another job">Resign</button>'}</div>
+      <div class="panel-head"><h2>Board</h2>${sacked ? '' : `<div class="row" style="gap:6px">
+        <button class="btn btn-small" data-action="askmoney" title="Ask the board for extra money (once a season)" ${m.board?.askedYear === g.season.year ? 'disabled' : ''}>Ask for money</button>
+        <button class="btn btn-small btn-blue" data-action="resign" title="Leave the club and look for another job">Resign</button></div>`}</div>
       <div style="flex:1;overflow:hidden">${boardHtml}</div>
     </div>
     <div class="panel" style="left:812px;top:92px;width:448px;height:300px;display:flex;flex-direction:column">
@@ -188,6 +191,26 @@ export function render(root, ctx) {
     },
     decline: (el) => { ctx.toast(declineOffer(ctx.game, el.dataset.id).message); draw(); },
     apply: (el) => { ctx.toast(applyForJob(ctx.game, el.dataset.id).message); draw(); },
+    askmoney: async () => {
+      const g = ctx.game;
+      const can = canAskBoard(g);
+      if (!can.ok) { ctx.toast(can.message); return; }
+      const purpose = await ctx.choose('What do you want extra money for? You can ask the board once a season.', [
+        { key: 'transfers', label: 'Transfers: more money to buy players' },
+        { key: 'stadium', label: 'The stadium: new stands, more seats, a better pitch' }]);
+      if (!purpose) return;
+      const size = await ctx.choose('How much? The more you ask for, the less likely the board says yes, and the more it may ask of you in return.',
+        MONEY_ASKS.map((a) => ({ key: a.key, label: `${a.label}: ${askAmount(g, a.key).toLocaleString('en-US')} €` })));
+      if (!size) return;
+      const r = askBoard(g, purpose, size);
+      if (!r.ok) { ctx.toast(r.message); return; }
+      if (r.offer.verdict === 'no') await ctx.confirm(r.message, { ok: 'OK', cancel: null });
+      else if (await ctx.confirm(r.message, r.offer.verdict === 'promise' ? { ok: 'I promise', cancel: 'No, thanks' } : { ok: 'Take the money', cancel: 'No, thanks' })) {
+        ctx.toast(acceptBoardOffer(g).message);
+      } else declineBoardOffer(g);
+      await ctx.save({ silent: true });
+      draw();
+    },
     resign: async () => {
       const g = ctx.game;
       if (!(await ctx.confirm(`Resign as manager of ${g.clubs[g.userClubId].name}? Your reputation suffers a little, and you will have to choose a new club from the offers you get.`,

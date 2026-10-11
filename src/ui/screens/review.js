@@ -1,6 +1,8 @@
 // End-of-season review (shown once the season has been rolled over).
 
 import { crest, flag, icon } from '../components/svg.js';
+import { potText } from '../../core/scouting.js';
+import { decisionsDue } from '../../core/commercial.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
 import { esc, fmtMoney, bindActions } from '../util.js';
 import { clubLink, playerLink, linkClubsInText } from '../components/links.js';
@@ -42,7 +44,7 @@ export function render(root, ctx) {
     </div>
     <h2 style="margin-top:8px">Youth intake</h2>
     <div class="scroll" style="max-height:150px"><table class="data">${youth.map((p) => `<tr><td>${esc(p.first)} ${esc(p.last)}</td><td class="c">${p.pos}</td>
-      <td class="num">${s.year + 1 - p.birthYear} yrs</td><td class="num">${p.skill}/<b>${p.potential}</b></td></tr>`).join('') || '<tr><td class="dim">None</td></tr>'}</table></div>
+      <td class="num">${s.year + 1 - p.birthYear} yrs</td><td class="num">${p.skill}/<b>${potText(g, p)}</b></td></tr>`).join('') || '<tr><td class="dim">None</td></tr>'}</table></div>
     <h2 style="margin-top:8px">Retired</h2>
     <div class="muted" style="font-size:13.5px">${s.retiredUser.length ? s.retiredUser.map((r) => `${esc(r.name)} (${r.pos}, ${r.age})`).join(', ') : 'Nobody'}</div>
     ${s.releasedUser.length ? `<div class="muted" style="font-size:13px">Left the academy: ${s.releasedUser.map(esc).join(', ')}</div>` : ''}
@@ -87,7 +89,7 @@ export function render(root, ctx) {
   bindTopbar(root, ctx);
   bindActions(root, {
     youth: () => ctx.go('youth'),
-    hub: () => ctx.home('hub'),
+    hub: () => (decisionsDue(g).any ? ctx.home('deals', { then: 'hub' }) : ctx.home('hub')),
     career: () => ctx.home('career'),
   });
 }

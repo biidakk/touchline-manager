@@ -29,8 +29,8 @@ export const ROLE_INFO = {
   technical: 'Technical training.',
   goalkeeping: 'All goalkeeper training.',
   physio: 'Shorter injuries (−20% at 5★, +35% when vacant), faster recovery between matches.',
-  youth: 'Academy development and the quality of the yearly youth intake.',
-  assistant: 'Match advice on My Team, calmer dressing room (bad news hurts morale less), better pep talks.',
+  youth: 'Academy development, the quality of the yearly youth intake and how precisely your staff judge potential.',
+  assistant: 'Match advice on My Team, calmer dressing room (bad news hurts morale less), better pep talks, judging potential.',
 };
 export const ROLE_WAGE = { fitness: 1, technical: 1, goalkeeping: 1, physio: 0.7, youth: 0.7, assistant: 0.8 };
 // By stars, per year, before scaling to the employing club (see staffPayScale).

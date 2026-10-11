@@ -1,8 +1,9 @@
 // Scouting: the potential of players at other clubs is hidden until a scout
-// has watched them. Better scouting staff report faster, more precisely and on
-// more players at once, at a higher yearly cost.
+// has watched them (for your own players you see your staff's estimate).
+// Better scouting staff report faster, more precisely and on more players at
+// once, at a higher yearly cost.
 
-import { Rng } from './rng.js';
+import { Rng, hashSeed } from './rng.js';
 import { addNews } from './season.js';
 import { PERSONALITY_LABEL } from './morale.js';
 import { costScale } from './finance.js';
@@ -20,22 +21,41 @@ export function scoutingOf(game) {
   return club.scouting;
 }
 
-// What the user knows about a player's potential:
-// { exact: n } for own players, { low, high, year } from a report, or null.
+// How wide the staff's estimate of an own player's potential is, by the
+// stars of the better of the youth coach and the assistant (0 = both vacant).
+export const OWN_BAND = [8, 7, 6, 5, 4, 3];
+
+// Own players (and the academy): the coaches' estimate, a range that always
+// contains the true potential. Where it sits in the range is fixed per player
+// and season, so it doesn't jump between screens.
+function ownEstimate(game, club, p) {
+  const stars = Math.max(club.staff?.youth?.stars || 0, club.staff?.assistant?.stars || 0);
+  const band = OWN_BAND[stars];
+  const off = hashSeed(`${p.id}:${game.season?.year}`) % (band + 1);
+  const low = Math.max(1, p.potential - off);
+  return { low, high: Math.max(p.potential, Math.min(99, low + band)), own: true };
+}
+
+// What the user knows about a player's potential: a { low, high } range
+// (own players: the staff's estimate; others: a scout report), or null.
+// Without a user club (tests, world generation) it is exact.
 export function knownPotential(game, p) {
   if (!p) return null;
   const club = game.clubs[game.userClubId];
   if (!club) return { exact: p.potential };
-  if (p.clubId === club.id) return { exact: p.potential };
+  if (p.clubId === club.id || (club.youth || []).includes(p.id)) return ownEstimate(game, club, p);
   const r = club.scouting?.reports?.[p.id];
   return r ? { low: r.low, high: r.high, year: r.year } : null;
 }
 
-export function potText(game, p) {
+// `short`: one number for tight spots (shirts on the pitch): "~" and the
+// middle of the range.
+export function potText(game, p, { short = false } = {}) {
   const k = knownPotential(game, p);
   if (!k) return '?';
   if (k.exact !== undefined) return String(k.exact);
-  return k.low === k.high ? String(k.low) : `${k.low}-${k.high}`;
+  if (k.low === k.high) return String(k.low);
+  return short ? `~${Math.round((k.low + k.high) / 2)}` : `${k.low}-${k.high}`;
 }
 
 // Technical / physical ability as the user knows it: exact for own players,

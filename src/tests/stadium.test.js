@@ -52,7 +52,10 @@ test('crowds are limited by demand: extra seats pay only while the stadium sells
 test('scouting: potential is hidden until a scout reports a range containing it', () => {
   const g = career('scout');
   const own = g.players[g.clubs[g.userClubId].squad[0]];
-  assertEq(potText(g, own), String(own.potential), 'own players are exact');
+  const ok = knownPotential(g, own);
+  assert(ok.low <= own.potential && ok.high >= own.potential, 'the staff estimate contains the true potential');
+  assertEq(potText(g, own), potText(g, own), 'the estimate is stable');
+  assert(ok.high - ok.low >= 3, 'own players are an estimate, not exact');
   const target = Object.values(g.players).find((p) => p.clubId !== g.userClubId && p.potential - p.skill > 5);
   assertEq(potText(g, target), '?', 'unknown player');
   setLevel(g, 2);

@@ -5,12 +5,13 @@ import { advanceToUserMatch, pendingUserFixture } from '../../core/matchday.js';
 import { endSeason } from '../../core/seasonend.js';
 import { confidence, confidenceLevel } from '../../core/board.js';
 import { teamOf } from '../../core/national.js';
+import { decisionsDue } from '../../core/commercial.js';
 import { matchReport, scoreText, outcomeFor, roundLabel } from '../components/report.js';
 import { lineupQuality } from '../../core/ratings.js';
 import { fmtDate } from '../../core/calendar.js';
 import { crest, jersey, flag, icon } from '../components/svg.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
-import { esc, fmtMoney, fmt1, bindActions } from '../util.js';
+import { esc, fmtMoney, fmtMoneyShort, fmt1, bindActions } from '../util.js';
 import { clubLink, playerLink, linkClubsInText } from '../components/links.js';
 
 const MENU = [
@@ -42,7 +43,7 @@ export function render(root, ctx, params = {}) {
     const natId = g.manager.national?.teamId;
     const natItems = natId ? Object.values(g.fixtures).filter((f) => !f.result && (f.homeId === natId || f.awayId === natId))
       .map((f) => ({ fixture: f, day: f.day, compId: f.compId })) : [];
-    const upcoming = [...upcomingForClub(g, club.id, 8), ...natItems].sort((a, b) => a.day - b.day).slice(0, 8).map((it) => {
+    const upcoming = [...upcomingForClub(g, club.id, 3), ...natItems].sort((a, b) => a.day - b.day).slice(0, 3).map((it) => {
       const c = g.competitions[it.compId];
       const f = it.fixture;
       let line3;
@@ -53,10 +54,10 @@ export function render(root, ctx, params = {}) {
         const opp = teamOf(g, home ? f.awayId : f.homeId);
         line3 = c.type === 'national' ? `${esc(teamOf(g, me).name)} vs ${esc(opp.name)} (${home ? 'H' : 'A'})`
           : `${clubLink(g, opp.id)} (${home ? 'H' : 'A'})`;
-        badge = c.type === 'national' ? crest(opp.crest, 30) : `<span class="lnk" data-club="${opp.id}">${crest(opp.crest, 30)}</span>`;
+        badge = c.type === 'national' ? crest(opp.crest, 40) : `<span class="lnk" data-club="${opp.id}">${crest(opp.crest, 40)}</span>`;
       } else {
         line3 = '<span class="dim">Opponent not drawn yet</span>';
-        badge = `<span style="width:30px;display:inline-flex;justify-content:center">${icon('trophy')}</span>`;
+        badge = `<span style="width:40px;display:inline-flex;justify-content:center">${icon('trophy')}</span>`;
       }
       const round = f ? roundLabel(g, f) : it.roundName;
       return `<div class="fixture">${badge}<div>
@@ -85,8 +86,10 @@ export function render(root, ctx, params = {}) {
     // Transfers ticker
     const inLeague = (id) => g.clubs[id].compId === club.compId;
     const allTransfers = g.transfers.filter((t) => st.transferScope === 'all' || inLeague(t.fromId) || inLeague(t.toId));
-    const pageCount = Math.min(5, Math.ceil(allTransfers.length / 10));
-    const transfers = allTransfers.slice(st.transferPage * 10, st.transferPage * 10 + 10);
+    // Phones (bigger text) show five transfers a page.
+    const per = document.documentElement.classList.contains('phone') ? 5 : 10;
+    const pageCount = Math.min(5, Math.ceil(allTransfers.length / per));
+    const transfers = allTransfers.slice(st.transferPage * per, st.transferPage * per + per);
 
     // Season box
     const table = sortedTable(g, comp);
@@ -103,9 +106,9 @@ export function render(root, ctx, params = {}) {
     <div class="panel" style="left:20px;top:92px;width:282px;height:394px">
       <ul class="menu-list">
         ${MENU.map(([ic, label, screen, title, m]) => `<li data-action="menu" data-screen="${screen}" data-title="${title}" data-m="${m}">${icon(ic)}${label}${screen === 'career' && offerCount ? ` <span class="badge list" title="Job offers">${offerCount}</span>` : ''}</li>`).join('')}
-        <li class="sep" data-action="comp" data-id="${comp.id}">${icon('ball')}${esc(comp.name)}</li>
-        <li data-action="comp" data-id="${cup.id}">${icon('trophy')}${esc(cup.name)}</li>
-        ${cont ? `<li data-action="comp" data-id="${cont.id}">${icon('star')}${esc(cont.name)}${cont.clubIds.includes(club.id) ? '' : ' <span class="soon">not qualified</span>'}</li>` : ''}
+        <li class="sep phone-hide" data-action="comp" data-id="${comp.id}">${icon('ball')}${esc(comp.name)}</li>
+        <li class="phone-hide" data-action="comp" data-id="${cup.id}">${icon('trophy')}${esc(cup.name)}</li>
+        ${cont ? `<li class="phone-hide" data-action="comp" data-id="${cont.id}">${icon('star')}${esc(cont.name)}${cont.clubIds.includes(club.id) ? '' : ' <span class="soon">not qualified</span>'}</li>` : ''}
       </ul>
     </div>
     <div class="panel comp-tiles" style="left:20px;top:500px;width:282px;height:200px;grid-template-columns:repeat(3,1fr)">
@@ -113,7 +116,8 @@ export function render(root, ctx, params = {}) {
       <div class="comp-tile" data-action="comp" data-id="" title="All leagues">${icon('flag', 'ico big')}<span>All leagues</span></div>
     </div>
 
-    <div class="panel scroll" style="left:320px;top:92px;width:322px;height:608px">${lastHtml}${upcoming || '<div class="empty">No fixtures left this season.</div>'}</div>
+    <div class="panel hub-fixtures" style="left:320px;top:92px;width:322px;height:608px;display:flex;flex-direction:column">${lastHtml}${upcoming || '<div class="empty">No fixtures left this season.</div>'}
+      <button class="btn btn-small btn-blue" style="margin-top:auto" data-action="menu" data-screen="schedule" data-title="Season Schedule" data-m="2">Full schedule</button></div>
 
     <div class="panel" style="left:660px;top:92px;width:332px;height:282px;display:flex;flex-direction:column">
       <h2>News</h2>
@@ -134,20 +138,20 @@ export function render(root, ctx, params = {}) {
         <td class="num">${t.loan ? `<span class="badge loan">LOAN</span> ${t.fee ? fmtMoney(t.fee) : ''}` : fmtMoney(t.fee)}</td></tr>`).join('')}</table>`
         : '<div class="empty">No transfers yet this season.</div>'}
       </div>
-      ${pageCount > 1 ? `<div class="pager"><div class="seg">${Array.from({ length: pageCount }, (_, i) => `<button class="${i === st.transferPage ? 'on' : ''}" data-action="tpage" data-p="${i}">${i * 10 + 1}-${i * 10 + 10}</button>`).join('')}</div></div>` : ''}
+      ${pageCount > 1 ? `<div class="pager"><div class="seg">${Array.from({ length: pageCount }, (_, i) => `<button class="${i === st.transferPage ? 'on' : ''}" data-action="tpage" data-p="${i}">${i * per + 1}-${i * per + per}</button>`).join('')}</div></div>` : ''}
     </div>
 
     <div class="panel" style="left:1010px;top:92px;width:250px;height:282px">
       <div class="row" style="justify-content:space-between;align-items:flex-start">
-        ${crest(club.crest, 112)}
-        <div style="display:flex;flex-direction:column;align-items:center;gap:10px">${flag(nation.flag, 40)}${jersey({ colors: club.colors, size: 52 })}</div>
+        ${crest(club.crest, 96)}
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px">${flag(nation.flag, 40)}${jersey({ colors: club.colors, size: 48 })}</div>
       </div>
-      <div class="kv" style="margin-top:12px">
+      <div class="kv" style="margin-top:8px">
         <span>League:</span><b class="row" style="gap:6px">${flag(nation.flag, 16)} ${comp.tier}. tier</b>
         <span>Quality:</span><b>${fmt1(lineupQuality(g, club))}</b>
-        <span>Stadium:</span><b>${club.stadium.capacity.toLocaleString('en-US')} seats</b>
-        <span>Money:</span><b>${fmtMoney(club.budget)}</b>
-        <span>Board:</span><b class="${confCls}" style="cursor:pointer" data-action="menu" data-screen="career" title="Board confidence: see My Career">${confLabel} (${conf})</b>
+        <span>Stadium:</span><b>${club.stadium.capacity.toLocaleString('en-US')}</b>
+        <span>Money:</span><b class="${club.budget < 0 ? 'bad' : ''}">${fmtMoneyShort(club.budget)}</b>
+        <span>Board:</span><b class="${confCls}" style="cursor:pointer" data-action="menu" data-screen="career" title="Board confidence: see My Career">${confLabel}<span class="phone-hide"> (${conf})</span></b>
       </div>
       ${g.season.phase === 'over' ? '<div class="banner good-bg" style="font-size:14px;margin-top:8px">Season over: press Continue</div>' : ''}
     </div>
@@ -157,12 +161,12 @@ export function render(root, ctx, params = {}) {
       <div class="row" style="justify-content:space-between;font-weight:800;font-size:13px;margin-bottom:6px">Season done:<div class="bar" style="width:92px"><i style="width:${prog.seasonPct}%"></i><b>${prog.seasonPct}%</b></div></div>
       <div class="row" style="justify-content:space-between;font-weight:800;font-size:13px">Points won:<div class="bar" style="width:92px"><i style="width:${prog.pointsPct}%"></i><b>${prog.pointsPct}%</b></div></div>
       <table class="data" style="margin-top:10px;cursor:pointer" data-action="comp" data-id="${comp.id}">
-        ${table.slice(from, from + 5).map((r, i) => `<tr class="${r.clubId === club.id ? 'me' : ''}">
+        ${table.slice(from, from + 5).map((r, i) => `<tr class="${r.clubId === club.id ? 'me' : ''} ${Math.abs(i - Math.min(3, Math.max(1, pos - from))) > 1 ? 'phone-hide' : ''}">
           <td style="width:24px">${from + i + 1}.</td><td>${clubLink(g, r.clubId, { short: true })}</td><td class="num">${r.pts} pts</td></tr>`).join('')}
       </table>
     </div>
 
-    <button class="btn" style="position:absolute;left:1030px;top:644px;width:210px;height:48px;font-size:18px" data-action="continue">Continue</button>`;
+    <button class="btn" style="position:absolute;left:1030px;top:644px;width:210px;height:48px;font-size:18px" data-action="continue">${g.season.phase !== 'over' && decisionsDue(g).any ? 'Prepare season' : 'Continue'}</button>`;
   }
 
   bindTopbar(root, ctx);
@@ -185,6 +189,8 @@ export function render(root, ctx, params = {}) {
     tpage: (el) => { st.transferPage = Number(el.dataset.p); draw(); },
     continue: async (el) => {
       const g = ctx.game;
+      // Ticket prices (and a sponsor, when the old deal has run out) come first.
+      if (g.season.phase !== 'over' && decisionsDue(g).any) { ctx.go('deals'); return; }
       el.disabled = true;
       if (g.season.phase === 'over') return finishSeason();
       // A match day already started (e.g. the page was reloaded at the pre-match screen) is resumed, not skipped.

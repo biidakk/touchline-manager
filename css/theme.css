@@ -49,40 +49,72 @@ body { -webkit-tap-highlight-color: transparent; }
   #rotate b { font-size: 22px; }
   #rotate span { color: var(--muted); font-size: 15px; max-width: 280px; }
 }
-/* Phone text: the stage is scaled to ~50 % on a phone, so text gets bigger
-   (small print most). html.phone is set by app.js on small screens. */
-html.phone body { font-size: 16px; }
-html.phone table.data { font-size: 16px; }
-html.phone table.data.compact td { font-size: 15px; height: 25px; }
-html.phone .squad-table { font-size: 15px; }
-html.phone .squad-table tr.sep td { font-size: 12.5px; }
+/* Phone text: on a phone the 1280x720 stage is shown at about half size
+   (0.45-0.55), so text is set much bigger there; screens hide low-value
+   columns and hints (.phone-hide) to make room. html.phone is set by app.js. */
+html.phone body { font-size: 20px; }
+html.phone table.data { font-size: 20px; }
+html.phone table.data th { font-size: 18px; }
+html.phone table.data td { padding: 4px 6px; }
+html.phone table.data.compact td { font-size: 19px; height: 32px; }
+html.phone .panel h2 { font-size: 22px; }
+html.phone .squad-table { font-size: 18px; }
+html.phone .squad-table tr.sep td { font-size: 15px; }
+html.phone .squad-table col.c-no { width: 30px !important; }
+html.phone .squad-table col.c-age { width: 30px !important; }
+html.phone .squad-table col.c-nat { width: 26px !important; }
+html.phone .squad-table col.c-sk { width: 34px !important; }
+html.phone .squad-table col.c-pot { width: 42px !important; }
+html.phone .squad-table col.c-form { width: 16px !important; }
+html.phone .squad-table col.c-en { width: 50px !important; }
+html.phone .seg.full button { font-size: 15px; padding-left: 0; padding-right: 0; }
+html.phone .topbar .title { font-size: 26px; }
 html.phone .topbar .sub, html.phone .fixture .t2, html.phone .job-txt, html.phone .filters,
-html.phone .btn-small, html.phone .tac-actions .btn-small { font-size: 15px; }
-html.phone .fixture .t3, html.phone .fin-list, html.phone .news-item, html.phone .stadium-card .info { font-size: 16px; }
-html.phone .fixture .t1, html.phone .job-txt b { font-size: 17px; }
-html.phone .kv { font-size: 16px; }
-html.phone .menu-list li { font-size: 17px; white-space: nowrap; overflow: hidden; }
+html.phone .btn-small, html.phone .tac-actions .btn-small { font-size: 18px; }
+html.phone .btn-small { height: 38px; }
+html.phone .btn { font-size: 19px; }
+html.phone .top-action { font-size: 17px; }
+html.phone .fixture .t3, html.phone .fin-list, html.phone .news-item, html.phone .stadium-card .info { font-size: 20px; }
+html.phone .fixture .t1, html.phone .job-txt b { font-size: 21px; }
+html.phone .kv { font-size: 20px; grid-template-columns: 104px 1fr; }
+html.phone .menu-list li { font-size: 21px; white-space: nowrap; overflow: hidden; padding: 5px 6px; }
+html.phone .menu-list li.sep { margin-top: 8px; }
+html.phone .comp-tile { font-size: 15px; }
 html.phone .phone-hide { display: none !important; }
-html.phone label.lbl, html.phone .job-head, html.phone .subs-left, html.phone .seg.small button { font-size: 14px; }
-html.phone .seg button { font-size: 15px; }
-html.phone .hint, html.phone .seg-caption, html.phone .version { font-size: 14px; }
-html.phone .tiles .lbl, html.phone .badge, html.phone .menu-list li .soon { font-size: 12px; }
-html.phone .pshirt .pname { font-size: 15px; }
-html.phone .pshirt .pinfo { font-size: 13.5px; }
-html.phone .bshirt .pname { font-size: 14px; }
-html.phone .bshirt .pinfo { font-size: 11px; }
-html.phone .academy-actions .btn, html.phone .player-card .roles button { font-size: 13px; }
-html.phone .player-card .roles.four button { font-size: 12.5px; }
-html.phone .rec-h, html.phone .tac-label, html.phone .ctl-label { font-size: 15px; }
-html.phone .field { font-size: 16px; }
-html.phone .field.small { font-size: 15px; }
-html.phone .mevents { font-size: 18px; }
-/* Inline small print in the screens (font-size:11px ... 13.5px). */
-html.phone [style*="font-size:11"], html.phone [style*="font-size:12"] { font-size: 14px !important; }
-html.phone [style*="font-size:13"] { font-size: 15px !important; }
-html.phone [style*="font-size:14"] { font-size: 16px !important; }
-html.phone [style*="font-size:15"] { font-size: 16.5px !important; }
-@keyframes tm-rotate { 0%, 25% { transform: rotate(0); } 55%, 100% { transform: rotate(-90deg); } }
+html.phone label.lbl, html.phone .job-head, html.phone .subs-left { font-size: 17px; }
+html.phone .seg button { font-size: 18px; padding: 6px 12px; }
+html.phone .hint, html.phone .seg-caption, html.phone .version { font-size: 16px; }
+html.phone .tiles .lbl, html.phone .badge, html.phone .menu-list li .soon { font-size: 14px; }
+html.phone .pshirt .pname { font-size: 18px; }
+html.phone .pshirt .pinfo { font-size: 16px; }
+html.phone .bshirt .pname { font-size: 16px; }
+html.phone .bshirt .pinfo { font-size: 12.5px; }
+html.phone .pitch-foot { font-size: 18px; }
+html.phone .academy-actions .btn, html.phone .player-card .roles button { font-size: 15px; }
+html.phone .player-card .roles.four button { font-size: 14px; }
+html.phone .rec-h, html.phone .ctl-label { font-size: 18px; }
+html.phone .tac-label { width: 76px; font-size: 16px; line-height: 1.1; }
+html.phone .seg.small button { font-size: 15px; padding: 5px 0; }
+html.phone .tac-actions .btn-small { font-size: 14px; }
+html.phone .bshirt .pinfo .form { display: none; }
+html.phone .cmp-l, html.phone .cmp-head { font-size: 15px; }
+html.phone .cmp { font-size: 25px; }
+html.phone .field { font-size: 19px; }
+html.phone .field.small { font-size: 18px; }
+html.phone select.field { height: 40px; }
+html.phone .mevents { font-size: 21px; }
+html.phone .modal { width: 620px; font-size: 21px; }
+html.phone .modal.wide { width: 900px; }
+html.phone .modal .btn-small { height: 44px; font-size: 19px; }
+html.phone #toast { font-size: 21px; }
+html.phone .deal-t { font-size: 22px; }
+html.phone .deal-l { font-size: 18px; }
+html.phone .deal-s { font-size: 16px; }
+/* Inline small print in the screens (font-size:11px ... 15px). */
+html.phone [style*="font-size:11"], html.phone [style*="font-size:12"] { font-size: 16px !important; }
+html.phone [style*="font-size:13"] { font-size: 17px !important; }
+html.phone [style*="font-size:14"] { font-size: 19px !important; }
+html.phone [style*="font-size:15"] { font-size: 20px !important; }@keyframes tm-rotate { 0%, 25% { transform: rotate(0); } 55%, 100% { transform: rotate(-90deg); } }
 #stage {
   position: absolute; left: 50%; top: 50%;
   width: 1280px; height: 720px; flex: none;
@@ -291,6 +323,7 @@ label.lbl { display: block; font-size: 12px; color: var(--muted); margin-bottom:
 .kv b { font-weight: 800; }
 
 .pager { display: flex; justify-content: center; margin-top: 8px; }
+.pager .seg button { white-space: nowrap; padding: 5px 10px; }
 .empty { color: var(--dim); font-style: italic; padding: 18px 0; text-align: center; }
 
 /* ---------- pitch ---------- */
@@ -427,8 +460,10 @@ table.rec-wrap td { white-space: normal; }
 .seg button:disabled { cursor: default; }
 .cmp-col { position: absolute; left: 594px; top: 92px; width: 92px; display: flex; flex-direction: column; gap: 8px; }
 .cmp { display: flex; flex-direction: column; align-items: center; background: var(--seg); border: 1px solid var(--seg-line);
-  border-radius: 6px; padding: 6px 0; font-size: 18px; }
-.cmp .ico { width: 26px; height: 26px; margin-bottom: 2px; }
+  border-radius: 6px; padding: 6px 0 4px; font-size: 22px; }
+.cmp-head { text-align: center; font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+.cmp-l { font-size: 12.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
+.cmp-v { display: flex; gap: 12px; }
 .tac-actions { position: absolute; left: 556px; top: 578px; width: 168px; display: flex; flex-direction: column; gap: 6px; align-items: center; }
 .tac-actions .btn { min-width: 0; width: 168px; height: 36px; font-size: 15px; padding: 0 6px; }
 .tac-actions .btn-small { height: 30px; font-size: 12.5px; }
@@ -494,3 +529,54 @@ table.data.compact .crest { vertical-align: middle; }
 /* ---------- screen placeholders ---------- */
 .soon-box { left: 340px; top: 220px; width: 600px; text-align: center; padding: 34px; }
 .soon-box p { color: var(--muted); font-size: 16px; }
+
+/* ---------- hub fixtures (last result + next three) ---------- */
+.hub-fixtures .fixture { padding: 10px 0; border-bottom: 1px solid var(--row-line); }
+.hub-fixtures .fixture .t1 { font-size: 17px; }
+.hub-fixtures .fixture .t2 { font-size: 14.5px; }
+.hub-fixtures .fixture .t3 { font-size: 16px; }
+
+/* ---------- season preparations (tickets, sponsor) ---------- */
+.deal-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.deal-card { text-align: left; color: #fff; font: inherit; cursor: pointer; padding: 12px 16px; border-radius: 8px; min-height: 186px;
+  background: rgba(3, 25, 70, 0.45); border: 2px solid var(--seg-line); display: flex; flex-direction: column; gap: 4px; }
+.deal-card:hover { background: rgba(40, 110, 215, 0.35); }
+.deal-card.on { border-color: var(--gold); background: rgba(47, 134, 239, 0.45); box-shadow: 0 0 0 2px var(--gold) inset; }
+.deal-t { font-size: 18px; font-weight: 800; }
+.deal-big { font-size: 30px; font-weight: 900; color: var(--gold); }
+.deal-l { font-size: 15px; }
+.deal-s { font-size: 13px; color: var(--muted); margin-top: auto; white-space: normal; line-height: 1.3; }
+.deal-current { display: flex; align-items: center; gap: 18px; }
+
+/* ---------- search filters ---------- */
+.search-filters { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; margin-bottom: 10px; }
+.search-filters select.field { height: 32px; font-size: 14px; }
+html.phone .search-filters select.field { height: 40px; font-size: 18px; }
+
+/* ---------- training ---------- */
+.staff .staff-name { font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px; }
+.staff .staff-btn { width: 76px; padding: 0 4px; }
+.staff-bcol { width: 82px; }
+html.phone .staff-bcol { width: 100px; }
+html.phone .staff .staff-btn { width: 94px; height: 31px; font-size: 16px; }
+html.phone .staff td, html.phone .plans td { padding-top: 2px; padding-bottom: 2px; height: 36px; }
+html.phone .plans select.plan { height: 32px; }
+.phone-only { display: none; }
+html.phone .phone-only { display: inline; }
+.stars { white-space: nowrap; letter-spacing: -1px; }
+.plans select.plan { width: 100%; }
+select.plan { height: 28px; font-size: 13px; padding: 0 4px; width: 100%; }
+.train-table .plan-col { width: 172px; }
+html.phone .train-table .plan-col { width: 236px; }
+.train-table { table-layout: fixed; }
+.train-table td.ellip { overflow: hidden; text-overflow: ellipsis; }
+.load-dot { font-size: 18px; }
+html.phone .staff .staff-name { font-size: 15px; max-width: 200px; }
+html.phone select.plan { height: 36px; font-size: 17px; }
+
+/* ---------- stadium ---------- */
+.pitch-q { display: inline-flex; align-items: center; justify-content: center; min-width: 58px; height: 32px; border-radius: 6px;
+  font-weight: 900; font-size: 17px; background: #8a7a40; }
+.pitch-q.q2 { background: #7d8f3a; }
+.pitch-q.q3 { background: #3f9a3a; }
+.pitch-q.q4 { background: #22a64a; }

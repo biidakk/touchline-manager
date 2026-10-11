@@ -33,7 +33,7 @@ function makeColors(rng) {
 }
 
 export function emptyLedger() {
-  return { tickets: 0, tvSponsors: 0, prizes: 0, transfersIn: 0, transfersOut: 0, wages: 0, costs: 0, construction: 0, scouting: 0 };
+  return { tickets: 0, tvSponsors: 0, prizes: 0, transfersIn: 0, transfersOut: 0, wages: 0, costs: 0, construction: 0, scouting: 0, board: 0 };
 }
 
 const AGE_WEIGHTS = [[17, 2], [18, 4], [19, 5], [20, 6], [21, 7], [22, 8], [23, 9], [24, 9], [25, 9], [26, 9],
