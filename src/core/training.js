@@ -80,7 +80,7 @@ export const staffPayScale = (game, club) => (STAFF_SHARE * expectedWageBill(gam
 export const coachWage = (stars, role, scale) => Math.max(1000, Math.round((COACH_WAGE[stars] * ROLE_WAGE[role] * scale) / 1000) * 1000);
 
 function makeCoach(game, rng, role, stars, scale) {
-  const nation = rng.pick(Object.values(game.nations));
+  const nation = rng.pick(Object.values(game.nations).filter((n) => !n.foreign));
   const { first, last } = personName(rng, nation.style);
   return {
     id: 'k' + (game.ids.coach = (game.ids.coach || 0) + 1),

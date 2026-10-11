@@ -32,7 +32,7 @@ export function createNational(game) {
       name: level === 'senior' ? 'Nations Championship' : 'U21 Nations Championship',
       clubIds: [], table: {}, fixtureIds: [], history: [],
     };
-    for (const n of Object.values(game.nations)) {
+    for (const n of Object.values(game.nations).filter((x) => !x.foreign)) {
       const id = `NT-${n.id}${level === 'u21' ? '-21' : ''}`;
       const name = level === 'senior' ? n.name : `${n.name} U21`;
       game.national.teams[id] = {
@@ -145,7 +145,7 @@ export function callUps(game, window) {
   }
   const user = game.clubs[game.userClubId];
   const mine = { senior: [], u21: [] };
-  for (const n of Object.values(game.nations)) {
+  for (const n of Object.values(game.nations).filter((x) => !x.foreign)) {
     const all = pool[n.id] || [];
     const senior = game.national.teams[`NT-${n.id}`];
     const u21 = game.national.teams[`NT-${n.id}-21`];

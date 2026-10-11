@@ -4,6 +4,8 @@
 import { generateWorld, startCareer, boardExpectation } from '../../core/worldgen.js';
 import { lineupQuality } from '../../core/ratings.js';
 import { startAcademy } from '../../core/development.js';
+import { applyRealPack } from '../../core/realpack.js';
+import { pickFile } from '../storage.js';
 import { crest, jersey, flag } from '../components/svg.js';
 import { esc, fmtMoney, fmt1, bindActions } from '../util.js';
 
@@ -15,10 +17,11 @@ function stars(rep) {
 }
 
 export function render(root, ctx) {
-  const st = { manager: 'Manager', seed: randomSeed(), world: null, nationId: 'ENG', tier: 1, clubId: null };
+  const st = { manager: 'Manager', seed: randomSeed(), world: null, nationId: 'ENG', tier: 1, clubId: null, real: !!ctx.realPack, realInfo: null };
 
   function generate() {
     st.world = generateWorld({ seed: st.seed, managerName: st.manager });
+    st.realInfo = st.real && ctx.realPack ? applyRealPack(st.world, ctx.realPack) : null;
     ctx.applyNames(st.world);
     if (!st.world.nations[st.nationId]) st.nationId = Object.values(st.world.nations).find((n) => n.leagueIds.length).id;
     const comp = st.world.competitions[`${st.nationId}-L${st.tier}`];
@@ -51,6 +54,12 @@ export function render(root, ctx) {
           return `<button class="${c.tier === st.tier ? 'on' : ''}" data-action="tier" data-tier="${c.tier}">${esc(c.name)}</button>`;
         }).join('')}
       </div>
+      <h2 style="margin-top:22px">Real teams</h2>
+      ${ctx.realPack ? `<label class="row" style="font-size:14px"><input type="checkbox" id="real" ${st.real ? 'checked' : ''}> Real clubs and players</label>
+        <div class="muted" style="font-size:12.5px;margin-top:4px">${st.realInfo ? `${st.realInfo.players.toLocaleString('en-US')} players, ${st.realInfo.clubs} clubs` : 'File loaded'}${ctx.realPack.season ? ` (${esc(ctx.realPack.season)})` : ''}</div>
+        <div class="row" style="margin-top:6px"><button class="btn btn-small btn-blue" data-action="loadpack">Load file</button>${ctx.realPackSource === 'browser' ? '<button class="btn btn-small btn-blue" data-action="droppack">Remove</button>' : ''}</div>`
+        : `<div class="muted" style="font-size:12.5px">Fictional players. Load a real-teams file (realpack.json) to play with real clubs and players.</div>
+        <button class="btn btn-small btn-blue" style="margin-top:6px" data-action="loadpack">Load file</button>`}
     </div>
 
     <div class="panel" style="left:330px;top:92px;width:600px;height:604px;display:flex;flex-direction:column">
@@ -83,6 +92,7 @@ export function render(root, ctx) {
     <button class="btn" style="position:absolute;left:946px;top:640px;width:310px;height:56px;font-size:20px" data-action="start">Start career</button>`;
 
     root.querySelector('#mgr').addEventListener('input', (e) => { st.manager = e.target.value; });
+    root.querySelector('#real')?.addEventListener('change', (e) => { st.real = e.target.checked; regenerate(); });
   }
 
   bindActions(root, {
@@ -99,6 +109,24 @@ export function render(root, ctx) {
       draw();
     },
     club: (el) => { st.clubId = el.dataset.id; draw(); },
+    loadpack: async () => {
+      const text = await pickFile();
+      if (!text) return;
+      try {
+        await ctx.storeRealPack(text);
+        st.real = true;
+        regenerate();
+        ctx.toast(`Real teams loaded: ${st.realInfo.players.toLocaleString('en-US')} players`);
+      } catch (e) {
+        await ctx.confirm(`That file could not be used: ${e.message}`, { cancel: null });
+      }
+    },
+    droppack: async () => {
+      if (!(await ctx.confirm('Remove the real-teams file from this browser? New careers will use fictional players again (careers you already play keep theirs).', { ok: 'Remove' }))) return;
+      await ctx.forgetRealPack();
+      st.real = !!ctx.realPack;
+      regenerate();
+    },
     start: async () => {
       const name = st.manager.trim() || 'Manager';
       ctx.game = startCareer(st.world, st.clubId, name);
@@ -108,6 +136,15 @@ export function render(root, ctx) {
       ctx.toast(`Welcome to ${ctx.game.clubs[st.clubId].name}!`);
     },
   });
+
+  // A new world with the same seed (the club choice is kept where it exists).
+  function regenerate() {
+    const base = st.world.clubs[st.clubId]?.baseName;
+    generate();
+    const same = Object.values(st.world.clubs).find((c) => c.baseName === base);
+    if (same) st.clubId = same.id;
+    draw();
+  }
 
   generate();
   draw();

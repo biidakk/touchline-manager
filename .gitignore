@@ -17,3 +17,7 @@ tests.html_
 # phone screenshots sent for feedback
 WhatsApp Image*
 
+# real player and club data for personal use (never published)
+private/
+realpack.json
+

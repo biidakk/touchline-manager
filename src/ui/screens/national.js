@@ -59,7 +59,7 @@ export function render(root, ctx) {
     </div>
     <div class="panel" style="left:792px;top:92px;width:468px;height:540px;display:flex;flex-direction:column">
       <div class="panel-head"><h2>${flag(g.nations[st.nationId].flag, 22)} ${esc(team.name)}</h2>
-        <select class="field" id="nation" style="height:30px">${Object.values(g.nations).map((n) => `<option value="${n.id}" ${n.id === st.nationId ? 'selected' : ''}>${esc(n.name)}</option>`).join('')}</select></div>
+        <select class="field" id="nation" style="height:30px">${Object.values(g.nations).filter((n) => !n.foreign).map((n) => `<option value="${n.id}" ${n.id === st.nationId ? 'selected' : ''}>${esc(n.name)}</option>`).join('')}</select></div>
       <div class="row" style="justify-content:space-between;margin-bottom:6px">
         <span class="muted" style="font-size:12.5px">${st.tab === 'records' ? 'Records since your career began' : team.squad.length ? `Latest squad · ${team.tactics.formation}` : 'Squad named before the first break.'}</span>
         <div class="seg">${[['squad', 'Squad'], ['records', 'Records']].map(([k, l]) => `<button class="${st.tab === k ? 'on' : ''}" data-action="tab" data-v="${k}">${l}</button>`).join('')}</div></div>

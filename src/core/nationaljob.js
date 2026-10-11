@@ -35,7 +35,7 @@ export function nationalRanking(game) {
       if (p) (by[p.nationId] = by[p.nationId] || []).push(p.skill);
     }
   }
-  return Object.keys(game.nations).map((id) => {
+  return Object.keys(game.nations).filter((id) => !game.nations[id].foreign).map((id) => {
     const top = (by[id] || []).sort((a, b) => b - a).slice(0, 23);
     return { nationId: id, level: top.reduce((a, b) => a + b, 0) / Math.max(1, top.length) };
   }).sort((a, b) => b.level - a.level);

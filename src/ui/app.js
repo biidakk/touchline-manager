@@ -5,6 +5,7 @@ import { serialize, deserialize } from '../core/save.js';
 import { generateWorld, startCareer } from '../core/worldgen.js';
 import { startAcademy } from '../core/development.js';
 import { applyRenames } from '../core/renames.js';
+import { checkPack } from '../core/realpack.js';
 import * as title from './screens/title.js';
 import * as newgame from './screens/newgame.js';
 import * as hub from './screens/hub.js';
@@ -33,6 +34,7 @@ import { showPlayer } from './components/playercard.js';
 const SCREENS = { title, newgame, hub, tables, soon, schedule, myteam, tactics, match, review, youth, career, cup, market,
   finances, otherteams, search, stadium, national, training, natteam, deals };
 const SAVE_KEY = 'career';
+const PACK_KEY = 'realpack';
 
 const stage = document.getElementById('stage');
 const rootRef = { el: document.getElementById('screen') };
@@ -206,6 +208,36 @@ const ctx = {
       this.namesError = 'names.json could not be read (check the file for typos).';
     }
   },
+  // Real teams and players (core/realpack.js): a file loaded on the New
+  // Career screen (kept in this browser), else realpack.json in the game folder.
+  realPack: null,
+  realPackSource: null,
+  async loadRealPack() {
+    this.realPack = null;
+    this.realPackSource = null;
+    try {
+      const text = await storage.get(PACK_KEY);
+      if (text) { this.realPack = JSON.parse(text); this.realPackSource = 'browser'; return; }
+    } catch (e) { console.warn('stored real-teams file unreadable:', e.message); }
+    try {
+      const r = await fetch('realpack.json', { cache: 'no-store' });
+      if (r.ok) { this.realPack = await r.json(); this.realPackSource = 'folder'; }
+    } catch { /* no file: the game stays fictional */ }
+  },
+  async storeRealPack(text) {
+    const pack = JSON.parse(text);
+    const problems = checkPack(pack);
+    if (problems.length) throw new Error(problems[0]);
+    await storage.put(PACK_KEY, text);
+    this.realPack = pack;
+    this.realPackSource = 'browser';
+    return pack;
+  },
+  async forgetRealPack() {
+    await storage.remove(PACK_KEY);
+    await this.loadRealPack();
+  },
+
   applyNames(game = this.game) {
     if (game && this.renames) applyRenames(game, this.renames);
   },
@@ -267,6 +299,7 @@ stage.addEventListener('click', (e) => {
 // Developer shortcut for automated checks: ?dev=1[&seed=..][&screen=..]
 const qs = new URLSearchParams(location.search);
 await ctx.loadNames();
+await ctx.loadRealPack();
 if (qs.get('dev')) {
   ctx.dev = true;
   const g = generateWorld({ seed: qs.get('seed') || 'dev', managerName: 'Dev' });

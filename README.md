@@ -35,6 +35,15 @@ The app and the browser keep separate saves. To move a career between them, use 
 - **Touch:** tap two players to swap them (drag-and-drop needs a mouse); double-tap a player for his career.
 - **Bigger text on phones:** small screens switch to much larger text automatically (the 1280×720 screen is shown at about half size on a phone). To make room, phones show fewer rows (three fixtures on the hub, five transfers a page) and hide low-value columns and hints. The search box doesn't pop up the keyboard by itself. Held upright, the game asks you to turn the phone sideways.
 
+## Real teams and players
+The published game uses near-real club names and generated players. For your own copy you can play with **real clubs and real squads** from a real-teams file (`realpack.json`, format `touchline-realpack`). It is personal-use data and is never published with the game.
+- **On the PC** (`start.bat`, `start-phone.bat` or `TouchlineManager.exe`): put `realpack.json` in the game folder (next to the .exe for the Windows app).
+- **On a phone or any browser:** send the file to the device, then on **New career → Real teams → Load file**. It stays stored in that browser (**Remove** takes it out again).
+- **New career:** tick **Real clubs and players**. Clubs get their real names, stadiums and head coaches, and their squads are replaced by the real players (positions, ages, nationalities, heights and shirt numbers). Careers you already play are not changed.
+- **Ratings** in the file are estimates on a video-game style 40–95 scale. The game turns them into its skills: each club keeps about the strength the game gives it, and the order of players inside a club follows the file. Potential comes from the file for young players, or from age.
+- **Countries without a league** in the game (Brazil, Argentina, Portugal, Norway…) are added for their players' nationality and flags only; they have no national team.
+- **Youth players** arriving each summer are still generated.
+- **Making the file:** `tools/make_realpack.py` merges per-league research files (`private/realpack/<LEAGUE>.json`) into `realpack.json` and reports problems. Clubs with fewer than 16 players or 2 keepers keep their generated squad (but take the real name).
 ## Your own names
 `names.json` (in the game folder, or next to `TouchlineManager.exe`) maps the game's names to yours, for example `"clubs": { "Manchester Blue": { "name": "...", "short": "...", "stadium": "...", "manager": "..." } }`. It also covers nations, leagues, cups and players ("Old Name": "New Name").
 - **When it applies:** when a world is created and every time a career is loaded, so you can edit it at any time.
@@ -169,6 +178,7 @@ With the server running, open http://localhost:8765/tests.html. The page title s
 - **Two-legged ties:** second legs are played at the other ground a week or two later, aggregates add up, level ties go to extra time and penalties, first legs never decide anything, the final stays one match, and no club ever has two matches on one day.
 - **National team job:** federations want managers of their level (U21 jobs are easier). As head coach your squad picks are called up, your formation is played, the calendar stops for your internationals, and the season ends with the federation's verdict. Older saves are upgraded.
 - **Club and season decisions:** small grounds miss stands and corners need their neighbours; a new stand and the stadium fund; pitch costs, wear and match effects; ticket prices move price and demand; sponsor offers (short pays more, long has a bonus) are paid and saved; asking the board works once a season and a broken promise means the sack.
+- **Real teams:** a real-teams file renames clubs, replaces squads with its players in rating order, keeps the leagues' balance, adds players-only nations without national teams, reports unusable clubs, and a career with it plays a season and saves.
 - **History and records:** skill-change marks last two matches; a mid-season transfer splits a player's season into two rows; departed players stay in club records; biggest wins, record crowd, national team scorers and caps; the Ballon d'Or and Golden Shoe podiums; federations only approach a manager who is doing well or out of work; old saves are upgraded.
 - **A full season.**
 - **A 20-season career run:** league sizes, squads, ages and league strength stay stable, the countries keep their character, club money stays healthy, the run takes about 25–45 s depending on the machine, and the save is about 9 MB (of which about 1.5 MB is history and records).

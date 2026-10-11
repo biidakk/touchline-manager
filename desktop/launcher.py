@@ -44,9 +44,11 @@ class Handler(SimpleHTTPRequestHandler):
     }
 
     def translate_path(self, path):
-        # names.json next to the .exe wins over the bundled example.
-        if path.split('?')[0] == '/names.json':
-            own = os.path.join(user_dir(), 'names.json')
+        # names.json next to the .exe wins over the bundled example; a
+        # realpack.json (real teams and players) is only ever read from there.
+        name = path.split('?')[0].lstrip('/')
+        if name in ('names.json', 'realpack.json'):
+            own = os.path.join(user_dir(), name)
             if os.path.exists(own):
                 return own
         return super().translate_path(path)
