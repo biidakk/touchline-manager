@@ -11,6 +11,7 @@ import { autoLineup } from './ai.js';
 import { bigTransfer } from './newsfeed.js';
 import { aiLoanOffers, acceptLoanOffer } from './loans.js';
 import { contractMood, onContractSigned } from './morale.js';
+import { money } from './currency.js';
 
 // ---- windows ----
 
@@ -136,7 +137,7 @@ export function evaluateBid(game, playerId, fee) {
   const posCount = seller.squad.filter((id) => game.players[id].pos === p.pos).length;
   if (posCount <= (p.pos === 'G' ? 2 : 4)) return { status: 'rejected', message: `${seller.name} cannot spare a ${p.pos === 'G' ? 'goalkeeper' : 'player in that position'}.` };
   if (fee >= ask) return { status: 'accepted', message: `${seller.name} accept your offer.` };
-  if (fee >= ask * 0.75) return { status: 'counter', counter: ask, message: `${seller.name} want ${ask.toLocaleString('en-US')} €.` };
+  if (fee >= ask * 0.75) return { status: 'counter', counter: ask, message: `${seller.name} want ${money(game, ask)}.` };
   return { status: 'rejected', message: `${seller.name} reject the offer as far too low.` };
 }
 
@@ -146,7 +147,7 @@ export function buyPlayer(game, playerId, fee, years = 3) {
   const wage = wageDemand(game, p, user);
   const fromName = game.clubs[p.clubId].name;
   const t = executeTransfer(game, playerId, user.id, fee, { years, wage });
-  addNews(game, `Signed: ${p.first} ${p.last} joins from ${fromName} for ${fee.toLocaleString('en-US')} €.`, 'transfer');
+  addNews(game, `Signed: ${p.first} ${p.last} joins from ${fromName} for ${money(game, fee)}.`, 'transfer');
   return t;
 }
 
@@ -174,7 +175,7 @@ export function acceptOffer(game, offerId) {
   const buyer = game.clubs[o.clubId];
   if (!p || buyer.budget < o.fee || game.clubs[game.userClubId].squad.length <= 16) return false;
   executeTransfer(game, o.playerId, o.clubId, o.fee);
-  addNews(game, `Sold: ${p.first} ${p.last} joins ${buyer.name} for ${o.fee.toLocaleString('en-US')} €.`, 'transfer');
+  addNews(game, `Sold: ${p.first} ${p.last} joins ${buyer.name} for ${money(game, o.fee)}.`, 'transfer');
   return true;
 }
 
@@ -209,8 +210,8 @@ function releaseQueuedOffers(game) {
     const offer = { ...rest, id: 'o' + (game.ids.offer = (game.ids.offer || 0) + 1), day: game.day, expires: game.day + 7, seen: false };
     game.offers.push(offer);
     addNews(game, q.type === 'loan'
-      ? `${game.clubs[q.clubId].name} come back for ${p.first} ${p.last} on loan: ${q.fee.toLocaleString('en-US')} € and ${Math.round(offer.wageShare * 100)}% of his wage.`
-      : `${game.clubs[q.clubId].name} improve their bid for ${p.first} ${p.last} to ${q.fee.toLocaleString('en-US')} €.`, 'offer');
+      ? `${game.clubs[q.clubId].name} come back for ${p.first} ${p.last} on loan: ${money(game, q.fee)} and ${Math.round(offer.wageShare * 100)}% of his wage.`
+      : `${game.clubs[q.clubId].name} improve their bid for ${p.first} ${p.last} to ${money(game, q.fee)}.`, 'offer');
   }
 }
 
@@ -238,7 +239,7 @@ export function renewContract(game, playerId, years) {
   p.wage = t.wage;
   p.contractEnd = game.season.year + years;
   onContractSigned(p);
-  return { ok: true, message: `${p.first} ${p.last} signs until ${p.contractEnd} for ${t.wage.toLocaleString('en-US')} € a year.` };
+  return { ok: true, message: `${p.first} ${p.last} signs until ${p.contractEnd} for ${money(game, t.wage)} a year.` };
 }
 
 // ---- daily market activity ----
@@ -270,7 +271,7 @@ function aiOffersForUser(game, rng) {
     const offer = { id: 'o' + (game.ids.offer = (game.ids.offer || 0) + 1), playerId: id, clubId: buyer.id, fee, day: game.day,
       expires: game.day + 7, interest, seen: false };
     game.offers.push(offer);
-    addNews(game, `Offer: ${buyer.name} bid ${fee.toLocaleString('en-US')} € for ${p.first} ${p.last} (valid 7 days).`, 'offer');
+    addNews(game, `Offer: ${buyer.name} bid ${money(game, fee)} for ${p.first} ${p.last} (valid 7 days).`, 'offer');
   }
 }
 

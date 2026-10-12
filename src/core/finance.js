@@ -9,6 +9,7 @@ import { naturalCrowd } from './stadium.js';
 import { scoutingCostPerYear } from './scouting.js';
 import { wageShareOf, loanedOutBy } from './loans.js';
 import { staffWages, expectedStaffWages } from './training.js';
+import { money } from './currency.js';
 
 export const clubLevel = (game, club) => 30 + club.reputation * 0.55 + (game.nations[club.nationId].strength || 0);
 
@@ -131,7 +132,7 @@ export function monthlyFinances(game) {
     club.finance.season.months = (club.finance.season.months || 0) + 1;
   }
   const user = game.clubs[game.userClubId];
-  if (user && user.budget < 0) addNews(game, `The club is ${Math.round(-user.budget).toLocaleString('en-US')} € in debt. The board wants it fixed: sell players or cut wages.`, 'board');
+  if (user && user.budget < 0) addNews(game, `The club is ${money(game, -user.budget)} in debt. The board wants it fixed: sell players or cut wages.`, 'board');
 }
 
 // Pays the months not yet covered this season (called at season end).

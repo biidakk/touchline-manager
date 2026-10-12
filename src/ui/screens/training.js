@@ -7,7 +7,7 @@ import { ageOf } from '../../core/valuation.js';
 import { potText } from '../../core/scouting.js';
 import { battery, skillMark } from '../components/pitch.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
-import { esc, fmtMoneyShort, bindActions, fullName } from '../util.js';
+import { esc, fmtMoney, fmtMoneyShort, bindActions, fullName } from '../util.js';
 
 const VACANT = {
   fitness: 'Vacant: physical training much less effective', technical: 'Vacant: technical training much less effective',
@@ -109,12 +109,12 @@ export function render(root, ctx) {
       const options = pool.map((c) => ({ key: c.id, label: `Hire ${'★'.repeat(c.stars)} ${c.name} · ${fmtMoneyShort(c.wage)} a season · ${c.years} yr` }));
       if (current) options.push({ key: '!release', label: `Release ${current.name} (compensation ${fmtMoneyShort(severance(g, current))})` });
       if (!options.length) { ctx.toast('No coaches available until the summer.'); return; }
-      const what = current ? `${ROLE_LABEL[role]}: ${current.name} (${current.stars}★).${pool.length ? ` Replacing him costs ${severance(g, current).toLocaleString('en-US')} € in compensation.` : ' No other coaches are available until the summer.'}`
+      const what = current ? `${ROLE_LABEL[role]}: ${current.name} (${current.stars}★).${pool.length ? ` Replacing him costs ${fmtMoney(severance(g, current))} in compensation.` : ' No other coaches are available until the summer.'}`
         : `Hire ${role === 'assistant' ? 'an' : 'a'} ${ROLE_LABEL[role].toLowerCase()}?`;
       const k = await ctx.choose(what, options);
       if (!k) return;
       if (k === '!release') {
-        if (!(await ctx.confirm(`Release ${current.name}? Compensation: ${severance(g, current).toLocaleString('en-US')} €.`, { ok: 'Release' }))) return;
+        if (!(await ctx.confirm(`Release ${current.name}? Compensation: ${fmtMoney(severance(g, current))}.`, { ok: 'Release' }))) return;
         ctx.toast(fireCoach(g, role).message);
       } else ctx.toast(hireCoach(g, k).message);
       draw();

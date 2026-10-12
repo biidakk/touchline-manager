@@ -18,6 +18,7 @@ import { addNews } from './season.js';
 import { personName } from './names.js';
 import { moraleDevFactor } from './morale.js';
 import { expectedWageBill } from './finance.js';
+import { money } from './currency.js';
 
 export const ROLES = ['fitness', 'technical', 'goalkeeping', 'physio', 'youth', 'assistant'];
 export const ROLE_LABEL = {
@@ -156,7 +157,7 @@ export function fireCoach(game, role) {
   if (!c) return { ok: false, message: 'No coach in that role.' };
   const fee = severance(game, c);
   payOff(game, club, c, fee);
-  return { ok: true, message: `${c.name} has left (compensation ${fee.toLocaleString('en-US')} €).` };
+  return { ok: true, message: `${c.name} has left (compensation ${money(game, fee)}).` };
 }
 
 export const staffWages = (club) => ROLES.reduce((s, r) => s + (club.staff?.[r]?.wage || 0), 0);

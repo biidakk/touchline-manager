@@ -12,7 +12,7 @@ import { nationalRanking, nationalRequirement, applyNational, declineNational, a
 import { nationalTable } from '../../core/national.js';
 import { sortedTable } from '../../core/season.js';
 import { fmtDate } from '../../core/calendar.js';
-import { esc, bindActions } from '../util.js';
+import { esc, bindActions, fmtMoney } from '../util.js';
 import { clubLink, playerLink, linkClubsInText } from '../components/links.js';
 
 const y = (yr) => `${yr}/${String(yr + 1).slice(2)}`;
@@ -200,7 +200,7 @@ export function render(root, ctx) {
         { key: 'stadium', label: 'The stadium: new stands, more seats, a better pitch' }]);
       if (!purpose) return;
       const size = await ctx.choose('How much? The more you ask for, the less likely the board says yes, and the more it may ask of you in return.',
-        MONEY_ASKS.map((a) => ({ key: a.key, label: `${a.label}: ${askAmount(g, a.key).toLocaleString('en-US')} €` })));
+        MONEY_ASKS.map((a) => ({ key: a.key, label: `${a.label}: ${fmtMoney(askAmount(g, a.key))}` })));
       if (!size) return;
       const r = askBoard(g, purpose, size);
       if (!r.ok) { ctx.toast(r.message); return; }

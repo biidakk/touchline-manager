@@ -13,6 +13,7 @@ import { freeNumber } from './development.js';
 import { repairLineup } from './lineup.js';
 import { autoLineup } from './ai.js';
 import { openWindow, willJoin } from './transfers.js';
+import { money } from './currency.js';
 
 export const isOnLoan = (p) => !!(p && p.loan);
 export const loanFee = (game, p) => Math.max(10000, Math.round((playerValue(p, game.season.year) * 0.08) / 1000) * 1000);
@@ -161,7 +162,7 @@ export function evaluateLoanRequest(game, playerId, wageShare) {
   const young = ageOf(p, game.season.year) <= 22;
   const needShare = young ? 0.5 : 0.75;
   if (wageShare < needShare) return { status: 'rejected', message: `${owner.name} want you to pay at least ${needShare * 100}% of his wage.` };
-  return { status: 'accepted', fee, message: `${owner.name} agree to loan him for ${fee.toLocaleString('en-US')} € and ${Math.round(wageShare * 100)}% of his wage.` };
+  return { status: 'accepted', fee, message: `${owner.name} agree to loan him for ${money(game, fee)} and ${Math.round(wageShare * 100)}% of his wage.` };
 }
 
 export function borrowPlayer(game, playerId, wageShare) {
@@ -209,7 +210,7 @@ export function aiLoanOffers(game, rng) {
     game.offers = game.offers || [];
     game.offers.push({ id: 'o' + (game.ids.offer = (game.ids.offer || 0) + 1), type: 'loan', playerId: id, clubId: club.id,
       fee, wageShare, day: game.day, expires: game.day + 7, interest: p.loanListed ? 0.5 : 0.3, seen: false });
-    addNews(game, `Loan offer: ${club.name} want ${p.first} ${p.last} on loan (${fee.toLocaleString('en-US')} €, they pay ${wageShare * 100}% of his wage).`, 'offer');
+    addNews(game, `Loan offer: ${club.name} want ${p.first} ${p.last} on loan (${money(game, fee)}, they pay ${wageShare * 100}% of his wage).`, 'offer');
   }
 }
 

@@ -3,6 +3,7 @@
 import { wageBill, tvSponsorsPerYear, costsPerYear, ticketPrice, TICKET_PLANS } from '../../core/finance.js';
 import { staffWages } from '../../core/training.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
+import { CURRENCIES, nationCurrency } from '../../core/currency.js';
 import { esc, fmtMoney, bindActions } from '../util.js';
 
 const incomeOf = (L) => L.tickets + L.tvSponsors + L.prizes + L.transfersOut + (L.board || 0);
@@ -57,11 +58,16 @@ export function render(root, ctx) {
     </div>
     <h2 style="margin-top:14px">Deals</h2>
     <div class="fin-list" style="font-size:14.5px;row-gap:6px">
-      <span>Ticket prices</span><b>${plan.label} · ${ticketPrice(g, club)} €</b>
+      <span>Ticket prices</span><b>${plan.label} · ${fmtMoney(ticketPrice(g, club))}</b>
       <span>Shirt sponsor</span><b>${sp ? esc(sp.name) : '<span class="dim">none</span>'}</b>
       ${sp ? `<span>Sponsor pays</span><b>${fmtMoney(sp.perYear)} / season</b><span>Contract</span><b>until ${y(sp.until)}</b>` : ''}
     </div>
     <p class="hint" style="margin-top:auto">Ticket prices are set each summer, a new sponsor is signed when the contract ends. TV money, wages and costs are paid monthly; league prize money at the end of the season.</p>
+    <div class="row" style="gap:10px;margin:8px 0">
+      <span class="muted">Show money in</span>
+      <div class="seg small">${[['club', `Club's (${CURRENCIES[nationCurrency(club.nationId)].symbol})`], ['EUR', '€'], ['GBP', '£']].map(([k, l]) =>
+        `<button class="${(g.settings.currency || 'club') === k ? 'on' : ''}" data-action="currency" data-v="${k}">${esc(l)}</button>`).join('')}</div>
+    </div>
     <button class="btn btn-small btn-blue" data-action="stadium">Stadium &amp; pitch</button>
   </div>
   <div class="panel" style="left:852px;top:92px;width:408px;height:540px;display:flex;flex-direction:column">
@@ -79,5 +85,10 @@ export function render(root, ctx) {
   <button class="btn btn-blue" style="position:absolute;left:1050px;top:648px;width:210px" data-action="back">Back</button>`;
 
   bindTopbar(root, ctx);
-  bindActions(root, { back: () => ctx.back(), stadium: () => ctx.go('stadium') });
+  bindActions(root, {
+    back: () => ctx.back(),
+    stadium: () => ctx.go('stadium'),
+    // Money is kept in euros; this only changes how it is shown (and typed).
+    currency: (el) => { g.settings.currency = el.dataset.v; ctx.save({ silent: true }); ctx.render(); },
+  });
 }

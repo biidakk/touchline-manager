@@ -21,6 +21,7 @@ import { seasonEndMorale } from './morale.js';
 import { seasonEndBoard, newSeasonBoard } from './board.js';
 import { seasonEndNational } from './nationaljob.js';
 import { worldAwards, flushSpell, pruneRecords, noteLeagueAwards } from './records.js';
+import { money } from './currency.js';
 
 const fullName = (p) => `${p.first} ${p.last}`;
 const avgRating = (p) => (p.stats.season.apps ? p.stats.season.ratingSum / p.stats.season.apps : 0);
@@ -229,7 +230,7 @@ export function endSeason(game) {
     if (!buyers.length) continue;
     const buyer = rng.pick(buyers);
     executeTransfer(game, star.id, buyer.id, fee, { years: 3 });
-    addNews(game, `${club.name} sell ${star.first} ${star.last} to ${buyer.name} for ${fee.toLocaleString('en-US')} € to ease their debts.`, 'transfer');
+    addNews(game, `${club.name} sell ${star.first} ${star.last} to ${buyer.name} for ${money(game, fee)} to ease their debts.`, 'transfer');
   }
 
   // ---- reset season state on players ----

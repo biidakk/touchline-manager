@@ -97,6 +97,7 @@ The published game uses near-real club names and generated players. For your own
    - **Pitch** (quality 1–10): wears by a point every season (two after a hard winter). A poor pitch blunts technical football for both teams and causes more injuries. Re-lay it to any better level; the top levels cost the most.
    - AI clubs with packed stadiums expand too, and re-lay worn pitches when they can afford it.
 9. **Finances:** tickets (crowds depend on reputation, form and the opponent), TV & sponsors, prize money, player and staff wages, running costs, building work and transfers, shown season to date and for past seasons, plus your current deals.
+   - **Currency** (Finances → Show money in): your club's currency (default: £ in England and Scotland, Kč, zł, kr, CHF, ₺, ₪, Ft, ₴, din., lei, toman in Iran, € elsewhere), or always € or £. Money is kept in euros; amounts are converted at fixed approximate rates for display, and asking prices and bids are typed in the shown currency.
    - **Season preparations** (before the first match of each season, and after taking over a club):
      - **Ticket prices:** Low, Normal or High for the season. Low fills more seats (a full house gives the home side a small lift), High earns more per fan but fewer come unless you sell out anyway. The screen estimates the crowd and the season's league ticket income for each.
      - **Main shirt sponsor** (when the old contract has run out): three companies offer a 1-, 3- or 5-season deal. The short deal pays the most per season; longer deals pay less but lock the money in (useful before a hard season) and come with a signing bonus. Offers follow your club's level when you sign.
@@ -171,7 +172,7 @@ The published game uses near-real club names and generated players. For your own
 - Save files are versioned, and older saves are upgraded automatically.
 
 ## Tests
-With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 130 tests. They cover:
+With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 131 tests. They cover:
 - **World generation:** world, fixtures, cup draws.
 - **Lineup rules.**
 - **Live-match mechanics.**

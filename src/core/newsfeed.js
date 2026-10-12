@@ -5,6 +5,7 @@
 import { addNews, sortedTable } from './season.js';
 import { boardTarget } from './worldgen.js';
 import { confidence } from './board.js';
+import { money } from './currency.js';
 
 const name = (p) => `${p.first} ${p.last}`;
 
@@ -53,7 +54,7 @@ export function bigTransfer(game, t) {
   if (!user || t.fromId === user.id || t.toId === user.id || t.fee < 8e6) return;
   const nat = user.nationId;
   if (game.clubs[t.fromId].nationId !== nat && game.clubs[t.toId].nationId !== nat) return;
-  addNews(game, `Big transfer: ${t.playerName} moves from ${game.clubs[t.fromId].name} to ${game.clubs[t.toId].name} for ${t.fee.toLocaleString('en-US')} €.`, 'transfer');
+  addNews(game, `Big transfer: ${t.playerName} moves from ${game.clubs[t.fromId].name} to ${game.clubs[t.toId].name} for ${money(game, t.fee)}.`, 'transfer');
 }
 
 // Before the user's match: a short preview of the opponent.

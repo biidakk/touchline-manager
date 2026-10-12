@@ -27,6 +27,7 @@ import { DAY_MS } from './calendar.js';
 import { nationalOffersWhenFree } from './nationaljob.js';
 import { clearDeals } from './commercial.js';
 import { naturalCrowd } from './stadium.js';
+import { money } from './currency.js';
 
 export const SACK_AT = 20;
 export const ULTIMATUM_AT = 30;
@@ -205,7 +206,7 @@ export function askBoard(game, purpose, size) {
   else offer = { verdict: 'no' };
   Object.assign(offer, { purpose, amount, year: game.season.year });
   m.board.offer = offer.verdict === 'no' ? null : offer;
-  const what = `${amount.toLocaleString('en-US')} € for ${BOARD_PURPOSE[purpose]}`;
+  const what = `${money(game, amount)} for ${BOARD_PURPOSE[purpose]}`;
   const message = offer.verdict === 'yes' ? `The board agrees to give you ${what}.`
     : offer.verdict === 'promise' ? `The board will give you ${what}, but only if you promise: ${promiseText(offer.maxPos).toLowerCase()} (instead of: ${t.text.toLowerCase()}). Miss it and you will be sacked at the end of the season.`
       : `The board turns you down: there is no money for ${BOARD_PURPOSE[purpose]} this season.`;
@@ -226,7 +227,7 @@ export function acceptBoardOffer(game) {
     m.board.table = tableScore(game, club).v;
   }
   m.board.offer = null;
-  addNews(game, `The board has given ${o.amount.toLocaleString('en-US')} € for ${BOARD_PURPOSE[o.purpose]}${o.verdict === 'promise' ? `. Your promise: ${promiseText(o.maxPos).toLowerCase()}` : ''}.`, 'board');
+  addNews(game, `The board has given ${money(game, o.amount)} for ${BOARD_PURPOSE[o.purpose]}${o.verdict === 'promise' ? `. Your promise: ${promiseText(o.maxPos).toLowerCase()}` : ''}.`, 'board');
   return { ok: true, message: o.purpose === 'stadium' ? 'The money is set aside for the stadium (see Stadium).' : 'The money is in the transfer budget.' };
 }
 

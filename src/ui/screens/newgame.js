@@ -7,7 +7,7 @@ import { startAcademy } from '../../core/development.js';
 import { applyRealPack } from '../../core/realpack.js';
 import { pickFile } from '../storage.js';
 import { crest, jersey, flag } from '../components/svg.js';
-import { esc, fmtMoney, fmt1, bindActions } from '../util.js';
+import { esc, fmtMoney, fmt1, bindActions, setMoneyGame } from '../util.js';
 
 const randomSeed = () => Math.random().toString(36).slice(2, 8).toUpperCase();
 
@@ -30,6 +30,8 @@ export function render(root, ctx) {
 
   function draw() {
     const g = st.world;
+    // Budgets in the currency of the club being looked at (or the chosen setting).
+    setMoneyGame({ settings: ctx.game?.settings || {}, clubs: g.clubs, userClubId: st.clubId });
     const comp = g.competitions[`${st.nationId}-L${st.tier}`];
     const clubs = comp.clubIds.map((id) => g.clubs[id]).sort((a, b) => b.reputation - a.reputation);
     const sel = g.clubs[st.clubId];

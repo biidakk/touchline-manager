@@ -1,17 +1,17 @@
 // Small formatting and DOM helpers for the UI layer.
 
+import { money, moneyShort } from '../core/currency.js';
+
 export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
 }[c]));
 
-export const fmtMoney = (n) => `${Math.round(n).toLocaleString('en-US')} €`;
-
-export function fmtMoneyShort(n) {
-  const a = Math.abs(n);
-  if (a >= 1e6) return `${(n / 1e6).toFixed(a >= 1e7 ? 1 : 2)}M €`;
-  if (a >= 1e3) return `${Math.round(n / 1e3)}k €`;
-  return `${Math.round(n)} €`;
-}
+// Money (kept in euros) in the currency the player chose (core/currency.js).
+// The app tells this module which career is loaded before each screen draws.
+let moneyGame = null;
+export const setMoneyGame = (game) => { moneyGame = game; };
+export const fmtMoney = (n) => money(moneyGame, n);
+export const fmtMoneyShort = (n) => moneyShort(moneyGame, n);
 
 export const fmt1 = (n) => n.toFixed(1);
 

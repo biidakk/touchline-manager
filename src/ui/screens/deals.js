@@ -37,7 +37,7 @@ export function render(root, ctx, params = {}) {
       const price = ticketPrice(g, club, plan);
       return `<button class="deal-card ${st.ticket === k ? 'on' : ''}" data-action="ticket" data-k="${k}">
         <div class="deal-t">${plan.label} prices</div>
-        <div class="deal-big">${price} €</div>
+        <div class="deal-big">${fmtMoney(price)}</div>
         <div class="deal-l">About <b>${c.toLocaleString('en-US')}</b> fans a game${sold ? ` (${sold} sell-outs)` : ''}</div>
         <div class="deal-l">League tickets: <b>~${fmtMoneyShort(c * price * (home.length || 19))}</b> a season</div>
         <div class="deal-s">${PLAN_TEXT[k]}</div></button>`;

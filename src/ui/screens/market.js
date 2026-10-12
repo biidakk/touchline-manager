@@ -9,6 +9,7 @@ import { crest, flag } from '../components/svg.js';
 import { formArrow } from '../components/pitch.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
 import { esc, fmtMoney, fmtMoneyShort, bindActions, fullName } from '../util.js';
+import { toShown, toEuros, currencySymbol } from '../../core/currency.js';
 import { clubLink, playerLink, linkClubsInText } from '../components/links.js';
 import { potText, potEstimate, scoutingOf, assignScout, cancelScout, setLevel, LEVELS, scoutingCost, attrText } from '../../core/scouting.js';
 import { scoutStatus } from '../components/playercard.js';
@@ -46,7 +47,7 @@ export function render(root, ctx, params = {}) {
   function results() {
     const f = st.f;
     let list = searchPlayers(g, { pos: f.pos || undefined, minAge: num(f.minAge), maxAge: num(f.maxAge), minSkill: num(f.minSkill),
-      maxPrice: num(f.maxPrice) ? num(f.maxPrice) * 1e6 : undefined, country: f.country || undefined,
+      maxPrice: num(f.maxPrice) ? toEuros(g, num(f.maxPrice) * 1e6) : undefined, country: f.country || undefined,
       listed: f.listed, name: f.name || undefined });
     // Potential filter works on what your scouts know (unscouted players are left out).
     if (num(f.minPot)) list = list.filter((x) => (potEstimate(g, x.p) ?? -1) >= num(f.minPot));
@@ -85,7 +86,7 @@ export function render(root, ctx, params = {}) {
         <label>Age <input class="field small" data-f="minAge" value="${f.minAge}" placeholder="min"> - <input class="field small" data-f="maxAge" value="${f.maxAge}" placeholder="max"></label>
         <label>Skill ≥ <input class="field small" data-f="minSkill" value="${f.minSkill}"></label>
         <label title="Uses scout reports: unscouted players are left out">Pot ≥ <input class="field small" data-f="minPot" value="${f.minPot}" placeholder="scout"></label>
-        <label>Price ≤ <input class="field small" data-f="maxPrice" value="${f.maxPrice}" placeholder="M €"></label>
+        <label>Price ≤ <input class="field small" data-f="maxPrice" value="${f.maxPrice}" placeholder="M ${esc(currencySymbol(g))}"></label>
         <select class="field" data-f="country" style="height:30px"><option value="">All countries</option>${nations.map((n) => `<option value="${n.id}" ${f.country === n.id ? 'selected' : ''}>${esc(n.name)}</option>`).join('')}</select>
         <label><input type="checkbox" data-f="listed" ${f.listed ? 'checked' : ''}> Listed only</label>
         <input class="field" data-f="name" value="${esc(f.name)}" placeholder="Name" style="width:110px;height:30px">
@@ -172,8 +173,8 @@ export function render(root, ctx, params = {}) {
         <span>Wage demand / year</span><b>${fmtMoney(wage)}</b>
         <span>Your money</span><b class="${user.budget < price ? 'bad' : ''}">${fmtMoney(user.budget)}</b>
       </div>
-      <label class="lbl" style="margin-top:16px">Your offer (€)</label>
-      <div class="row"><input class="field" id="bid" style="flex:1" value="${st.bid ?? price}">
+      <label class="lbl" style="margin-top:16px">Your offer (${esc(currencySymbol(g))})</label>
+      <div class="row"><input class="field" id="bid" style="flex:1" value="${st.bid ?? Math.round(toShown(g, price))}">
         <select class="field" id="years">${[1, 2, 3, 4, 5].map((y) => `<option value="${y}" ${y === 3 ? 'selected' : ''}>${y} yr</option>`).join('')}</select></div>
       ${st.msg ? `<div class="notice-inline">${esc(st.msg)}</div>` : ''}
       <div class="row" style="margin-top:12px">
@@ -264,14 +265,15 @@ export function render(root, ctx, params = {}) {
       draw();
     },
     offer: async () => {
-      const fee = Math.round(Number(String(root.querySelector('#bid').value).replace(/[^0-9.]/g, '')));
+      // Typed in the shown currency; the game works in euros.
+      const fee = Math.round(toEuros(g, Number(String(root.querySelector('#bid').value).replace(/[^0-9.]/g, ''))));
       const years = Number(root.querySelector('#years').value);
       if (!fee) { st.msg = 'Enter a fee.'; draw(); return; }
       const r = evaluateBid(g, st.sel, fee);
       if (r.status === 'accepted') {
         const p = g.players[st.sel];
         const wage = wageDemand(g, p, user);
-        if (!(await ctx.confirm(`${r.message} ${p.first} ${p.last} asks ${wage.toLocaleString('en-US')} € a year for ${years} year(s). Sign him?`, { ok: 'Sign' }))) return;
+        if (!(await ctx.confirm(`${r.message} ${p.first} ${p.last} asks ${fmtMoney(wage)} a year for ${years} year(s). Sign him?`, { ok: 'Sign' }))) return;
         buyPlayer(g, st.sel, fee, years);
         g.shortlist = g.shortlist.filter((id) => id !== st.sel);
         st.sel = null;
@@ -280,7 +282,7 @@ export function render(root, ctx, params = {}) {
         ctx.toast(`${p.first} ${p.last} signed!`);
       } else if (r.status === 'counter') {
         st.msg = `${r.message} (counter-offer)`;
-        st.bid = r.counter;
+        st.bid = Math.round(toShown(g, r.counter));
       } else {
         st.msg = r.message;
       }
@@ -289,7 +291,7 @@ export function render(root, ctx, params = {}) {
     unlistloan: (el) => { unlistForLoan(g, el.dataset.id); draw(); },
     askloan: async () => {
       const p = g.players[st.sel];
-      const k = await ctx.choose(`Ask ${C(p.clubId).name} to loan you ${p.first} ${p.last} until the end of the season? Loan fee ${loanFee(g, p).toLocaleString('en-US')} €. How much of his wage (${p.wage.toLocaleString('en-US')} € a year) will you pay?`,
+      const k = await ctx.choose(`Ask ${C(p.clubId).name} to loan you ${p.first} ${p.last} until the end of the season? Loan fee ${fmtMoney(loanFee(g, p))}. How much of his wage (${fmtMoney(p.wage)} a year) will you pay?`,
         [{ key: '1', label: '100% of his wage' }, { key: '0.75', label: '75%' }, { key: '0.5', label: '50%' }]);
       if (!k) return;
       const r = borrowPlayer(g, st.sel, Number(k));
@@ -301,8 +303,8 @@ export function render(root, ctx, params = {}) {
       const o = g.offers.find((x) => x.id === el.dataset.id);
       const p = g.players[o.playerId];
       const q = o.type === 'loan'
-        ? `Loan ${p.first} ${p.last} to ${C(o.clubId).name} until the end of the season for ${o.fee.toLocaleString('en-US')} €? They pay ${Math.round(o.wageShare * 100)}% of his wage.`
-        : `Sell ${p.first} ${p.last} to ${C(o.clubId).name} for ${o.fee.toLocaleString('en-US')} €?`;
+        ? `Loan ${p.first} ${p.last} to ${C(o.clubId).name} until the end of the season for ${fmtMoney(o.fee)}? They pay ${Math.round(o.wageShare * 100)}% of his wage.`
+        : `Sell ${p.first} ${p.last} to ${C(o.clubId).name} for ${fmtMoney(o.fee)}?`;
       if (!(await ctx.confirm(q, { ok: o.type === 'loan' ? 'Loan him' : 'Sell' }))) return;
       if (!acceptOffer(g, o.id)) ctx.toast('The deal could not be completed.');
       else { await ctx.save({ silent: true }); ctx.toast(`${p.first} ${p.last} ${o.type === 'loan' ? 'loaned out' : 'sold'}`); }

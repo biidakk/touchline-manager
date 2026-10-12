@@ -8,6 +8,7 @@
 import { Rng, hashSeed } from './rng.js';
 import { TICKET_PLANS, sponsorBase } from './finance.js';
 import { addNews } from './season.js';
+import { money } from './currency.js';
 
 export const SPONSOR_TERMS = [
   { years: 1, factor: 1.15, bonus: 0 },
@@ -65,7 +66,7 @@ export function signSponsor(game, index) {
     club.budget += o.bonus;
     club.finance.season.tvSponsors = (club.finance.season.tvSponsors || 0) + o.bonus;
   }
-  addNews(game, `${club.name} have signed a ${o.years}-year shirt deal with ${o.name}: ${o.perYear.toLocaleString('en-US')} € a season${o.bonus ? ` plus ${o.bonus.toLocaleString('en-US')} € on signing` : ''}.`, 'club');
+  addNews(game, `${club.name} have signed a ${o.years}-year shirt deal with ${o.name}: ${money(game, o.perYear)} a season${o.bonus ? ` plus ${money(game, o.bonus)} on signing` : ''}.`, 'club');
   return { ok: true, message: `${o.name} is your new shirt sponsor.` };
 }
 

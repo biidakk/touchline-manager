@@ -30,7 +30,7 @@ import * as natteam from './screens/natteam.js';
 import * as deals from './screens/deals.js';
 import * as preseason from './screens/preseason.js';
 import * as rankings from './screens/rankings.js';
-import { esc } from './util.js';
+import { esc, setMoneyGame } from './util.js';
 import { showPlayer } from './components/playercard.js';
 
 const SCREENS = { title, newgame, hub, tables, soon, schedule, myteam, tactics, match, review, youth, career, cup, market,
@@ -87,6 +87,7 @@ const ctx = {
     rootRef.el = fresh;
     // A screen may return a cleanup function (e.g. to stop the live match clock).
     if (this.cleanup) this.cleanup();
+    setMoneyGame(this.game);
     this.cleanup = SCREENS[this.current.name].render(fresh, this, this.current.params) || null;
   },
 

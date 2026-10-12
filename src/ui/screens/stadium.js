@@ -79,7 +79,7 @@ export function render(root, ctx) {
         <span>Fans per home game</span><b>${Math.round(s.avgDemand).toLocaleString('en-US')}</b>
         <span>Average crowd</span><b>${s.avgCrowd ? Math.round(s.avgCrowd).toLocaleString('en-US') : '-'}</b>
         <span>Sold out</span><b>${s.soldOut} of ${s.played} home games</b>
-        <span>Ticket price</span><b>${price} € (${(TICKET_PLANS[club.deals?.ticket] || TICKET_PLANS.normal).label.toLowerCase()})</b>
+        <span>Ticket price</span><b>${fmtMoney(price)} (${(TICKET_PLANS[club.deals?.ticket] || TICKET_PLANS.normal).label.toLowerCase()})</b>
         <span>Upkeep and costs</span><b>${fmtMoney(costsPerYear(g, club))} / season</b>
       </div>
       <h2 style="margin-top:14px">Pitch</h2>
@@ -115,17 +115,17 @@ export function render(root, ctx) {
   bindActions(root, {
     build: (el) => {
       const q = expansionQuote(club, Number(el.dataset.seats));
-      confirmAndRun(`Enlarge the stands by ${q.seats.toLocaleString('en-US')} seats for ${q.cost.toLocaleString('en-US')} €? Ready in about ${Math.round(q.days / 30)} months.`,
+      confirmAndRun(`Enlarge the stands by ${q.seats.toLocaleString('en-US')} seats for ${fmtMoney(q.cost)}? Ready in about ${Math.round(q.days / 30)} months.`,
         () => startExpansion(g, club, Number(el.dataset.seats)));
     },
     stand: (el) => {
       const q = standQuote(club, el.dataset.k);
-      confirmAndRun(`Build the ${q.label.toLowerCase()} (${q.seats.toLocaleString('en-US')} seats) for ${q.cost.toLocaleString('en-US')} €? Ready in about ${Math.round(q.days / 30)} months.`,
+      confirmAndRun(`Build the ${q.label.toLowerCase()} (${q.seats.toLocaleString('en-US')} seats) for ${fmtMoney(q.cost)}? Ready in about ${Math.round(q.days / 30)} months.`,
         () => startStand(g, club, el.dataset.k));
     },
     pitch: () => {
       const to = Number(root.querySelector('#pitchTo').value);
-      confirmAndRun(`Re-lay the pitch to ${to}/10 (${PITCH_LABEL[to].toLowerCase()}) for ${pitchCost(g, club, to).toLocaleString('en-US')} €?`,
+      confirmAndRun(`Re-lay the pitch to ${to}/10 (${PITCH_LABEL[to].toLowerCase()}) for ${fmtMoney(pitchCost(g, club, to))}?`,
         () => improvePitch(g, club, to));
     },
     back: () => ctx.back(),

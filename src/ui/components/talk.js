@@ -5,7 +5,7 @@ import { moraleOf, moraleLevel, moraleReasons, personalityOf, PERSONALITY_LABEL,
 import { listPlayer } from '../../core/transfers.js';
 import { assistantAdvice } from '../../core/assistant.js';
 import { moraleBadge } from './playercard.js';
-import { esc } from '../util.js';
+import { esc, fmtMoney } from '../util.js';
 
 // Opens a modal whose buttons carry data-ta="<key>"; resolves with the key clicked (or null).
 async function modalWithActions(ctx, html, title) {
@@ -59,7 +59,7 @@ export async function talkTo(ctx, playerId) {
   else if (a === 'refuse') r = refuseRequest(g, p.id);
   else if (a === 'list') {
     listPlayer(g, p.id, p.value);
-    r = { message: `${p.last} is on the transfer list at ${p.value.toLocaleString('en-US')} €.` };
+    r = { message: `${p.last} is on the transfer list at ${fmtMoney(p.value)}.` };
   }
   if (r) ctx.toast(r.message);
 }

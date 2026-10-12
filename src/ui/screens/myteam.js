@@ -15,6 +15,7 @@ import { pitch, formArrow, battery, skillMark } from '../components/pitch.js';
 import { flag, icon, stadiumArt } from '../components/svg.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
 import { esc, fmtMoney, fmtMoneyShort, bindActions, fullName } from '../util.js';
+import { toShown, toEuros } from '../../core/currency.js';
 import { moraleOf, moraleLevel, personalityOf, PERSONALITY_LABEL } from '../../core/morale.js';
 import { moraleBadge, showPlayer } from '../components/playercard.js';
 import { talkTo, showAdvice } from '../components/talk.js';
@@ -407,17 +408,17 @@ export function render(root, ctx) {
     list: async () => {
       const p = P(st.sel);
       if (p.listed) { unlistPlayer(g, p.id); draw(); return; }
-      const v = await ctx.prompt(`Asking price for ${p.first} ${p.last} (market value ${p.value.toLocaleString('en-US')} €). Clubs make offers during transfer windows; each one pops up so you can accept or reject it.`,
-        String(p.value), { ok: 'List for sale' });
+      const v = await ctx.prompt(`Asking price for ${p.first} ${p.last} (market value ${fmtMoney(p.value)}). Clubs make offers during transfer windows; each one pops up so you can accept or reject it.`,
+        String(Math.round(toShown(g, p.value))), { ok: 'List for sale' });
       if (v === null) return;
-      const price = Number(String(v).replace(/[^0-9.]/g, ''));
+      const price = toEuros(g, Number(String(v).replace(/[^0-9.]/g, ''))); // typed in the shown currency
       if (price > 0) { listPlayer(g, p.id, price); ctx.toast(`${p.last} is on the transfer list`); }
       draw();
     },
     contract: async () => {
       const p = P(st.sel);
       const t = contractTerms(g, p);
-      const v = await ctx.prompt(`${p.first} ${p.last} (contract until ${p.contractEnd}) asks ${t.wage.toLocaleString('en-US')} € a year (now ${p.wage.toLocaleString('en-US')} €). How many years (1-${t.maxYears})?`,
+      const v = await ctx.prompt(`${p.first} ${p.last} (contract until ${p.contractEnd}) asks ${fmtMoney(t.wage)} a year (now ${fmtMoney(p.wage)}). How many years (1-${t.maxYears})?`,
         String(Math.min(3, t.maxYears)), { ok: 'Offer contract' });
       if (v === null) return;
       const r = renewContract(g, p.id, Math.max(1, Math.round(Number(v) || 1)));
