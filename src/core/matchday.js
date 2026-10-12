@@ -20,6 +20,7 @@ import { addNews, sortedTable } from './season.js';
 import { Rng } from './rng.js';
 import { tickSkillMarks } from './attributes.js';
 import { spellFor, clubMatchRecords } from './records.js';
+import { applyFriendly } from './preseason.js';
 
 // The user's matches: his club's, and his national team's if he manages one.
 export const isUserFixture = (game, f) => {
@@ -71,6 +72,7 @@ function updateForm(p, rating, rng) {
 export function applyResult(game, f, m) {
   const comp = game.competitions[f.compId];
   const rng = new Rng(game.rng);
+  if (comp.type === 'friendly') return applyFriendly(game, f, m, { updateTeamwork, matchLoad, updateForm, rng });
   const [hs, as] = m.sides;
   const user = isUserFixture(game, f);
   const evs = m.events;
@@ -269,7 +271,7 @@ export function nextUserFixture(game) {
 
 export function seasonComplete(game) {
   return Object.values(game.fixtures).every((f) => f.result)
-    && Object.values(game.competitions).every((c) => c.type === 'league' || c.type === 'national' || c.winnerId
+    && Object.values(game.competitions).every((c) => c.type === 'league' || c.type === 'national' || c.type === 'friendly' || c.winnerId
       || (c.type === 'continental' && !c.clubIds.length));
 }
 
@@ -300,8 +302,14 @@ export function advanceToUserMatch(game, { stopForOffers = false } = {}) {
       addNews(game, 'The winter transfer window is open until 31 January.', 'transfer');
       return null;
     }
-    // Bids and loan offers for the user's players stop the calendar so they can be answered.
-    if (stopForOffers && newOffers(game).some((o) => o.day === game.day)) {
+    if (stopForOffers && game.windowNews) {
+      game.stopReason = 'windowNews';
+      return null;
+    }
+    // Bids and loan offers for the user's players stop the calendar so they can be
+    // answered, at most once a week; others wait for the next match day.
+    if (stopForOffers && newOffers(game).some((o) => o.day === game.day) && !(game.day - (game.lastOfferStop ?? -99) < 7)) {
+      game.lastOfferStop = game.day;
       game.stopReason = 'offer';
       return null;
     }

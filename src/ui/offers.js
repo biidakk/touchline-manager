@@ -28,6 +28,20 @@ function offerHtml(g, o) {
     </div>`;
 }
 
+// A window that has just shut is announced first (its offers are gone),
+// then any offers not seen yet.
+export async function marketPopups(ctx) {
+  const g = ctx.game;
+  const news = g.windowNews;
+  if (news) {
+    delete g.windowNews;
+    await ctx.confirm(news.name === 'summer'
+      ? 'The summer transfer window has closed. No more offers until it opens again on 1 January.'
+      : 'The winter transfer window has closed. No more offers until the summer.', { ok: 'OK', cancel: null });
+  }
+  return reviewOffers(ctx);
+}
+
 // Shows every offer not seen yet, one after another. Returns true if a player left.
 export async function reviewOffers(ctx) {
   const g = ctx.game;

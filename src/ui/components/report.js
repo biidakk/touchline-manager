@@ -13,6 +13,7 @@ export function roundLabel(game, f) {
     return f.group !== undefined ? `Group ${c.groups[f.group].name} · Matchday ${f.round}` : c.rounds[f.cupRound].name + leg;
   }
   if (c.type === 'national') return `Matchday ${f.round}`;
+  if (c.type === 'friendly') return `Pre-season ${f.round}/3`;
   return c.type === 'cup' ? c.rounds[f.cupRound].name + leg : `Round ${f.round}`;
 }
 

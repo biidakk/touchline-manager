@@ -199,7 +199,7 @@ export function aiLoanOffers(game, rng) {
     if (p.loan || (game.offers || []).some((o) => o.playerId === id)) continue;
     const young = ageOf(p, game.season.year) <= 22;
     const benchwarmer = young && p.stats.season.apps / played < 0.3;
-    const chance = p.loanListed ? 0.15 : benchwarmer ? 0.012 : 0;
+    const chance = p.loanListed ? 0.1 : benchwarmer ? 0.005 : 0;
     if (!chance || !rng.chance(chance)) continue;
     const buyers = others.filter((c) => p.skill >= clubLevel(game, c) - 4 && p.skill <= clubLevel(game, c) + 8 && c.budget > 0);
     if (!buyers.length) continue;

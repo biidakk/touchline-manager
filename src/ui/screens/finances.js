@@ -6,7 +6,7 @@ import { clubTopbar, bindTopbar } from '../components/chrome.js';
 import { esc, fmtMoney, bindActions } from '../util.js';
 
 const incomeOf = (L) => L.tickets + L.tvSponsors + L.prizes + L.transfersOut + (L.board || 0);
-const spendOf = (L) => L.wages + L.costs + L.transfersIn + (L.scouting || 0) + (L.construction || 0) + (L.staff || 0);
+const spendOf = (L) => L.wages + L.costs + L.transfersIn + (L.scouting || 0) + (L.construction || 0) + (L.staff || 0) + (L.tour || 0);
 
 export function render(root, ctx) {
   const g = ctx.game;
@@ -35,6 +35,7 @@ export function render(root, ctx) {
       ${line('Season costs', -L.costs, 'bad')}
       ${line('Scouting', -(L.scouting || 0), 'bad')}
       ${line('Stadium & pitch', -(L.construction || 0), 'bad')}
+      ${L.tour ? line('Pre-season tour', -L.tour, L.tour > 0 ? 'bad' : 'good') : ''}
       ${line('Players bought', -L.transfersIn, 'bad')}
       <span style="border-top:1px solid var(--row-line);padding-top:6px"><b>Balance</b></span>
       <b style="border-top:1px solid var(--row-line);padding-top:6px" class="${income - spend >= 0 ? 'good' : 'bad'}">${income - spend >= 0 ? '' : '−'}${fmtMoney(Math.abs(income - spend))}</b>

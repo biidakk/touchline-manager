@@ -11,7 +11,7 @@ export function initSeason(game, year) {
   const rng = new Rng(game.rng);
   const dates = seasonDates(year);
   game.season = { year, start: dates.start, end: dates.end, weekends: dates.weekends, phase: 'season' };
-  game.day = dates.start - 7;
+  game.day = dates.start - 14; // two weeks of pre-season (friendlies, see preseason.js)
   for (const comp of Object.values(game.competitions)) {
     if (comp.type === 'league') {
       comp.table = {};

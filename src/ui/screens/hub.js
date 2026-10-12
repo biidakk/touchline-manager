@@ -6,6 +6,7 @@ import { endSeason } from '../../core/seasonend.js';
 import { confidence, confidenceLevel } from '../../core/board.js';
 import { teamOf } from '../../core/national.js';
 import { decisionsDue } from '../../core/commercial.js';
+import { tourDue } from '../../core/preseason.js';
 import { matchReport, scoreText, outcomeFor, roundLabel } from '../components/report.js';
 import { lineupQuality } from '../../core/ratings.js';
 import { fmtDate } from '../../core/calendar.js';
@@ -14,7 +15,7 @@ import { clubTopbar, bindTopbar } from '../components/chrome.js';
 import { esc, fmtMoney, fmtMoneyShort, fmt1, bindActions } from '../util.js';
 import { clubLink, playerLink, linkClubsInText } from '../components/links.js';
 import { newOffers } from '../../core/transfers.js';
-import { reviewOffers } from '../offers.js';
+import { marketPopups } from '../offers.js';
 
 const MENU = [
   ['team', 'My Team', 'myteam', 'My Team', 3],
@@ -168,7 +169,7 @@ export function render(root, ctx, params = {}) {
       </table>
     </div>
 
-    <button class="btn" style="position:absolute;left:1030px;top:644px;width:210px;height:48px;font-size:18px" data-action="continue">${g.season.phase !== 'over' && decisionsDue(g).any ? 'Prepare season' : 'Continue'}</button>`;
+    <button class="btn" style="position:absolute;left:1030px;top:644px;width:210px;height:48px;font-size:18px" data-action="continue">${g.season.phase !== 'over' && (decisionsDue(g).any || tourDue(g)) ? 'Prepare season' : 'Continue'}</button>`;
   }
 
   bindTopbar(root, ctx);
@@ -193,20 +194,21 @@ export function render(root, ctx, params = {}) {
       const g = ctx.game;
       // Ticket prices (and a sponsor, when the old deal has run out) come first.
       if (g.season.phase !== 'over' && decisionsDue(g).any) { ctx.go('deals'); return; }
+      if (g.season.phase !== 'over' && tourDue(g)) { ctx.go('preseason'); return; }
       el.disabled = true;
       if (g.season.phase === 'over') return finishSeason();
       // A match day already started (e.g. the page was reloaded at the pre-match screen) is resumed, not skipped.
       const f = pendingUserFixture(g) || advanceToUserMatch(g, { stopForOffers: true });
       await ctx.save({ silent: true });
-      if (g.stopReason === 'offer') {
+      if (g.stopReason === 'offer' || g.stopReason === 'windowNews') {
         delete g.stopReason;
         draw();
-        await reviewOffers(ctx);
+        await marketPopups(ctx);
         await ctx.save({ silent: true });
         draw();
         return;
       }
-      if (f && newOffers(g).length) await reviewOffers(ctx);
+      if (f && (newOffers(g).length || g.windowNews)) await marketPopups(ctx);
       if (f) ctx.go('tactics', { mode: 'pre', fixtureId: f.id });
       else if (g.stopReason === 'sacked') {
         delete g.stopReason;
@@ -215,7 +217,7 @@ export function render(root, ctx, params = {}) {
       } else if (g.stopReason) {
         delete g.stopReason;
         draw();
-        ctx.toast('The winter transfer window is open');
+        await ctx.confirm('The winter transfer window is open until 31 January. Clubs can make offers for your players again.', { ok: 'OK', cancel: null });
       } else finishSeason();
     },
   });
@@ -234,6 +236,6 @@ export function render(root, ctx, params = {}) {
   }
   draw();
   // Offers that arrived while away (e.g. on a match day) pop up here.
-  if (newOffers(ctx.game).length) reviewOffers(ctx).then(() => draw());
+  if (newOffers(ctx.game).length || ctx.game.windowNews) marketPopups(ctx).then(() => draw());
   if (params.seasonOver) ctx.toast('The season is over. Press Continue for the season review.');
 }

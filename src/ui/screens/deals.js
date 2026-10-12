@@ -3,6 +3,7 @@
 // a season (and after taking over a club).
 
 import { decisionsDue, sponsorOffers, chooseTickets, signSponsor, dealsOf } from '../../core/commercial.js';
+import { tourDue } from '../../core/preseason.js';
 import { TICKET_PLANS, ticketPrice, demand } from '../../core/finance.js';
 import { naturalCrowd } from '../../core/stadium.js';
 import { jersey } from '../components/svg.js';
@@ -72,7 +73,9 @@ export function render(root, ctx, params = {}) {
       chooseTickets(g, st.ticket);
       if (due.sponsor) ctx.toast(signSponsor(g, st.sponsor).message);
       await ctx.save({ silent: true });
-      if (params.then) ctx.home(params.then); else ctx.back();
+      // The pre-season tour is chosen next, while there's still time for it.
+      if (tourDue(g)) ctx.home('preseason');
+      else if (params.then) ctx.home(params.then); else ctx.back();
     },
   });
   draw();

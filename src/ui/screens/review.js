@@ -3,6 +3,7 @@
 import { crest, flag, icon } from '../components/svg.js';
 import { potText } from '../../core/scouting.js';
 import { decisionsDue } from '../../core/commercial.js';
+import { tourDue } from '../../core/preseason.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
 import { esc, fmtMoney, bindActions } from '../util.js';
 import { clubLink, playerLink, linkClubsInText } from '../components/links.js';
@@ -89,7 +90,7 @@ export function render(root, ctx) {
   bindTopbar(root, ctx);
   bindActions(root, {
     youth: () => ctx.go('youth'),
-    hub: () => (decisionsDue(g).any ? ctx.home('deals', { then: 'hub' }) : ctx.home('hub')),
+    hub: () => (decisionsDue(g).any ? ctx.home('deals', { then: 'hub' }) : tourDue(g) ? ctx.home('preseason') : ctx.home('hub')),
     career: () => ctx.home('career'),
   });
 }

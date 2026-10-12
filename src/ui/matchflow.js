@@ -12,7 +12,7 @@ export async function finishMatch(ctx, f, m) {
   finishUserMatch(g, f, m);
   const o = outcomeFor(g, f, mine);
   // (Internationals make their own news.)
-  if (!national) addNews(g, `${o === 'W' ? 'Win' : o === 'L' ? 'Defeat' : 'Draw'}: ${teamOf(g, f.homeId).name} ${scoreText(f)} ${teamOf(g, f.awayId).name}.`, 'result');
+  if (!national) addNews(g, `${f.result.friendly ? `Friendly ${o === 'W' ? 'win' : o === 'L' ? 'defeat' : 'draw'}` : o === 'W' ? 'Win' : o === 'L' ? 'Defeat' : 'Draw'}: ${teamOf(g, f.homeId).name} ${scoreText(f)} ${teamOf(g, f.awayId).name}.`, 'result');
   ctx.match = null;
   await ctx.save({ silent: true });
   ctx.home('hub');

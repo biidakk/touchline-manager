@@ -17,7 +17,7 @@ import { contractMood, onContractSigned } from './morale.js';
 export function windows(game) {
   const y = game.season.year;
   return [
-    { name: 'summer', open: game.season.start - 7, close: dayOf(y, 8, 31) },
+    { name: 'summer', open: game.season.start - 14, close: dayOf(y, 8, 31) },
     { name: 'winter', open: dayOf(y + 1, 1, 1), close: dayOf(y + 1, 1, 31) },
   ];
 }
@@ -257,7 +257,7 @@ function aiOffersForUser(game, rng) {
     if (p.loan) continue; // borrowed players aren't ours to sell
     // Word gets around when a player wants to leave: more bids, lower ones.
     const wantsOut = !!p.mood?.request;
-    const chance = p.listed ? 0.12 : wantsOut ? 0.06 : 0.006;
+    const chance = p.listed ? 0.08 : wantsOut ? 0.04 : 0.003;
     if (!rng.chance(chance) || game.offers.some((o) => o.playerId === id)) continue;
     const price = p.listed ? p.askingPrice : playerValue(p, game.season.year) * (wantsOut ? rng.float(0.85, 1.15) : rng.float(1.1, 1.5));
     const fee = Math.round((price * rng.float(p.listed ? 0.75 : 1, p.listed ? 1.05 : 1)) / 1000) * 1000;
@@ -309,13 +309,24 @@ function aiDeals(game, rng) {
 }
 
 export function dailyMarket(game) {
-  if (!openWindow(game)) {
-    game.offers = (game.offers || []).filter((o) => o.expires >= game.day);
+  const w = openWindow(game);
+  if (!w) {
+    // The day after a window shuts: offers lapse and the user is told.
+    const shut = windows(game).find((x) => x.close === game.day - 1);
+    if (shut && game.season.phase === 'season') {
+      game.windowNews = { kind: 'closed', name: shut.name };
+      addNews(game, `The ${shut.name} transfer window has closed.`, 'transfer');
+    }
+    game.offers = [];
     game.offerQueue = [];
     return;
   }
   const rng = new Rng(game.rng);
-  aiDeals(game, rng);
+  // AI clubs trade from the last week of pre-season (as before the friendlies
+  // were added, so the market keeps its size).
+  if (game.day >= game.season.start - 7 || w.name !== 'summer') aiDeals(game, rng);
+  // Nobody bids for the user's players during the pre-season friendlies.
+  if (game.day <= game.season.start - 3 && w.name === 'summer') return;
   aiOffersForUser(game, rng);
   releaseQueuedOffers(game);
   aiLoanOffers(game, rng);

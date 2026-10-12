@@ -28,11 +28,12 @@ import * as national from './screens/national.js';
 import * as training from './screens/training.js';
 import * as natteam from './screens/natteam.js';
 import * as deals from './screens/deals.js';
+import * as preseason from './screens/preseason.js';
 import { esc } from './util.js';
 import { showPlayer } from './components/playercard.js';
 
 const SCREENS = { title, newgame, hub, tables, soon, schedule, myteam, tactics, match, review, youth, career, cup, market,
-  finances, otherteams, search, stadium, national, training, natteam, deals };
+  finances, otherteams, search, stadium, national, training, natteam, deals, preseason };
 const SAVE_KEY = 'career';
 const PACK_KEY = 'realpack';
 

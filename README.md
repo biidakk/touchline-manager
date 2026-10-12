@@ -57,7 +57,7 @@ The published game uses near-real club names and generated players. For your own
 2. **Hub:**
    - **Menu:** My Team, Other Teams, Season Schedule, My Career, Search, Transfer Market, Training, Finances, plus your league and cup.
    - **Panels:** your last result and next three fixtures (Full schedule for the rest), news, the transfer ticker, your club card and the season table.
-   - **CONTINUE** plays the calendar up to your next match. It also stops when the winter transfer window opens, on a day a club makes an offer for one of your players (see Selling), and at the end of the season. At the start of a season (and after taking over a club) it reads **PREPARE SEASON** first: see Season preparations below.
+   - **CONTINUE** plays the calendar up to your next match. It also stops when the winter transfer window opens or a window closes (both announced in a pop-up), when a club makes an offer for one of your players (at most once a week, see Selling), and at the end of the season. At the start of a season (and after taking over a club) it reads **PREPARE SEASON** first: see Season preparations below.
 3. **My Team:**
    - **Picking the team:** drag players between the squad list and the pitch, or click two players to swap them. Choose a formation (4-4-2, 4-3-3, 4-5-1, 3-5-2, 5-3-2) or use **Auto pick**.
    - **Out of position:** a player outside his natural position plays at 70 % of his skill, and at 25 % in or out of goal.
@@ -74,7 +74,7 @@ The published game uses near-real club names and generated players. For your own
 5. **Transfers:**
    - **Windows:** summer (pre-season to 31 Aug) and January.
    - **Buying:** search with filters, bid, and handle counter-offers. Players don't drop down: a club's stature is its reputation plus the strength of its country's league, and the bigger the step down from his club and the better he is for yours, the less willing he is (a top Czech club can sign only about one in eight of the world's best players, a mid-table Czech club almost none). Players who want to leave and players of 32 and over bend more, and players going on loan (young ones most) a lot. The search marks players who won't come with **won't join**.
-   - **Selling:** list players with **Sell…**. Each new offer, for a sale or a loan, pops up in the middle of the screen: **Sell** (or **Loan him**), **Reject**, or **Decide later** (it stays under Transfer Market → Selling until it runs out after a week). A club that really wants the player may come back a few days after a rejection with a better bid, 10–25 % higher, at most twice; the more he would improve their team, the more likely they are to come back.
+   - **Selling:** list players with **Sell…**. Each new offer, for a sale or a loan, pops up in the middle of the screen: **Sell** (or **Loan him**), **Reject**, or **Decide later** (it stays under Transfer Market → Selling until it runs out after a week). Nobody bids during the pre-season friendlies, and offers come only while a window is open: when it closes, open offers lapse. If several clubs bid within a week, the later ones wait for your next match day. A club that really wants the player may come back a few days after a rejection with a better bid, 10–25 % higher, at most twice; the more he would improve their team, the more likely they are to come back.
    - **Contracts:** expiring contracts must be renewed, or the player leaves for free in the summer.
 6. **Loans and B-team cooperation:**
    - **Loaning out:** use **Loan…** on a player's card in My Team. It offers up to three ways: send him to your **B-team partner** (if you have one), **choose a club now** from up to six clubs of his level that want him (each shows whether he would start, the loan fee and the share of his wage they pay; the list changes weekly), or put him on the **loan list** and wait for offers, which pop up like transfer offers. Loans are agreed only during a transfer window.
@@ -100,6 +100,7 @@ The published game uses near-real club names and generated players. For your own
    - **Season preparations** (before the first match of each season, and after taking over a club):
      - **Ticket prices:** Low, Normal or High for the season. Low fills more seats (a full house gives the home side a small lift), High earns more per fan but fewer come unless you sell out anyway. The screen estimates the crowd and the season's league ticket income for each.
      - **Main shirt sponsor** (when the old contract has run out): three companies offer a 1-, 3- or 5-season deal. The short deal pays the most per season; longer deals pay less but lock the money in (useful before a hard season) and come with a signing bonus. Offers follow your club's level when you sign.
+     - **Pre-season tour:** pre-season lasts two weeks, and you take the squad on one of three tours, each with three friendlies (Wednesday, Saturday and Wednesday before the first league weekend) against foreign clubs of your level. The **mountain training camp** is cheapest and builds teamwork most (+10); the **seaside tour** costs about twice as much and lifts morale most; the **summer tour** in the USA costs most and brings stronger opponents, but its appearance fees grow with your club's name and more than pay for it at the biggest clubs. Friendlies count for nothing: no table, appearances, goals, records, suspensions or board verdicts, but players tire, find form, get injured and play together as in any match.
 10. **Continental Champions Cup:**
    - **Entry:** the top of each first division qualifies: England, Spain, Italy and Germany 3 each, France and the Czech Republic 2 each (by reputation in the first season).
    - **Group stage:** 4 groups of 4 in autumn, drawn from seeding pots, home and away on Tuesday nights.
@@ -165,7 +166,7 @@ The published game uses near-real club names and generated players. For your own
 - Save files are versioned, and older saves are upgraded automatically.
 
 ## Tests
-With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 119 tests. They cover:
+With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 123 tests. They cover:
 - **World generation:** world, fixtures, cup draws.
 - **Lineup rules.**
 - **Live-match mechanics.**
