@@ -37,6 +37,7 @@ test('a whole season simulates: every fixture played, cups won, tables consisten
 
   for (const comp of Object.values(g.competitions)) {
     if (comp.type === 'national') continue; // tested in national.test.js
+    if (comp.type === 'guest') continue; // guest clubs have no league
     if (comp.type === 'continental') {
       assert(comp.winnerId, 'continental cup has no winner');
       continue;

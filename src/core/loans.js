@@ -193,7 +193,7 @@ export function aiLoanOffers(game, rng) {
   const user = game.clubs[game.userClubId];
   if (!user) return;
   const played = Math.max(1, game.competitions[user.compId].table[user.id]?.p || 0);
-  const others = Object.values(game.clubs).filter((c) => c.id !== user.id && c.id !== user.partnerId);
+  const others = Object.values(game.clubs).filter((c) => c.id !== user.id && c.id !== user.partnerId && !c.guest);
   for (const id of user.squad) {
     const p = game.players[id];
     if (p.loan || (game.offers || []).some((o) => o.playerId === id)) continue;
@@ -222,7 +222,7 @@ export function loanSuitors(game, playerId) {
   if (!p || p.loan || p.clubId !== user.id || !openWindow(game)) return [];
   const rng = new Rng({ s: hashSeed(`${game.seed}:loan:${playerId}:${Math.floor(game.day / 7)}`) });
   const fits = Object.values(game.clubs).filter((c) => {
-    if (c.id === user.id || c.id === user.partnerId || c.budget <= 0) return false;
+    if (c.id === user.id || c.id === user.partnerId || c.guest || c.budget <= 0) return false;
     const level = clubLevel(game, c);
     return p.skill >= level - 4 && p.skill <= level + 8 && willJoin(game, p, c, { loan: true }).ok;
   });

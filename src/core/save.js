@@ -10,7 +10,7 @@ import { Rng } from './rng.js';
 import { ensurePersonalities } from './morale.js';
 import { ensureManager } from './board.js';
 import { startNationalJobs } from './nationaljob.js';
-import { makeManager } from './worldgen.js';
+import { makeManager, addGuests } from './worldgen.js';
 
 // Each entry upgrades a save from version `from` to `from + 1`.
 const MIGRATIONS = {
@@ -103,6 +103,20 @@ const MIGRATIONS = {
       p.stats.career.assists = p.stats.career.assists ?? s.assists ?? 0;
     }
     game.version = 13;
+  },
+  // v14: three continental competitions in the league-phase format. A
+  // Champions Cup with groups already under way is played out this season.
+  13: (game) => {
+    const old = game.competitions[CONTINENTAL_ID];
+    createContinental(game);
+    if (old) { old.level = 1; old.baseName = old.baseName || old.name; }
+    game.version = 14;
+  },
+  // Guest clubs for the full-size European competitions (real-country worlds).
+  // They take part from the next season on.
+  14: (game) => {
+    if (game.nations.ENG) addGuests(game);
+    game.version = 15;
   },
 };
 

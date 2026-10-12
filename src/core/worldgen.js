@@ -11,6 +11,7 @@ import { rollPersonality } from './morale.js';
 import { initUserStaff, defaultTraining } from './training.js';
 import { initSeason, addNews } from './season.js';
 import { createContinental } from './continental.js';
+import { GUEST_NATIONS, GUEST_CLUBS, GUEST_COMP_ID, guestReputation } from './guests.js';
 import { createNational } from './national.js';
 import { initManager } from './board.js';
 import { startNationalJobs } from './nationaljob.js';
@@ -168,6 +169,35 @@ function makeClub(game, rng, nation, comp, rep, usedTowns, usedNames, tpl = null
   return club;
 }
 
+// Guest countries and clubs (see guests.js). They use their own random
+// numbers, so the rest of a seeded world is the same with or without them.
+export function addGuests(game) {
+  if (game.competitions[GUEST_COMP_ID]) return;
+  const rng = new Rng({ s: hashSeed(`${game.seed}:guests`) });
+  for (const n of GUEST_NATIONS) {
+    const have = game.nations[n.id];
+    // A players-only nation from a real-teams file keeps its entry and becomes a guest country.
+    if (have) Object.assign(have, { style: n.style, strength: n.strength, foreign: true, guest: true });
+    else {
+      game.nations[n.id] = { id: n.id, name: n.name, baseName: n.name, adj: n.adj, style: n.style, flag: n.flag, kit: null,
+        strength: n.strength, leagueIds: [], cupId: null, nationalTeam: null, foreign: true, guest: true };
+    }
+  }
+  const comp = { id: GUEST_COMP_ID, type: 'guest', nationId: null, name: 'Guest clubs', baseName: 'Guest clubs',
+    clubIds: [], table: {}, history: [] };
+  game.competitions[comp.id] = comp;
+  const usedNames = new Set(Object.values(game.clubs).map((c) => c.name));
+  for (const [name, short, nationId, level, primary, secondary, pattern, stadium, capacity] of GUEST_CLUBS) {
+    const n = GUEST_NATIONS.find((x) => x.id === nationId);
+    const club = makeClub(game, rng, n, comp, guestReputation(level, n.strength), new Set(), usedNames,
+      [name, short, primary, secondary, pattern, stadium, capacity]);
+    club.guest = true;
+    club.lineup = autoLineup(game, club);
+  }
+}
+
+export const isGuest = (club) => !!club?.guest;
+
 export function generateWorld({ seed = Date.now(), managerName = 'Manager' } = {}) {
   const rng = new Rng({ s: hashSeed(String(seed)) });
   const game = {
@@ -215,6 +245,8 @@ export function generateWorld({ seed = Date.now(), managerName = 'Manager' } = {
     nation.cupId = cup.id;
   }
 
+  // Real-country worlds: clubs from other countries for the European competitions.
+  if (game.nations.ENG) addGuests(game);
   createContinental(game);
   createNational(game);
   initSeason(game, START_YEAR);

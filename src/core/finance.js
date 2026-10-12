@@ -92,7 +92,7 @@ export function demand(game, f) {
   const row = game.competitions[home.compId].table[home.id];
   const form = row ? row.form.slice(-5).reduce((a, x) => a + (x === 'W' ? 0.02 : x === 'L' ? -0.015 : 0), 0) : 0;
   const fill = clamp(0.3 + home.reputation / 200 + (away.reputation - 50) / 400 + form
-    + (comp.type === 'cup' ? 0.08 : comp.type === 'continental' ? 0.2 : 0), 0.15, 1);
+    + (comp.type === 'cup' ? 0.08 : comp.type === 'continental' ? [0.2, 0.12, 0.07][(comp.level || 1) - 1] : 0), 0.15, 1);
   return Math.round(naturalCrowd(home) * 1.25 * fill * ticketPlan(home).demand);
 }
 
@@ -122,6 +122,7 @@ function monthlyCosts(game, club) {
 export function monthlyFinances(game) {
   const loaned = loanedOutWages(game);
   for (const club of Object.values(game.clubs)) {
+    if (club.guest) continue; // guest clubs: only European prize money and transfers move their money
     book(club, 'tvSponsors', tvSponsorsPerYear(game, club) / 12);
     book(club, 'wages', -wageBill(game, club, loaned) / 12);
     monthlyCosts(game, club);
@@ -137,6 +138,7 @@ export function monthlyFinances(game) {
 export function settleSeason(game) {
   const loaned = loanedOutWages(game);
   for (const club of Object.values(game.clubs)) {
+    if (club.guest) continue;
     const left = 12 - (club.finance.season.months || 0);
     for (let i = 0; i < left; i++) {
       book(club, 'tvSponsors', tvSponsorsPerYear(game, club) / 12);

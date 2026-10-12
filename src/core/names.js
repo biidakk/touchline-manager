@@ -148,7 +148,74 @@ Object.assign(STYLES, {
   },
 });
 
-const fill = (tpl, map) => tpl.replace(/\{(\w)\}/g, (_, k) => map[k] ?? '');
+// The guest countries of the European competitions (clubs only, no league):
+// a few broad styles, each shared by neighbouring countries.
+Object.assign(STYLES, {
+  portuguese: {
+    first: ['João', 'Rui', 'Tiago', 'Diogo', 'Gonçalo', 'Rodrigo', 'Francisco', 'Pedro', 'Miguel', 'André', 'Bruno',
+      'Nuno', 'Ricardo', 'Vítor', 'Fábio', 'Hugo', 'Duarte', 'Afonso', 'Martim', 'Rafael', 'Henrique', 'Bernardo',
+      'Samuel', 'Gustavo', 'Tomás', 'Leonardo', 'Wellington', 'Matheus', 'Thiago', 'Danilo'],
+    last: ['Silva', 'Santos', 'Ferreira', 'Pereira', 'Oliveira', 'Costa', 'Rodrigues', 'Martins', 'Sousa', 'Fernandes',
+      'Gonçalves', 'Gomes', 'Lopes', 'Marques', 'Alves', 'Almeida', 'Ribeiro', 'Pinto', 'Carvalho', 'Teixeira',
+      'Moreira', 'Correia', 'Mendes', 'Nunes', 'Soares', 'Vieira', 'Monteiro', 'Cardoso', 'Rocha', 'Neves', 'Coelho',
+      'Cunha', 'Pires', 'Ramos', 'Reis', 'Simões', 'Antunes', 'Matos', 'Fonseca', 'Machado', 'Araújo', 'Barbosa'],
+  },
+  dutch: {
+    first: ['Daan', 'Sem', 'Lucas', 'Milan', 'Levi', 'Luuk', 'Thijs', 'Jesse', 'Bram', 'Lars', 'Ruben', 'Stijn', 'Tim',
+      'Bas', 'Jordy', 'Kevin', 'Wout', 'Jens', 'Sander', 'Niels', 'Joep', 'Siem', 'Arthur', 'Lennert', 'Senne', 'Mats',
+      'Jorrit', 'Quinten', 'Brian', 'Noah'],
+    last: ['de Jong', 'Jansen', 'de Vries', 'van den Berg', 'van Dijk', 'Bakker', 'Visser', 'Smit', 'Meijer', 'de Boer',
+      'Mulder', 'de Groot', 'Bos', 'Vos', 'Peters', 'Hendriks', 'van Leeuwen', 'Dekker', 'Brouwer', 'de Wit', 'Dijkstra',
+      'Smits', 'de Graaf', 'van der Meer', 'Kok', 'Jacobs', 'Vermeulen', 'Peeters', 'Maes', 'Claes', 'Willems',
+      'Goossens', 'Wouters', 'De Smet', 'Janssens', 'Mertens', 'Verbeke', 'Hoekstra', 'Postma', 'Kuipers'],
+  },
+  turkish: {
+    first: ['Mehmet', 'Mustafa', 'Ahmet', 'Ali', 'Hüseyin', 'Emre', 'Burak', 'Can', 'Kerem', 'Arda', 'Oğuz', 'Barış',
+      'Cenk', 'Serdar', 'Hakan', 'Yusuf', 'Enes', 'Furkan', 'Berkay', 'Ozan', 'Orkun', 'Doğan', 'Eren', 'Kaan', 'Umut',
+      'Rauf', 'Elvin', 'Tural', 'Murad'],
+    last: ['Yılmaz', 'Kaya', 'Demir', 'Şahin', 'Çelik', 'Yıldız', 'Yıldırım', 'Öztürk', 'Aydın', 'Özdemir', 'Arslan',
+      'Doğan', 'Kılıç', 'Aslan', 'Çetin', 'Kara', 'Koç', 'Kurt', 'Özkan', 'Şimşek', 'Polat', 'Erdem', 'Güler', 'Aktaş',
+      'Bulut', 'Korkmaz', 'Ünal', 'Tekin', 'Karaca', 'Akın', 'Uçar', 'Yavuz', 'Mammadov', 'Aliyev', 'Huseynov'],
+  },
+  greek: {
+    first: ['Giorgos', 'Dimitris', 'Kostas', 'Nikos', 'Giannis', 'Christos', 'Vasilis', 'Thanasis', 'Panagiotis',
+      'Michalis', 'Stelios', 'Andreas', 'Petros', 'Sotiris', 'Lefteris', 'Manolis', 'Antonis', 'Pavlos', 'Fotis',
+      'Kyriakos', 'Marios', 'Tasos', 'Charalambos', 'Savvas'],
+    last: ['Papadopoulos', 'Papadakis', 'Georgiou', 'Nikolaou', 'Ioannou', 'Konstantinou', 'Dimitriou', 'Christodoulou',
+      'Vlachos', 'Pappas', 'Antoniou', 'Makris', 'Alexiou', 'Karagiannis', 'Mavros', 'Katsaros', 'Oikonomou',
+      'Theodorou', 'Stavrou', 'Petrou', 'Athanasiou', 'Michailidis', 'Kyriakou', 'Laskaris', 'Galanis', 'Siopis',
+      'Chatzis', 'Kotsis', 'Tsimikas', 'Bakasetas'],
+  },
+  scandi: {
+    first: ['Oliver', 'William', 'Noah', 'Emil', 'Lucas', 'Magnus', 'Mathias', 'Jonas', 'Kasper', 'Rasmus', 'Mikkel',
+      'Anders', 'Fredrik', 'Henrik', 'Sondre', 'Eirik', 'Kristian', 'Sebastian', 'Viktor', 'Gustav', 'Isak', 'Elias',
+      'Oskar', 'Joel', 'Ville', 'Aleksi', 'Teemu', 'Jesper', 'Tobias', 'Patrick'],
+    last: ['Hansen', 'Johansen', 'Olsen', 'Larsen', 'Andersen', 'Pedersen', 'Nielsen', 'Kristiansen', 'Jensen',
+      'Karlsen', 'Berg', 'Haugen', 'Johansson', 'Andersson', 'Karlsson', 'Nilsson', 'Eriksson', 'Larsson', 'Lindberg',
+      'Holm', 'Lund', 'Dahl', 'Strand', 'Bakke', 'Moen', 'Solberg', 'Virtanen', 'Korhonen', 'Mäkinen', 'Nieminen',
+      'Lehtonen', 'Thomsen', 'Christensen', 'Mortensen', 'Sørensen', 'Rasmussen', 'Poulsen', 'Lindqvist'],
+  },
+  balkan: {
+    first: ['Luka', 'Marko', 'Nikola', 'Stefan', 'Filip', 'Ivan', 'Josip', 'Ante', 'Mario', 'Dario', 'Nemanja', 'Aleksandar',
+      'Dušan', 'Milan', 'Petar', 'Mateo', 'Toni', 'Denis', 'Jan', 'Žan', 'Amir', 'Edin', 'Kristijan', 'Bojan', 'Dimitar',
+      'Georgi', 'Ivaylo', 'Ardit', 'Klevis', 'Erion'],
+    last: ['Horvat', 'Kovačević', 'Babić', 'Marić', 'Jurić', 'Novak', 'Petrović', 'Jovanović', 'Nikolić', 'Marković',
+      'Đorđević', 'Stojanović', 'Ilić', 'Pavlović', 'Milošević', 'Popović', 'Kovač', 'Perić', 'Vuković', 'Knežević',
+      'Hadžić', 'Begić', 'Krajnc', 'Zupan', 'Mlakar', 'Ivanov', 'Georgiev', 'Dimitrov', 'Petrov', 'Hoxha', 'Krasniqi',
+      'Berisha', 'Gashi', 'Šimić', 'Brozović', 'Vlašić'],
+  },
+  eastern: {
+    first: ['Jakub', 'Kacper', 'Szymon', 'Mateusz', 'Bartosz', 'Kamil', 'Michał', 'Oleksandr', 'Andriy', 'Mykola',
+      'Dmytro', 'Artem', 'Bohdan', 'Valeriy', 'Dominik', 'Ádám', 'Bence', 'Dániel', 'Andrei', 'Alexandru', 'Ionuț',
+      'Gheorghe', 'Kristaps', 'Mantas', 'Lukas', 'Arman', 'Daniyar', 'Giorgi', 'Levan', 'Narek'],
+    last: ['Nowak', 'Kowalski', 'Wiśniewski', 'Wójcik', 'Kamiński', 'Lewandowski', 'Zieliński', 'Szymański', 'Dąbrowski',
+      'Kozłowski', 'Mazur', 'Krawczyk', 'Shevchenko', 'Bondarenko', 'Kovalenko', 'Tkachenko', 'Kravchenko', 'Melnyk',
+      'Nagy', 'Kovács', 'Tóth', 'Szabó', 'Horváth', 'Popescu', 'Ionescu', 'Stan', 'Dumitru', 'Bērziņš', 'Kazlauskas',
+      'Petrauskas', 'Abenov', 'Beridze', 'Kapanadze', 'Hovhannisyan', 'Grigoryan', 'Cohen', 'Levi', 'Mizrahi'],
+  },
+});
+
+const fill =(tpl, map) => tpl.replace(/\{(\w)\}/g, (_, k) => map[k] ?? '');
 
 export function personName(rng, style) {
   const s = STYLES[style];

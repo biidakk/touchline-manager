@@ -101,14 +101,17 @@ The published game uses near-real club names and generated players. For your own
      - **Ticket prices:** Low, Normal or High for the season. Low fills more seats (a full house gives the home side a small lift), High earns more per fan but fewer come unless you sell out anyway. The screen estimates the crowd and the season's league ticket income for each.
      - **Main shirt sponsor** (when the old contract has run out): three companies offer a 1-, 3- or 5-season deal. The short deal pays the most per season; longer deals pay less but lock the money in (useful before a hard season) and come with a signing bonus. Offers follow your club's level when you sign.
      - **Pre-season tour:** pre-season lasts two weeks, and you take the squad on one of three tours, each with three friendlies (Wednesday, Saturday and Wednesday before the first league weekend) against foreign clubs of your level. The **mountain training camp** is cheapest and builds teamwork most (+10); the **seaside tour** costs about twice as much and lifts morale most; the **summer tour** in the USA costs most and brings stronger opponents, but its appearance fees grow with your club's name and more than pay for it at the biggest clubs. Friendlies count for nothing: no table, appearances, goals, records, suspensions or board verdicts, but players tire, find form, get injured and play together as in any match.
-10. **Continental Champions Cup:**
-   - **Entry:** the top of each first division qualifies: England, Spain, Italy and Germany 3 each, France and the Czech Republic 2 each (by reputation in the first season).
-   - **Group stage:** 4 groups of 4 in autumn, drawn from seeding pots, home and away on Tuesday nights.
-   - **Knockouts in spring:** quarter-finals and semi-finals over **two legs** (group winners play the second leg at home), then a one-match final.
+10. **Continental competitions:** the Continental Champions Cup (Tuesdays), the Continental League and the Continental Conference (Thursdays), in the current league-phase format.
+   - **36 clubs each:** the six countries' clubs plus **guest clubs** from 33 other countries (Portugal, the Netherlands, Turkey, Belgium, Scotland, Greece and many more: 84 clubs with near-real names, generated squads and their own name styles). Guests play only in Europe: they have no league, never offer you a job, stay out of the AI transfer market and don't bid for your players, but you can buy their players. Open them from any link or under Other Teams → Guests.
+   - **First season:** the clubs that really play in the 2026/27 league phases: from the six countries 22 in the Champions Cup, 14 in the Continental League and 6 in the Conference, and the 66 real guest clubs filling the rest. With your real-teams file the guests carry their real names (kept in the private files, never published).
+   - **Later seasons:** places come from the final tables (Champions Cup: England and Spain 5, Italy and Germany 4, France 3, Czech Republic 1; Continental League: England and France 3, the others 2; Conference: 1 each). The national cup winner takes its country's first Continental League place unless it is already in the Champions Cup. The rest of each competition is filled with guest clubs by reputation, with a little luck each season so the line-ups change. A club plays in one competition only.
+   - **League phase** (autumn to winter, away from international weeks and national cup rounds): one table of 36. Every club plays 8 different opponents (6 in the Conference) on 8 (6) matchdays, half at home, with as few clubs from its own country as can be arranged. Places 1–8 go to the round of 16, 9–24 play the knockout play-offs, 25–36 are out.
+   - **Knockouts in spring:** the top places go straight to the last 16; the next places play two-legged **knockout play-offs** (the better-placed club at home in the second leg; when there are fewer clubs than places, the best of them go through without playing); the rest are out. Then round of 16, quarter-finals and semi-finals over **two legs**, and a one-match final.
    - **Two-legged ties:** the aggregate score decides (no away-goals rule). If it's level after the second leg, extra time and penalties follow. The pre-match screen shows the first-leg score, the live match shows the aggregate, and the cup screen lists both legs.
    - The national cups' **semi-finals** are two-legged too; every other round and the final is one match.
-   - **Rewards:** prize money per win and per round, bigger crowds, and a reputation boost for the winner.
-   - See it from the hub (★ tile) or the Cup screen.
+   - **Rewards:** prize money per win and per round (most in the Champions Cup), bigger crowds, and a reputation boost for the winner.
+   - **Older saves:** a Champions Cup with four groups already under way is played out; the new format starts next season.
+   - See it from the hub (★ tile, your club's competition) or the Cup screen.
 11. **National teams** (hub → National Teams):
     - **Competition:** a senior and an **Under-21** Nations Championship for all six nations, home and away. Ten matchdays on Thursdays across five international breaks, so they never clash with club matches.
     - **Call-ups:** before each break the best available players of each nationality are called up. The U21 squad takes the best players aged 21 or under who aren't in the senior squad, academy players included.
@@ -166,7 +169,7 @@ The published game uses near-real club names and generated players. For your own
 - Save files are versioned, and older saves are upgraded automatically.
 
 ## Tests
-With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 123 tests. They cover:
+With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 124 tests. They cover:
 - **World generation:** world, fixtures, cup draws.
 - **Lineup rules.**
 - **Live-match mechanics.**
@@ -213,7 +216,8 @@ src/core/                     game logic: no DOM access, testable
   transfers.js    windows, prices, offers, AI deals, contracts, market search
   finance.js      gate receipts, TV & sponsors, wages, running costs, prizes
   newsfeed.js     extra news: previews, big results, hat-tricks, leaders, big transfers, board verdicts
-  continental.js  Continental Champions Cup: qualification, group draw, groups, knockouts, history
+  continental.js  the three European competitions: qualification, league phase, knockouts, history
+  guests.js       guest countries and clubs for the European competitions, the real 2026/27 guests
   stadium.js      crowd demand, stadium expansion (user and AI)
   scouting.js     hidden potential, scouting staff levels, assignments and reports
   loans.js        loans in both directions, AI loan offers, B-team partner club

@@ -271,7 +271,7 @@ export function nextUserFixture(game) {
 
 export function seasonComplete(game) {
   return Object.values(game.fixtures).every((f) => f.result)
-    && Object.values(game.competitions).every((c) => c.type === 'league' || c.type === 'national' || c.type === 'friendly' || c.winnerId
+    && Object.values(game.competitions).every((c) => c.type === 'league' || c.type === 'national' || c.type === 'friendly' || c.type === 'guest' || c.winnerId
       || (c.type === 'continental' && !c.clubIds.length));
 }
 

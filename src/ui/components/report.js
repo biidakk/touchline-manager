@@ -10,6 +10,7 @@ export function roundLabel(game, f) {
   const c = game.competitions[f.compId];
   const leg = f.leg === 1 ? ' · 1st leg' : f.leg === 2 ? ' · 2nd leg' : '';
   if (c.type === 'continental') {
+    if (f.phase === 'league') return `League phase · Matchday ${f.round}`;
     return f.group !== undefined ? `Group ${c.groups[f.group].name} · Matchday ${f.round}` : c.rounds[f.cupRound].name + leg;
   }
   if (c.type === 'national') return `Matchday ${f.round}`;

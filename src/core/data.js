@@ -2,7 +2,7 @@
 
 import { REAL_NATIONS } from './realworld.js';
 
-export const GAME_VERSION = 13;
+export const GAME_VERSION = 15;
 export const START_YEAR = 2026;
 
 // New careers are played in the real-country world (see realworld.js).

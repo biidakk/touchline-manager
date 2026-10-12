@@ -4,7 +4,7 @@
 import { esc } from '../util.js';
 
 const yr = (y) => `${y}/${String(y + 1).slice(2)}`;
-const KIND = { league: 'League', cup: 'Cup', continental: 'Champions Cup', intl: 'Internationals' };
+const KIND = { league: 'League', cup: 'Cup', continental: 'Continental', intl: 'Internationals' };
 
 function result(e, withComp = false) {
   if (!e) return '<span class="dim">-</span>';

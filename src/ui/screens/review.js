@@ -35,7 +35,7 @@ export function render(root, ctx) {
     <div class="fin-list">
       <span>Points</span><b>${s.user.pts}</b>
       <span>${esc(g.competitions[g.nations[C(s.user.clubId).nationId].cupId].name)}</span><b>${esc(s.user.cup || '-')}</b>
-      ${s.user.cont ? `<span>Champions Cup</span><b>${esc(s.user.cont)}</b>` : ''}
+      ${s.user.cont ? `<span>Continental</span><b>${esc(s.user.cont)}</b>` : ''}
       <span>Prize money</span><b>${fmtMoney(s.user.prize)}</b>
       <span>Trophies</span><b>${s.user.trophies.length ? s.user.trophies.map(esc).join(', ') : '-'}</b>
       ${s.user.board ? `<span>Board target</span><b class="${s.user.board.met ? 'good' : 'bad'}" title="${esc(s.user.board.target)}">${s.user.board.met ? 'Met' : 'Missed'}</b>
@@ -58,11 +58,11 @@ export function render(root, ctx) {
         ${s.world.goldenShoe[0] ? `<tr><td><b>Golden Shoe</b></td><td>${icon('trophy')}</td><td>${flag(g.nations[s.world.goldenShoe[0].nationId].flag, 20)} <b>${esc(s.world.goldenShoe[0].name)}</b>
           <span class="muted">(${esc(s.world.goldenShoe[0].clubName)})</span></td><td class="muted">${s.world.goldenShoe[0].goals} league goals, ${s.world.goldenShoe[0].points} points</td></tr>` : ''}
       </table>` : ''}
-    ${s.continental ? `<h2 class="row">${icon('star')} ${esc(s.continental.name)}</h2>
-      <table class="data" style="margin-bottom:14px"><tr><td style="width:190px"><b>Winner</b></td><td>${icon('trophy')}</td>
-        <td><b>${clubLink(g, s.continental.winnerId, { crest: 20 })}</b>
-        <span class="muted">(${esc(g.nations[C(s.continental.winnerId).nationId].name)})</span></td>
-        <td class="muted">Final vs ${s.continental.runnerUpId ? clubLink(g, s.continental.runnerUpId) : '-'}</td></tr></table>` : ''}
+    ${(s.continentals || (s.continental ? [s.continental] : [])).length ? `<h2 class="row">${icon('star')} Continental competitions</h2>
+      <table class="data" style="margin-bottom:14px">${(s.continentals || [s.continental]).map((c) => `<tr><td style="width:190px"><b>${esc(c.name)}</b></td><td>${icon('trophy')}</td>
+        <td><b>${clubLink(g, c.winnerId, { crest: 20 })}</b>
+        <span class="muted">(${esc(g.nations[C(c.winnerId).nationId].name)})</span></td>
+        <td class="muted">Final vs ${c.runnerUpId ? clubLink(g, c.runnerUpId) : '-'}</td></tr>`).join('')}</table>` : ''}
     ${(s.national || []).length ? `<h2 class="row">${icon('flag')} National teams</h2>
       <table class="data" style="margin-bottom:14px">${s.national.map((x) => {
         const t = g.national.teams[x.championId];

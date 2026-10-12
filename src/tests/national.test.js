@@ -19,8 +19,10 @@ test('senior and U21 Nations Championships: 6 teams, home and away, on Thursdays
     const pairs = new Set(fx.map((f) => f.homeId + '>' + f.awayId));
     assertEq(pairs.size, 30, 'every pairing home and away');
   }
-  const clubOnThursday = Object.values(g.fixtures).some((f) => g.competitions[f.compId].type !== 'national' && weekday(f.day) === 4);
-  assert(!clubOnThursday, 'a club match on an international Thursday');
+  // The Continental League and Conference play on Thursdays too, but never in international weeks.
+  const natDays = new Set(Object.values(g.fixtures).filter((f) => g.competitions[f.compId].type === 'national').map((f) => f.day));
+  const clash = Object.values(g.fixtures).find((f) => g.competitions[f.compId].type !== 'national' && natDays.has(f.day));
+  assert(!clash, `a club match on an international Thursday (${clash?.compId})`);
 });
 
 test('a season of internationals: call-ups, caps, tables and champions', () => {

@@ -53,7 +53,12 @@ def main():
                         'Segunda División': 'LaLiga Hypermotion', 'Division 1': 'Ligue 1', 'Division 2': 'Ligue 2',
                         '1. liga': 'Chance Liga', '2. liga': 'Chance Národní liga'},
             'cups': {'English Cup': 'FA Cup', 'Copa de España': 'Copa del Rey', 'Deutscher Pokal': 'DFB-Pokal',
-                     'Český pohár': 'MOL Cup', 'Continental Champions Cup': 'Champions League'}}
+                     'Český pohár': 'MOL Cup', 'Continental Champions Cup': 'Champions League',
+                     'Continental League': 'Europa League', 'Continental Conference': 'Conference League'}}
+    # Real names for the guest clubs of the European competitions (names only).
+    guest_file = os.path.join(ROOT, 'private', 'guest-names.json')
+    if os.path.exists(guest_file):
+        pack['guests'] = json.load(open(guest_file, encoding='utf-8'))
     problems = []
     total = 0
     for fn in sorted(os.listdir(SRC)):

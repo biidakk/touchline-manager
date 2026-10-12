@@ -173,7 +173,7 @@ export function seasonEndPitches(game, rng) {
 // End of season: rich AI clubs with crowds bigger than their stadium build.
 export function aiExpansions(game, rng) {
   for (const club of Object.values(game.clubs)) {
-    if (club.id === game.userClubId || club.stadium.expansion) continue;
+    if (club.id === game.userClubId || club.guest || club.stadium.expansion) continue;
     if (naturalCrowd(club) < club.stadium.capacity * 1.1) continue;
     const seats = rng.pick(EXPANSIONS);
     const q = expansionQuote(club, seats);

@@ -241,7 +241,8 @@ function emergencyOffers(game) {
   const rng = rngFor(game, 'sacked');
   const have = new Set(m.offers.map((o) => o.clubId));
   const aim = m.reputation - 3;
-  const pool = Object.values(game.clubs).filter((c) => c.id !== m.sacked.clubId && !have.has(c.id))
+  // Guest clubs (European competitions only) have no league to manage in.
+  const pool = Object.values(game.clubs).filter((c) => c.id !== m.sacked.clubId && !have.has(c.id) && !c.guest)
     .sort((a, b) => Math.abs(a.reputation - aim) - Math.abs(b.reputation - aim)).slice(0, 10);
   for (const o of m.offers) o.expires = Math.max(o.expires, game.day + 3650);
   while (m.offers.length < 3 && pool.length) {
@@ -435,7 +436,7 @@ export function aiBoardAfterMatch(game, f) {
 
 // ---- end of season ----
 
-const TROPHY_REP = { league1: 8, league2: 3, cup: 3, continental: 10 };
+const TROPHY_REP = { league1: 8, league2: 3, cup: 3, continental1: 10, continental2: 6, continental3: 4 };
 
 // Called in endSeason before reputations, promotion and relegation change.
 // Returns the AI clubs that will look for a new manager in the summer.
@@ -455,7 +456,7 @@ export function seasonEndBoard(game, summary, finalTables, trophies) {
   let rep = clamp(gap * 0.7, -6, 6) + (club.reputation - m.reputation) * 0.08;
   for (const tr of trophies) {
     const c = game.competitions[tr.compId];
-    const key = c.type === 'league' ? `league${c.tier}` : c.type;
+    const key = c.type === 'league' ? `league${c.tier}` : c.type === 'continental' ? `continental${c.level || 1}` : c.type;
     score += c.type === 'league' && c.tier === 1 ? 10 : 6;
     rep += TROPHY_REP[key] || 3;
   }

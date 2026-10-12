@@ -251,7 +251,7 @@ function clubLevel(game, club) {
 function aiOffersForUser(game, rng) {
   const user = game.clubs[game.userClubId];
   game.offers = (game.offers || []).filter((o) => o.expires >= game.day && game.players[o.playerId]?.clubId === user.id);
-  const others = Object.values(game.clubs).filter((c) => c.id !== user.id);
+  const others = Object.values(game.clubs).filter((c) => c.id !== user.id && !c.guest);
   for (const id of user.squad) {
     const p = game.players[id];
     if (p.loan) continue; // borrowed players aren't ours to sell
@@ -276,7 +276,8 @@ function aiOffersForUser(game, rng) {
 // AI clubs buy from each other: mostly players who improve their XI from
 // clubs of similar or lower standing.
 function aiDeals(game, rng) {
-  const clubs = Object.values(game.clubs).filter((c) => c.id !== game.userClubId);
+  // Guest clubs stay out of the AI market (their squads are kept up at season end).
+  const clubs = Object.values(game.clubs).filter((c) => c.id !== game.userClubId && !c.guest);
   const all = clubs.flatMap((c) => c.squad.map((id) => game.players[id])).filter((p) => !p.loan);
   const deals = rng.int(1, 4); // attempts per window day; many find nothing suitable
   for (let k = 0; k < deals; k++) {

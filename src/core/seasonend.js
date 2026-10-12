@@ -10,7 +10,7 @@ import { retireChance, youthIntake, maintainAiSquad, ensureUserSquad, ACADEMY_MA
 import { emptyLedger, boardExpectation } from './worldgen.js';
 import { settleSeason, expectedWageBill, wageBill } from './finance.js';
 import { executeTransfer } from './transfers.js';
-import { closeContinental } from './continental.js';
+import { closeContinentals } from './continental.js';
 import { aiExpansions, seasonEndPitches } from './stadium.js';
 import { ageReports, potText, potEstimate } from './scouting.js';
 import { returnLoans } from './loans.js';
@@ -111,7 +111,9 @@ export function endSeason(game) {
     }
   }
 
-  summary.continental = closeContinental(game, year);
+  // All continental finals of the season; summary.continental is the Champions Cup's.
+  summary.continentals = closeContinentals(game, year);
+  summary.continental = summary.continentals.find((c) => c.level === 1) || null;
   summary.national = closeNational(game, year);
   summary.nationalJob = seasonEndNational(game);
 
@@ -129,7 +131,7 @@ export function endSeason(game) {
   const leaving = seasonEndBoard(game, summary, finalTables, trophies);
   game.manager.history.at(-1).board = summary.user.board;
   game.history.seasons.push({ year, champions: summary.leagues.map((l) => ({ compId: l.compId, clubId: l.championId })),
-    cups: [...summary.cups, ...(summary.continental ? [summary.continental] : [])].map((c) => ({ compId: c.compId, clubId: c.winnerId })),
+    cups: [...summary.cups, ...summary.continentals].map((c) => ({ compId: c.compId, clubId: c.winnerId })),
     awards: summary.leagues.map((l) => ({ compId: l.compId, topScorer: l.topScorer, bestPlayer: l.bestPlayer, youngPlayer: l.youngPlayer })) });
 
   // ---- reputation: finishing above or below expectations ----
@@ -212,7 +214,7 @@ export function endSeason(game) {
 
   // ---- AI clubs in debt sell their most valuable player to a richer club ----
   for (const club of Object.values(game.clubs)) {
-    if (club.id === userId || club.budget >= 0 || club.squad.length <= 20) continue;
+    if (club.id === userId || club.guest || club.budget >= 0 || club.squad.length <= 20) continue;
     const star = club.squad.map((id) => game.players[id]).sort((a, b) => b.value - a.value)[0];
     const fee = Math.round(star.value / 1e4) * 1e4;
     const buyers = Object.values(game.clubs).filter((c) => c.id !== userId && c.id !== club.id

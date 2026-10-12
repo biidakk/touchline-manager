@@ -223,6 +223,12 @@ export function applyRealPack(game, pack) {
     a = my - b * mx;
   } else if (fit.length) a = mean(fit.map((j) => j.target - j.rating));
 
+  // Guest clubs (European competitions only): real names, generated squads.
+  for (const [name, real] of Object.entries(pack.guests || {})) {
+    const club = byBase.get(name);
+    if (club?.guest && typeof real === 'string' && real.trim()) setClubName(game, club, real.trim(), real.trim().length <= 14 ? real.trim() : null);
+  }
+
   let count = 0;
   for (const { club, e, players, target, rating } of jobs) {
     if (typeof e.real === 'string' && e.real.trim()) setClubName(game, club, e.real.trim(), typeof e.short === 'string' && e.short.trim() ? e.short.trim().slice(0, 14) : null);

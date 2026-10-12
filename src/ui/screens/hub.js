@@ -7,6 +7,7 @@ import { confidence, confidenceLevel } from '../../core/board.js';
 import { teamOf } from '../../core/national.js';
 import { decisionsDue } from '../../core/commercial.js';
 import { tourDue } from '../../core/preseason.js';
+import { continentalOf } from '../../core/continental.js';
 import { matchReport, scoreText, outcomeFor, roundLabel } from '../components/report.js';
 import { lineupQuality } from '../../core/ratings.js';
 import { fmtDate } from '../../core/calendar.js';
@@ -100,7 +101,8 @@ export function render(root, ctx, params = {}) {
     const from = Math.max(0, Math.min(pos - 2, table.length - 5));
     const prog = leagueProgress(g, club.id);
 
-    const cont = g.competitions.CCC;
+    // The club's continental competition this season, else the Champions Cup.
+    const cont = continentalOf(g, club.id) || g.competitions.CCC;
     const compTiles = [...nation.leagueIds.map((id) => g.competitions[id]), cup, ...(cont ? [cont] : [])].map((c) => `
       <div class="comp-tile" data-action="comp" data-id="${c.id}" title="${esc(c.name)}">
         ${icon(c.type === 'league' ? 'table' : c.type === 'continental' ? 'star' : 'trophy', 'ico big')}<span>${esc(c.name)}</span></div>`).join('');

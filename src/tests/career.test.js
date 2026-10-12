@@ -62,7 +62,7 @@ test(`a ${SEASONS}-season career runs and the world stays healthy`, () => {
         }
       }
     }
-    assertEq(seen.size, Object.keys(g.clubs).length, 'every club in a league');
+    assertEq(seen.size, Object.values(g.clubs).filter((c) => !c.guest).length, 'every club in a league');
     for (const club of Object.values(g.clubs)) {
       const min = club.id === g.userClubId ? 18 : 22;
       assertBetween(club.squad.length, min, 34, `${club.name} squad size`);
@@ -110,7 +110,7 @@ test('career history, trophies and records are kept', () => {
   assertEq(g.manager.history.length, SEASONS, 'manager seasons');
   const user = g.clubs[g.userClubId];
   assertEq(user.history.length, SEASONS, 'club history');
-  for (const c of Object.values(g.competitions)) assertEq(c.history.length, SEASONS, `${c.name} history`);
+  for (const c of Object.values(g.competitions).filter((x) => x.type !== 'guest')) assertEq(c.history.length, SEASONS, `${c.name} history`);
   const won = g.manager.history.reduce((a, h) => a + h.trophies.length, 0);
   assertEq(g.history.trophies.length, won, 'trophies list');
   info(`User club: ${user.name}; trophies ${won}; finishes: ${g.manager.history.map((h) => `${h.tier}.${h.pos}`).join(' ')}`);

@@ -270,4 +270,3 @@ export const REAL_NATIONS = [
 ];
 
 // Continental places by country (16 in total).
-export const REAL_QUOTAS = { ENG: 3, ESP: 3, ITA: 3, GER: 3, FRA: 2, CZE: 2 };

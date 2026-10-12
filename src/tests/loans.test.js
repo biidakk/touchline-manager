@@ -58,12 +58,14 @@ test('wages are split between the parent club and the borrower', () => {
 test('AI clubs make loan offers for listed and unused young players, and loans can be accepted', () => {
   const g = career('offers');
   const user = g.clubs[g.userClubId];
-  const p = g.players[user.squad.filter((id) => !user.lineup.slots.includes(id) && g.players[id].pos !== 'G')[0]];
-  listForLoan(g, p.id);
-  const loanOffer = () => (g.offers || []).find((o) => o.type === 'loan' && o.playerId === p.id);
+  // Three players on the loan list (offers come at about 10% a day each, from the end of pre-season).
+  const listed = user.squad.filter((id) => !user.lineup.slots.includes(id) && g.players[id].pos !== 'G').slice(0, 3);
+  for (const id of listed) listForLoan(g, id);
+  const loanOffer = () => (g.offers || []).find((o) => o.type === 'loan' && listed.includes(o.playerId));
   for (let i = 0; i < 45 && !loanOffer(); i++) startDay(g);
   const o = loanOffer();
   assert(o, 'no loan offer in the summer window');
+  const p = g.players[o.playerId];
   assert(acceptLoanOffer(g, o.id), 'accept failed');
   assertEq(p.clubId, o.clubId);
   assert(loanedOutBy(g, user.id).includes(p), 'listed as loaned out');

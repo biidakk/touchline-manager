@@ -12,6 +12,8 @@ import { esc, fmtMoneyShort, bindActions, fullName } from '../util.js';
 import { setClubName } from '../../core/renames.js';
 import { recordsHtml, clubSeasonsHtml } from '../components/records.js';
 import { clubHistoryHtml, loadHistory } from '../components/clubhistory.js';
+import { GUEST_COMP_ID } from '../../core/guests.js';
+import { continentalOf } from '../../core/continental.js';
 
 const POS_ORDER = { G: 0, D: 1, M: 2, F: 3 };
 
@@ -25,7 +27,10 @@ export function render(root, ctx, params = {}) {
   function draw() {
     if (st.tab === 'history') loadHistory(g.clubs[st.clubId].nationId, () => { if (st.tab === 'history') draw(); });
     const comp = g.competitions[st.compId];
-    const table = sortedTable(g, comp);
+    // Guest clubs have no league: they are listed by reputation.
+    const guests = comp.type === 'guest';
+    const table = guests ? comp.clubIds.slice().sort((a, b) => g.clubs[b].reputation - g.clubs[a].reputation).map((clubId) => ({ clubId }))
+      : sortedTable(g, comp);
     const club = g.clubs[st.clubId];
     const nation = g.nations[club.nationId];
     const pos = table.findIndex((r) => r.clubId === club.id) + 1;
@@ -39,10 +44,10 @@ export function render(root, ctx, params = {}) {
       <div class="row" style="gap:6px;flex-wrap:wrap">${nations.flatMap((n) => n.leagueIds).map((id) => {
         const c = g.competitions[id];
         return `<button class="btn btn-small ${id === st.compId ? '' : 'btn-blue'}" style="min-width:0;padding:0 8px" data-action="comp" data-id="${id}" title="${esc(c.name)}">${flag(g.nations[c.nationId].flag, 16)} ${c.tier}</button>`;
-      }).join('')}</div>
+      }).join('')}${g.competitions[GUEST_COMP_ID] ? `<button class="btn btn-small ${guests ? '' : 'btn-blue'}" style="min-width:0;padding:0 8px" data-action="comp" data-id="${GUEST_COMP_ID}" title="Clubs from other countries that play in the European competitions">${icon('star')} Guests</button>` : ''}</div>
       <h2 style="margin:12px 0 6px">${esc(comp.name)}</h2>
       <div class="scroll" style="flex:1"><table class="data">${table.map((r, i) => `<tr class="click ${r.clubId === st.clubId ? 'sel' : ''} ${r.clubId === g.userClubId ? 'me' : ''}" data-action="club" data-id="${r.clubId}">
-        <td class="num" style="width:22px">${i + 1}.</td><td style="width:24px">${crest(g.clubs[r.clubId].crest, 20)}</td><td>${esc(g.clubs[r.clubId].name)}</td></tr>`).join('')}</table></div>
+        <td class="num" style="width:22px">${guests ? flag(g.nations[g.clubs[r.clubId].nationId].flag, 16) : `${i + 1}.`}</td><td style="width:24px">${crest(g.clubs[r.clubId].crest, 20)}</td><td>${esc(g.clubs[r.clubId].name)}</td></tr>`).join('')}</table></div>
     </div>
     <div class="panel" style="left:318px;top:92px;width:942px;height:200px">
       <div class="row" style="gap:20px;align-items:flex-start">
@@ -50,7 +55,7 @@ export function render(root, ctx, params = {}) {
         <div style="flex:1">
           <div class="row" style="gap:12px"><span style="font-size:26px;font-weight:900">${esc(club.name)}</span>
             <button class="linkbtn muted" style="font-size:13px" data-action="rename" title="Rename this club (your copy only)">Rename</button></div>
-          <div class="row muted">${flag(nation.flag, 18)} ${esc(nation.name)} · ${esc(comp.name)} · ${pos}. place · Manager: ${esc(club.id === g.userClubId ? g.manager.name : club.manager?.name || 'caretaker')}</div>
+          <div class="row muted">${flag(nation.flag, 18)} ${esc(nation.name)} · ${guests ? esc(continentalOf(g, club.id)?.name || 'no European football this season') : `${esc(comp.name)} · ${pos}. place`} · Manager: ${esc(club.id === g.userClubId ? g.manager.name : club.manager?.name || 'caretaker')}</div>
           <div class="row" style="gap:28px;margin-top:12px;align-items:flex-start">
             <div class="fin-list" style="width:260px"><span>Stadium</span><b>${esc(club.stadium.name)}</b><span>Capacity</span><b>${club.stadium.capacity.toLocaleString('en-US')}</b>
               <span>Reputation</span><b>${club.reputation}</b><span>Money</span><b>${fmtMoneyShort(club.budget)}</b></div>

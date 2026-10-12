@@ -18,7 +18,7 @@ import { nationalMatchRecords } from './records.js';
 
 export const NAT_IDS = { senior: 'NAT', u21: 'NAT21' };
 const SQUAD_SHAPE = { G: 3, D: 7, M: 7, F: 6 }; // 23 players
-const BREAK_WEEKS = [1, 2, 7, 8, 14, 15, 21, 22, 27, 28]; // weekend indices; matches on the following Thursday
+export const BREAK_WEEKS = [1, 2, 7, 8, 14, 15, 21, 22, 27, 28]; // weekend indices; matches on the following Thursday
 
 export const teamOf = (game, id) => game.clubs[id] || game.national?.teams[id];
 export const isNational = (game, f) => game.competitions[f.compId]?.type === 'national';
