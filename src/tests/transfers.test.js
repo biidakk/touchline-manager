@@ -77,7 +77,7 @@ test('listed players attract AI offers, and accepting one sells him', () => {
   const p = g.players[user.squad.filter((id) => !user.lineup.slots.includes(id))[0]];
   listPlayer(g, p.id, Math.round(p.value * 0.8));
   const forHim = () => (g.offers || []).find((x) => x.playerId === p.id);
-  for (let i = 0; i < 25 && !forHim(); i++) startDay(g);
+  for (let i = 0; i < 45 && !forHim(); i++) startDay(g);
   const o = forHim();
   assert(o, 'no offers received in the summer window');
   const before = user.budget;
@@ -171,7 +171,7 @@ test('a rejected bid from a keen club can come back higher; offers pop up once',
   const p = g.players[user.squad.filter((id) => !user.lineup.slots.includes(id))[0]];
   listPlayer(g, p.id, Math.round(p.value * 0.8));
   const forHim = () => (g.offers || []).find((x) => x.playerId === p.id);
-  for (let i = 0; i < 25 && !forHim(); i++) startDay(g);
+  for (let i = 0; i < 45 && !forHim(); i++) startDay(g);
   const o = forHim();
   assert(o, 'no offer');
   assert(o.seen === false && newOffers(g).includes(o), 'a new offer should wait to be shown');

@@ -105,6 +105,7 @@ test('an old save without the competition is migrated and plays a normal season'
   const m = deserialize(serialize(old));
   assert(m.competitions[CONTINENTAL_ID], 'competition added');
   startCareer(m, m.competitions['CZE-L1'].clubIds[0], 'Old');
+  m.manager.board.standing = 100; // a patient board: a sacking would stop the simulated season
   simulateRestOfSeason(m);
   assertEq(m.season.phase, 'over', 'season should finish without a continental cup');
   endSeason(m);

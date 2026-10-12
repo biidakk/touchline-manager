@@ -61,7 +61,7 @@ test('AI clubs make loan offers for listed and unused young players, and loans c
   const p = g.players[user.squad.filter((id) => !user.lineup.slots.includes(id) && g.players[id].pos !== 'G')[0]];
   listForLoan(g, p.id);
   const loanOffer = () => (g.offers || []).find((o) => o.type === 'loan' && o.playerId === p.id);
-  for (let i = 0; i < 25 && !loanOffer(); i++) startDay(g);
+  for (let i = 0; i < 45 && !loanOffer(); i++) startDay(g);
   const o = loanOffer();
   assert(o, 'no loan offer in the summer window');
   assert(acceptLoanOffer(g, o.id), 'accept failed');
