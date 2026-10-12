@@ -57,11 +57,11 @@ The published game uses near-real club names and generated players. For your own
 2. **Hub:**
    - **Menu:** My Team, Other Teams, Season Schedule, My Career, Search, Transfer Market, Training, Finances, plus your league and cup.
    - **Panels:** your last result and next three fixtures (Full schedule for the rest), news, the transfer ticker, your club card and the season table.
-   - **CONTINUE** plays the calendar up to your next match. It also stops when the winter transfer window opens, and at the end of the season. At the start of a season (and after taking over a club) it reads **PREPARE SEASON** first: see Season preparations below.
+   - **CONTINUE** plays the calendar up to your next match. It also stops when the winter transfer window opens, on a day a club makes an offer for one of your players (see Selling), and at the end of the season. At the start of a season (and after taking over a club) it reads **PREPARE SEASON** first: see Season preparations below.
 3. **My Team:**
    - **Picking the team:** drag players between the squad list and the pitch, or click two players to swap them. Choose a formation (4-4-2, 4-3-3, 4-5-1, 3-5-2, 5-3-2) or use **Auto pick**.
    - **Out of position:** a player outside his natural position plays at 70 % of his skill, and at 25 % in or out of goal.
-   - **Player card** (click a player): make him captain, set-piece taker or penalty taker; put him on the transfer list (**Sell…**); offer a new **Contract…**; or **Release** him.
+   - **Player card** (click a player): make him captain, set-piece taker or penalty taker; put him on the transfer list (**Sell…**); loan him out (**Loan…**); offer a new **Contract…**; or **Release** him. While the card is open it takes the right-hand column; close it with **✕** to get the Youth, Transfers, Training and Back buttons again.
    - **Career history** (double-click any player, in the list, on the pitch or in the Detail tab): his full card with a season-by-season table (one row per club, so a mid-season move shows both clubs) with apps, goals, assists and average rating, career totals, international caps and his awards.
    - **Skill changes:** when a player's skill goes up his number turns **green** (▲), when it drops **red** (▼). The colour stays for your next two matches.
    - **Tactics:** attacking intent 0–100 % and a play style (Normal / Passing / Crosses / Through-balls; the styles counter each other in a triangle).
@@ -73,11 +73,11 @@ The published game uses near-real club names and generated players. For your own
    - **Tactics & subs** is available at any time, and opens automatically at half-time and when one of your players is injured. Drag a substitute onto a player to bring him on.
 5. **Transfers:**
    - **Windows:** summer (pre-season to 31 Aug) and January.
-   - **Buying:** search with filters, bid, and handle counter-offers. Stars won't drop to much smaller clubs.
-   - **Selling:** list players and accept or reject AI offers under Transfer Market → Selling.
+   - **Buying:** search with filters, bid, and handle counter-offers. Players don't drop down: a club's stature is its reputation plus the strength of its country's league, and the bigger the step down from his club and the better he is for yours, the less willing he is (a top Czech club can sign only about one in eight of the world's best players, a mid-table Czech club almost none). Players who want to leave and players of 32 and over bend more, and players going on loan (young ones most) a lot. The search marks players who won't come with **won't join**.
+   - **Selling:** list players with **Sell…**. Each new offer, for a sale or a loan, pops up in the middle of the screen: **Sell** (or **Loan him**), **Reject**, or **Decide later** (it stays under Transfer Market → Selling until it runs out after a week). A club that really wants the player may come back a few days after a rejection with a better bid, 10–25 % higher, at most twice; the more he would improve their team, the more likely they are to come back.
    - **Contracts:** expiring contracts must be renewed, or the player leaves for free in the summer.
 6. **Loans and B-team cooperation:**
-   - **Loaning out:** use **Loan…** on a player's card in My Team to put him on the loan list. AI clubs make loan offers with a fee and the share of his wage they'll pay; accept them under Transfer Market → Selling.
+   - **Loaning out:** use **Loan…** on a player's card in My Team. It offers up to three ways: send him to your **B-team partner** (if you have one), **choose a club now** from up to six clubs of his level that want him (each shows whether he would start, the loan fee and the share of his wage they pay; the list changes weekly), or put him on the **loan list** and wait for offers, which pop up like transfer offers. Loans are agreed only during a transfer window.
    - **Unprompted offers:** AI clubs also approach you on their own, with loan offers for young players who aren't playing and transfer offers for good players.
    - **Borrowing:** in the market, pick a player who isn't a regular starter at his club and use **Ask for loan**. You pay a loan fee and choose to cover 50/75/100 % of his wage; clubs want at least 75 % for older players.
    - **Loan rules:** loans run until the end of the season and the players then return. Borrowed players can't be sold or released. Playing time on loan counts for development.
@@ -165,7 +165,7 @@ The published game uses near-real club names and generated players. For your own
 - Save files are versioned, and older saves are upgraded automatically.
 
 ## Tests
-With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 103 tests. They cover:
+With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 119 tests. They cover:
 - **World generation:** world, fixtures, cup draws.
 - **Lineup rules.**
 - **Live-match mechanics.**

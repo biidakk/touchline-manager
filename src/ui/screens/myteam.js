@@ -6,8 +6,8 @@ import { autoLineup, slotSkill } from '../../core/ai.js';
 import { placePlayer, reshapeLineup, locate, roleTakers, styleShares, saveLineupSlot, loadLineupSlot, BENCH_SIZE,
   slotPositions, repairLineup } from '../../core/lineup.js';
 import { releasePlayer } from '../../core/development.js';
-import { listPlayer, unlistPlayer, contractTerms, renewContract } from '../../core/transfers.js';
-import { partnerOf, loanToPartner, listForLoan, unlistForLoan } from '../../core/loans.js';
+import { listPlayer, unlistPlayer, contractTerms, renewContract, openWindow } from '../../core/transfers.js';
+import { partnerOf, loanToPartner, listForLoan, unlistForLoan, loanSuitors, loanToClub } from '../../core/loans.js';
 import { squadSummary, lineupSkill } from '../../core/ratings.js';
 import { ageOf } from '../../core/valuation.js';
 import { potText, potEstimate } from '../../core/scouting.js';
@@ -85,12 +85,15 @@ export function render(root, ctx) {
       : p.suspension > 0 ? `<span class="bad">Suspended, ${p.suspension} match(es)</span>` : '<span class="good">Available</span>';
     const roleBtn = (key, label) => `<button class="btn btn-small btn-blue ${club.lineup[key] === p.id || (!club.lineup[key] && roles[key] === p.id) ? 'on' : ''}"
       data-action="role" data-key="${key}" ${inXI ? '' : 'disabled'}>${label}</button>`;
-    return `<div class="panel player-card" style="left:984px;top:290px;width:280px;height:252px;padding:10px 14px">
-      <div class="row" style="justify-content:space-between"><span class="big">${p.number}. ${esc(p.last)}</span>${flag(g.nations[p.nationId].flag, 26)}</div>
+    // It takes the whole column under the money panel (the club buttons come back when it is closed),
+    // so the bigger phone text never pushes its buttons over anything else.
+    return `<div class="panel player-card" style="left:984px;top:290px;width:280px;height:414px;padding:10px 14px;overflow-y:auto">
+      <div class="row" style="justify-content:space-between"><span class="big">${p.number}. ${esc(p.last)}</span>
+        <span class="row" style="gap:8px">${flag(g.nations[p.nationId].flag, 26)}<button class="btn btn-small btn-blue" style="min-width:0;padding:0 10px" data-action="deselect" title="Close">✕</button></span></div>
       <div class="muted">${esc(p.first)} · ${{ G: 'Goalkeeper', D: 'Defender', M: 'Midfielder', F: 'Forward' }[p.pos]} · ${ageOf(p, year)} years</div>
       <div class="fin-list" style="margin-top:6px;grid-template-columns:auto 1fr">
         <span>Skill / potential</span><b>${p.skill} / ${potText(g, p)} ${formArrow(p.form)}</b>
-        <span>TEC · PHY · height</span><b>${p.tec} · ${p.phy} · ${p.height} cm</b>
+        <span class="phone-hide">TEC · PHY · height</span><b class="phone-hide">${p.tec} · ${p.phy} · ${p.height} cm</b>
         <span>Morale</span><b><button class="linkbtn" data-action="talk" title="Talk to him">${moraleBadge(p, true)}</button></b>
         <span>Value · wage</span><b>${fmtMoneyShort(p.value)} · ${fmtMoneyShort(p.wage)}</b>
         <span>Contract · status</span><b>${p.contractEnd} · ${status}</b>
@@ -103,6 +106,8 @@ export function render(root, ctx) {
         <button class="btn btn-small btn-blue ${p.contractEnd <= year ? 'on' : ''}" data-action="contract" title="Offer a new contract">Contract…</button>
         <button class="btn btn-small btn-blue" data-action="release">Release</button>
       </div>`}
+      ${p.listed ? `<div class="muted" style="margin-top:8px;font-size:13px">On the transfer list at ${fmtMoneyShort(p.askingPrice)}. Offers pop up when they arrive.</div>` : ''}
+      ${p.loanListed ? '<div class="muted" style="margin-top:8px;font-size:13px">On the loan list. Loan offers pop up when they arrive.</div>' : ''}
     </div>`;
   }
 
@@ -180,12 +185,12 @@ export function render(root, ctx) {
       <div class="info"><div class="fin-list"><span>Stadium</span><b>${esc(club.stadium.name)}</b>
         <span>Capacity</span><b>${club.stadium.capacity.toLocaleString('en-US')} seats</b></div></div></div>`}
 
-    <div class="myteam-actions" style="position:absolute;left:1010px;top:546px;width:228px;display:flex;flex-direction:column;gap:6px">
+    ${sel ? '' : `<div class="myteam-actions" style="position:absolute;left:1010px;top:546px;width:228px;display:flex;flex-direction:column;gap:6px">
       <button class="btn btn-blue" data-action="youth">Youth (${(club.youth || []).length})</button>
       <button class="btn btn-blue" data-action="market">Transfers</button>
       <button class="btn btn-blue" data-action="training">Training</button>
       <button class="btn btn-blue" data-action="back">Back</button>
-    </div>
+    </div>`}
     <div class="hint phone-hide" style="position:absolute;left:412px;top:699px;width:560px;text-align:center">Drag or click two players to swap them. Double-click a player for his career.</div>`;
   }
 
@@ -366,18 +371,34 @@ export function render(root, ctx) {
     training: () => ctx.go('training'),
     talk: async () => { await talkTo(ctx, st.sel); draw(); },
     advice: () => showAdvice(ctx),
+    deselect: () => { st.sel = null; draw(); },
     loan: async () => {
       const p = P(st.sel);
       const partner = partnerOf(g);
+      const suitors = loanSuitors(g, p.id);
+      const inWindow = openWindow(g);
       const options = [];
-      if (partner) options.push({ key: 'partner', label: `Send to partner ${partner.name} (free, they pay his wage)` });
+      if (partner) options.push({ key: 'partner', label: `Send to your B-team partner ${partner.name} (free, they pay his wage)` });
+      if (suitors.length) options.push({ key: 'clubs', label: `Choose a club now (${suitors.length} interested)` });
       options.push(p.loanListed ? { key: 'unlist', label: 'Take him off the loan list' }
-        : { key: 'list', label: 'Put him on the loan list (AI clubs make offers)' });
-      const k = await ctx.choose(`Loan ${p.first} ${p.last} out until the end of the season?`, options);
+        : { key: 'list', label: 'Put him on the loan list and wait for offers' });
+      const notes = [
+        partner ? '' : 'You have no B-team partner yet: pick one on the Youth screen and you can send players there for free.',
+        inWindow ? (suitors.length ? '' : 'No club of his level wants him right now.') : 'Loans can only be agreed during a transfer window; offers for listed players come when it opens.',
+      ].filter(Boolean).join(' ');
+      const k = await ctx.choose(`Loan ${p.first} ${p.last} out until the end of the season?${notes ? ` ${notes}` : ''}`, options);
       if (k === 'partner') {
         const r = loanToPartner(g, p.id);
         ctx.toast(r.message);
         if (r.ok) st.sel = null;
+      } else if (k === 'clubs') {
+        const c = await ctx.choose(`Clubs ready to take ${p.first} ${p.last} on loan:`, suitors.map((s) => ({ key: s.clubId,
+          label: `${g.clubs[s.clubId].name} (${g.competitions[g.clubs[s.clubId].compId].name}) · ${s.starter ? 'would start' : 'squad player'} · ${fmtMoneyShort(s.fee)}, they pay ${Math.round(s.wageShare * 100)}% of his wage` })));
+        if (c) {
+          const r = loanToClub(g, p.id, c);
+          ctx.toast(r.message);
+          if (r.ok) { st.sel = null; await ctx.save({ silent: true }); }
+        }
       } else if (k === 'list') { listForLoan(g, p.id); ctx.toast(`${p.last} is on the loan list`); }
       else if (k === 'unlist') unlistForLoan(g, p.id);
       draw();
@@ -386,7 +407,7 @@ export function render(root, ctx) {
     list: async () => {
       const p = P(st.sel);
       if (p.listed) { unlistPlayer(g, p.id); draw(); return; }
-      const v = await ctx.prompt(`Asking price for ${p.first} ${p.last} (market value ${p.value.toLocaleString('en-US')} €). AI clubs make offers during transfer windows.`,
+      const v = await ctx.prompt(`Asking price for ${p.first} ${p.last} (market value ${p.value.toLocaleString('en-US')} €). Clubs make offers during transfer windows; each one pops up so you can accept or reject it.`,
         String(p.value), { ok: 'List for sale' });
       if (v === null) return;
       const price = Number(String(v).replace(/[^0-9.]/g, ''));
@@ -406,7 +427,7 @@ export function render(root, ctx) {
     release: async () => {
       const p = P(st.sel);
       if (club.squad.length <= 16) { ctx.toast('The squad is too small to release anyone'); return; }
-      if (!(await ctx.confirm(`Release ${p.first} ${p.last}? He leaves the club for nothing. (Selling arrives with the transfer market.)`, { ok: 'Release' }))) return;
+      if (!(await ctx.confirm(`Release ${p.first} ${p.last}? He leaves the club for nothing. (To get a fee, use Sell instead.)`, { ok: 'Release' }))) return;
       releasePlayer(g, club, st.sel);
       st.sel = null;
       club.lineup = repairLineup(g, club, club.lineup).lineup;

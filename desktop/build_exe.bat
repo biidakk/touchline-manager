@@ -5,7 +5,7 @@ cd /d "%~dp0.."
 python -m PyInstaller --noconfirm --clean --onefile --windowed --name TouchlineManager ^
   --distpath app --workpath build\pyinstaller --specpath build ^
   --add-data "%CD%\index.html;." --add-data "%CD%\css;css" --add-data "%CD%\src;src" --add-data "%CD%\names.json;." ^
-  --add-data "%CD%\sw.js;." --add-data "%CD%\manifest.webmanifest;." --add-data "%CD%\icons;icons" --add-data "%CD%\data;data" ^
+  --add-data "%CD%\sw.js;." --add-data "%CD%\manifest.webmanifest;." --add-data "%CD%\icons;icons" --add-data "%CD%\data;data" --add-data "%CD%\realpack.enc;." ^
   desktop\launcher.py
 if errorlevel 1 exit /b 1
 if not exist app\names.json copy names.json app\names.json >nul

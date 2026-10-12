@@ -7,6 +7,7 @@
 // the season and the player returns to his parent club (or its academy).
 
 import { ageOf, playerValue } from './valuation.js';
+import { Rng, hashSeed } from './rng.js';
 import { addNews } from './season.js';
 import { freeNumber } from './development.js';
 import { repairLineup } from './lineup.js';
@@ -152,7 +153,7 @@ export function evaluateLoanRequest(game, playerId, wageShare) {
   const owner = game.clubs[p.clubId];
   const fee = loanFee(game, p);
   if (fee > user.budget) return { status: 'rejected', message: 'You cannot afford the loan fee.' };
-  const will = willJoin(game, p, user);
+  const will = willJoin(game, p, user, { loan: true });
   if (!will.ok) return { status: 'rejected', message: will.reason };
   const starter = owner.lineup && owner.lineup.slots.includes(p.id);
   if (starter) return { status: 'rejected', message: `${owner.name} won't loan out a regular starter.` };
@@ -207,9 +208,43 @@ export function aiLoanOffers(game, rng) {
     const wageShare = rng.pick([0.5, 0.75, 1]);
     game.offers = game.offers || [];
     game.offers.push({ id: 'o' + (game.ids.offer = (game.ids.offer || 0) + 1), type: 'loan', playerId: id, clubId: club.id,
-      fee, wageShare, day: game.day, expires: game.day + 7 });
+      fee, wageShare, day: game.day, expires: game.day + 7, interest: p.loanListed ? 0.5 : 0.3, seen: false });
     addNews(game, `Loan offer: ${club.name} want ${p.first} ${p.last} on loan (${fee.toLocaleString('en-US')} €, they pay ${wageShare * 100}% of his wage).`, 'offer');
   }
+}
+
+// Clubs ready to take one of the user's players on loan right now (up to 6):
+// clubs of his level that he is willing to join, with what they pay and how
+// much he would play there. The list stays the same for the whole week.
+export function loanSuitors(game, playerId) {
+  const user = game.clubs[game.userClubId];
+  const p = game.players[playerId];
+  if (!p || p.loan || p.clubId !== user.id || !openWindow(game)) return [];
+  const rng = new Rng({ s: hashSeed(`${game.seed}:loan:${playerId}:${Math.floor(game.day / 7)}`) });
+  const fits = Object.values(game.clubs).filter((c) => {
+    if (c.id === user.id || c.id === user.partnerId || c.budget <= 0) return false;
+    const level = clubLevel(game, c);
+    return p.skill >= level - 4 && p.skill <= level + 8 && willJoin(game, p, c, { loan: true }).ok;
+  });
+  const out = [];
+  while (fits.length && out.length < 6) {
+    const c = fits.splice(Math.floor(rng.next() * fits.length), 1)[0];
+    if (!rng.chance(0.6)) continue; // not every club of his level wants him
+    const starter = p.skill >= clubLevel(game, c) + 1;
+    out.push({ clubId: c.id, starter, fee: Math.round((loanFee(game, p) * rng.float(0.5, 1.2) * (starter ? 1.1 : 0.8)) / 1000) * 1000,
+      wageShare: starter ? rng.pick([0.75, 1]) : rng.pick([0.5, 0.75]) });
+  }
+  return out.sort((a, b) => b.starter - a.starter || b.fee - a.fee);
+}
+
+export function loanToClub(game, playerId, clubId) {
+  const s = loanSuitors(game, playerId).find((x) => x.clubId === clubId);
+  const p = game.players[playerId];
+  if (!s) return { ok: false, message: 'That club is no longer interested.' };
+  if (game.clubs[game.userClubId].squad.length <= 18) return { ok: false, message: 'Your squad is too small to loan him out.' };
+  startLoan(game, playerId, clubId, { fee: s.fee, wageShare: s.wageShare });
+  addNews(game, `${p.first} ${p.last} joins ${game.clubs[clubId].name} on loan until the end of the season.`, 'loan');
+  return { ok: true, message: `${p.first} ${p.last} is on loan at ${game.clubs[clubId].name}.` };
 }
 
 export function acceptLoanOffer(game, offerId) {

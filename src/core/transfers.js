@@ -55,12 +55,24 @@ export function wageDemand(game, p, club) {
   return Math.round((base * bump) / 1000) * 1000;
 }
 
-// Does the player want to move to `club`? Stars don't drop far down.
-export function willJoin(game, p, club) {
+// Does the player want to move to `club`? Players don't drop down: the bigger
+// the step down from his club (in reputation and league strength) and the
+// better he is for the new club's level, the less
+// willing he is. Players who want out and older players bend more, loanees (young ones most) a lot.
+export function willJoin(game, p, club, { loan = false } = {}) {
   const seller = game.clubs[p.clubId];
   if (!seller) return { ok: true };
-  const level = 30 + club.reputation * 0.55;
-  if (club.reputation < seller.reputation - 20 && p.skill > level + 10) {
+  // Stature: reputation plus the strength of the club's country, so a top Czech club
+  // still ranks below a mid-table Premier League one.
+  const stature = (c) => c.reputation + 2 * (game.nations[c.nationId]?.strength || 0);
+  const gap = stature(seller) - stature(club); // > 0: a step down
+  const above = p.skill - (30 + club.reputation * 0.55); // how good he is for that club
+  const age = ageOf(p, game.season.year);
+  let slack = 0;
+  if (p.mood?.request) slack += 5;
+  if (age >= 32) slack += 5;
+  if (loan) slack += age <= 22 ? 18 : 10; // a loan is a spell of games, not a move for good
+  if ((gap > 15 + slack && above > -2) || (gap > 6 + slack && above > 8 + slack) || (gap > slack && above > 16 + slack)) {
     return { ok: false, reason: `${p.first} ${p.last} is not interested in joining a club of ${club.name}'s stature.` };
   }
   return { ok: true };
@@ -166,9 +178,43 @@ export function acceptOffer(game, offerId) {
   return true;
 }
 
+// Turning a bid down: a club that really wants the player (high interest) may
+// come back a few days later with a better one, at most twice. Returns true
+// when they will.
 export function rejectOffer(game, offerId) {
-  game.offers = (game.offers || []).filter((o) => o.id !== offerId);
+  const o = (game.offers || []).find((x) => x.id === offerId);
+  game.offers = (game.offers || []).filter((x) => x.id !== offerId);
+  if (!o || !openWindow(game) || (o.raises || 0) >= 2) return false;
+  const rng = new Rng(game.rng);
+  const buyer = game.clubs[o.clubId];
+  if (!rng.chance((o.interest ?? 0.3) * (o.raises ? 0.6 : 1))) return false;
+  const fee = Math.round((o.fee * rng.float(1.1, 1.25)) / 1000) * 1000;
+  if (o.type !== 'loan' && (!buyer || buyer.budget < fee * 1.2)) return false;
+  game.offerQueue = game.offerQueue || [];
+  game.offerQueue.push({ ...o, fee, wageShare: o.type === 'loan' ? Math.min(1, (o.wageShare || 0.5) + 0.25) : o.wageShare,
+    raises: (o.raises || 0) + 1, previous: o.fee, due: game.day + rng.int(1, 3) });
+  return true;
 }
+
+// Improved bids that are due arrive as new offers.
+function releaseQueuedOffers(game) {
+  const user = game.clubs[game.userClubId];
+  const due = (game.offerQueue || []).filter((o) => o.due <= game.day);
+  game.offerQueue = (game.offerQueue || []).filter((o) => o.due > game.day);
+  for (const q of due) {
+    const p = game.players[q.playerId];
+    if (!p || p.clubId !== user.id || p.loan || game.offers.some((o) => o.playerId === q.playerId)) continue;
+    const { due: _, ...rest } = q;
+    const offer = { ...rest, id: 'o' + (game.ids.offer = (game.ids.offer || 0) + 1), day: game.day, expires: game.day + 7, seen: false };
+    game.offers.push(offer);
+    addNews(game, q.type === 'loan'
+      ? `${game.clubs[q.clubId].name} come back for ${p.first} ${p.last} on loan: ${q.fee.toLocaleString('en-US')} € and ${Math.round(offer.wageShare * 100)}% of his wage.`
+      : `${game.clubs[q.clubId].name} improve their bid for ${p.first} ${p.last} to ${q.fee.toLocaleString('en-US')} €.`, 'offer');
+  }
+}
+
+// Offers the user hasn't been shown yet (the game stops for them).
+export const newOffers = (game) => (game.offers || []).filter((o) => o.seen === false && game.players[o.playerId]);
 
 // ---- contracts ----
 
@@ -218,7 +264,10 @@ function aiOffersForUser(game, rng) {
     const buyers = others.filter((c) => c.budget > fee * 1.5 && p.skill >= clubLevel(game, c) - 3 && p.skill <= clubLevel(game, c) + 12);
     if (!buyers.length) continue;
     const buyer = rng.pick(buyers);
-    const offer = { id: 'o' + (game.ids.offer = (game.ids.offer || 0) + 1), playerId: id, clubId: buyer.id, fee, day: game.day, expires: game.day + 7 };
+    // How badly they want him: a player who would walk into their XI, and an unlisted one they had to chase.
+    const interest = Math.min(0.9, 0.25 + Math.max(0, p.skill - clubLevel(game, buyer)) * 0.05 + (p.listed ? 0 : 0.2) + rng.float(0, 0.2));
+    const offer = { id: 'o' + (game.ids.offer = (game.ids.offer || 0) + 1), playerId: id, clubId: buyer.id, fee, day: game.day,
+      expires: game.day + 7, interest, seen: false };
     game.offers.push(offer);
     addNews(game, `Offer: ${buyer.name} bid ${fee.toLocaleString('en-US')} € for ${p.first} ${p.last} (valid 7 days).`, 'offer');
   }
@@ -260,10 +309,15 @@ function aiDeals(game, rng) {
 }
 
 export function dailyMarket(game) {
-  if (!openWindow(game)) { game.offers = (game.offers || []).filter((o) => o.expires >= game.day); return; }
+  if (!openWindow(game)) {
+    game.offers = (game.offers || []).filter((o) => o.expires >= game.day);
+    game.offerQueue = [];
+    return;
+  }
   const rng = new Rng(game.rng);
   aiDeals(game, rng);
   aiOffersForUser(game, rng);
+  releaseQueuedOffers(game);
   aiLoanOffers(game, rng);
 }
 

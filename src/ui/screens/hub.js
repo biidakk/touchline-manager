@@ -13,6 +13,8 @@ import { crest, jersey, flag, icon } from '../components/svg.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
 import { esc, fmtMoney, fmtMoneyShort, fmt1, bindActions } from '../util.js';
 import { clubLink, playerLink, linkClubsInText } from '../components/links.js';
+import { newOffers } from '../../core/transfers.js';
+import { reviewOffers } from '../offers.js';
 
 const MENU = [
   ['team', 'My Team', 'myteam', 'My Team', 3],
@@ -194,8 +196,17 @@ export function render(root, ctx, params = {}) {
       el.disabled = true;
       if (g.season.phase === 'over') return finishSeason();
       // A match day already started (e.g. the page was reloaded at the pre-match screen) is resumed, not skipped.
-      const f = pendingUserFixture(g) || advanceToUserMatch(g);
+      const f = pendingUserFixture(g) || advanceToUserMatch(g, { stopForOffers: true });
       await ctx.save({ silent: true });
+      if (g.stopReason === 'offer') {
+        delete g.stopReason;
+        draw();
+        await reviewOffers(ctx);
+        await ctx.save({ silent: true });
+        draw();
+        return;
+      }
+      if (f && newOffers(g).length) await reviewOffers(ctx);
       if (f) ctx.go('tactics', { mode: 'pre', fixtureId: f.id });
       else if (g.stopReason === 'sacked') {
         delete g.stopReason;
@@ -222,5 +233,7 @@ export function render(root, ctx, params = {}) {
     return;
   }
   draw();
+  // Offers that arrived while away (e.g. on a match day) pop up here.
+  if (newOffers(ctx.game).length) reviewOffers(ctx).then(() => draw());
   if (params.seasonOver) ctx.toast('The season is over. Press Continue for the season review.');
 }

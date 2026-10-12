@@ -2,7 +2,7 @@
 // offers received) and transfer history.
 
 import { searchPlayers, askingPrice, wageDemand, evaluateBid, buyPlayer, openWindow, nextWindow, acceptOffer, rejectOffer,
-  unlistPlayer } from '../../core/transfers.js';
+  unlistPlayer, willJoin } from '../../core/transfers.js';
 import { fmtDate } from '../../core/calendar.js';
 import { ageOf } from '../../core/valuation.js';
 import { crest, flag } from '../components/svg.js';
@@ -68,7 +68,7 @@ export function render(root, ctx, params = {}) {
       <td class="num">${ageOf(p, year)}</td><td class="num">${p.height}</td><td>${flag(g.nations[p.nationId].flag, 18)}</td>
       <td>${clubLink(g, p.clubId, { crest: 18, short: true })}</td>
       <td class="num">${p.skill}</td><td class="num">${potText(g, p)}</td><td class="c">${formArrow(p.form)}</td>
-      <td class="num">${fmtMoneyShort(price)}</td></tr>`).join('');
+      <td class="num">${willJoin(g, p, user).ok ? fmtMoneyShort(price) : `<span class="muted" title="He won't drop down to a club of your stature">won't join</span>`}</td></tr>`).join('');
   }
 
   const head = (k, label, cls = '') => `<th class="${cls}" data-action="sort" data-k="${k}">${label}${st.sortKey === k ? (st.sortDir > 0 ? ' ▲' : ' ▼') : ''}</th>`;
@@ -109,6 +109,7 @@ export function render(root, ctx, params = {}) {
   function sellingTab() {
     const listed = user.squad.map((id) => g.players[id]).filter((p) => p.listed);
     const offers = (g.offers || []).filter((o) => g.players[o.playerId]);
+    for (const o of offers) o.seen = true; // seen here: no pop-up needed
     return `<h2>Offers received</h2>
       <table class="data" style="margin-bottom:16px">${offers.map((o) => {
         const p = g.players[o.playerId];

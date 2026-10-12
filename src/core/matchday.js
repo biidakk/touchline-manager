@@ -9,7 +9,7 @@ import { trainingDay, matchLoad } from './training.js';
 import { moraleDay, moraleAfterMatch } from './morale.js';
 import { boardDay, boardAfterMatch, aiBoardAfterMatch } from './board.js';
 import { receiveGate, payPrize, cupRoundPrize, monthlyFinances } from './finance.js';
-import { dailyMarket, windows } from './transfers.js';
+import { dailyMarket, windows, newOffers } from './transfers.js';
 import { afterResult, afterDay, boardVerdict, opponentPreview } from './newsfeed.js';
 import { checkContinental, applyContinentalResult } from './continental.js';
 import { progressConstruction } from './stadium.js';
@@ -277,8 +277,9 @@ export function seasonComplete(game) {
 // fixture, or null if the user has no fixtures left (the rest of the season
 // is then simulated).
 // It also stops (returning null, with game.stopReason set) on the day the
-// winter transfer window opens, so the winter break can't skip it.
-export function advanceToUserMatch(game) {
+// winter transfer window opens, so the winter break can't skip it, and on a
+// day new offers arrive for the user's players (with stopForOffers, as the game does).
+export function advanceToUserMatch(game, { stopForOffers = false } = {}) {
   const winter = windows(game).find((w) => w.name === 'winter');
   for (let guard = 0; guard < 400; guard++) {
     const target = nextUserFixture(game);
@@ -297,6 +298,11 @@ export function advanceToUserMatch(game) {
     if (game.day === winter.open) {
       game.stopReason = 'window';
       addNews(game, 'The winter transfer window is open until 31 January.', 'transfer');
+      return null;
+    }
+    // Bids and loan offers for the user's players stop the calendar so they can be answered.
+    if (stopForOffers && newOffers(game).some((o) => o.day === game.day)) {
+      game.stopReason = 'offer';
       return null;
     }
   }

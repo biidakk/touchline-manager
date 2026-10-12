@@ -171,6 +171,24 @@ const ctx = {
     });
   },
 
+  // A centred dialog with HTML content and its own buttons; resolves to the
+  // chosen button's key. buttons: [{ key, label, blue? }]
+  dialog(html, buttons, { title = '' } = {}) {
+    return new Promise((resolve) => {
+      const bg = document.createElement('div');
+      bg.className = 'modal-bg';
+      bg.innerHTML = `<div class="panel modal">${title ? `<h2>${esc(title)}</h2>` : ''}<div>${html}</div>
+        <div class="actions">${buttons.map((b) => `<button class="btn btn-small ${b.blue ? 'btn-blue' : ''}" data-k="${esc(b.key)}">${esc(b.label)}</button>`).join('')}</div></div>`;
+      bg.addEventListener('click', (e) => {
+        const b = e.target.closest('[data-k]');
+        if (!b) return;
+        bg.remove();
+        resolve(b.dataset.k);
+      });
+      stage.appendChild(bg);
+    });
+  },
+
   async hasSave() {
     try { return !!(await storage.get(SAVE_KEY)); } catch { return false; }
   },

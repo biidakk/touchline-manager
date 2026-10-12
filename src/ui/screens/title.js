@@ -22,7 +22,7 @@ export function render(root, ctx) {
       <button class="btn btn-blue" data-action="new">New career</button>
       <button class="btn btn-blue" data-action="import">Import save file</button>
     </div>
-    <div class="version">v2.5</div>
+    <div class="version">v2.6</div>
   </div>`;
 
   ctx.hasSave().then((has) => {

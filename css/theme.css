@@ -91,7 +91,9 @@ html.phone .bshirt .pname { font-size: 16px; }
 html.phone .bshirt .pinfo { font-size: 12.5px; }
 html.phone .pitch-foot { font-size: 18px; }
 html.phone .academy-actions .btn, html.phone .player-card .roles button { font-size: 15px; }
-html.phone .player-card .roles.four button { font-size: 14px; }
+html.phone .player-card .roles.four { grid-template-columns: 1fr 1fr; }
+html.phone .player-card .roles.four button { font-size: 15px; }
+html.phone .player-card .fin-list { font-size: 17px; }
 html.phone .rec-h, html.phone .ctl-label { font-size: 18px; }
 html.phone .tac-label { width: 76px; font-size: 16px; line-height: 1.1; }
 html.phone .seg.small button { font-size: 15px; padding: 5px 0; }
