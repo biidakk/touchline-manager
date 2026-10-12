@@ -10,6 +10,7 @@
 import { addNews } from './season.js';
 
 const KEEP = 30; // all-time list entries kept per team (current players are never dropped)
+const KEEP_AI = 15; // other clubs: a shorter list keeps saves small in a big world
 const fullName = (p) => `${p.first} ${p.last}`;
 export const emptyRecords = () => ({ players: {}, seasons: [], wins: {}, defeat: null, crowd: null });
 const recs = (team) => (team.records ||= emptyRecords());
@@ -110,9 +111,11 @@ export function pruneRecords(game) {
     const r = t.records;
     if (!r) continue;
     const ids = Object.keys(r.players);
-    if (ids.length <= KEEP * 2) continue;
+    // The user's club and national teams keep the full lists.
+    const n = t.id === game.userClubId || !game.clubs[t.id] ? KEEP : KEEP_AI;
+    if (ids.length <= n * 2) continue;
     const keep = new Set([...(t.squad || []), ...(t.youth || [])]);
-    const top = (key) => ids.slice().sort((x, y) => r.players[y][key] - r.players[x][key]).slice(0, KEEP);
+    const top = (key) => ids.slice().sort((x, y) => r.players[y][key] - r.players[x][key]).slice(0, n);
     for (const id of [...top('goals'), ...top('apps')]) keep.add(id);
     for (const id of ids) if (!keep.has(id)) delete r.players[id];
   }

@@ -74,12 +74,14 @@ test('bids are refused when the window is closed', () => {
 test('listed players attract AI offers, and accepting one sells him', () => {
   const g = career('sell');
   const user = g.clubs[g.userClubId];
-  const p = g.players[user.squad.filter((id) => !user.lineup.slots.includes(id))[0]];
-  listPlayer(g, p.id, Math.round(p.value * 0.8));
-  const forHim = () => (g.offers || []).find((x) => x.playerId === p.id);
+  // Three players on the list (offers come from the end of pre-season).
+  const listed = user.squad.filter((id) => !user.lineup.slots.includes(id)).slice(0, 3);
+  for (const id of listed) listPlayer(g, id, Math.round(g.players[id].value * 0.8));
+  const forHim = () => (g.offers || []).find((x) => listed.includes(x.playerId) && x.type !== 'loan');
   for (let i = 0; i < 45 && !forHim(); i++) startDay(g);
   const o = forHim();
   assert(o, 'no offers received in the summer window');
+  const p = g.players[o.playerId];
   const before = user.budget;
   assert(acceptOffer(g, o.id), 'accept failed');
   assert(!user.squad.includes(p.id) && g.clubs[o.clubId].squad.includes(p.id), 'not moved');

@@ -168,6 +168,9 @@ export function applyResult(game, f, m) {
   if (user) boardAfterMatch(game, f);
   aiBoardAfterMatch(game, f);
   afterResult(game, f);
+  // Other clubs' matches keep only the score: their scorers and cards are in
+  // the players' stats and the news now, and nobody opens their report.
+  if (!user) { result.goals = []; result.cards = []; }
   return result;
 }
 
@@ -272,6 +275,7 @@ export function nextUserFixture(game) {
 export function seasonComplete(game) {
   return Object.values(game.fixtures).every((f) => f.result)
     && Object.values(game.competitions).every((c) => c.type === 'league' || c.type === 'national' || c.type === 'friendly' || c.type === 'guest' || c.winnerId
+      || (c.type === 'cup' && !c.rounds.length) // a cup added in mid-season starts next season
       || (c.type === 'continental' && !c.clubIds.length));
 }
 

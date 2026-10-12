@@ -22,6 +22,7 @@ import { sortedTable, addNews } from './season.js';
 import { payPrize } from './finance.js';
 import { BREAK_WEEKS } from './national.js';
 import { GUEST_COMP_ID, GUEST_FIRST_SEASON } from './guests.js';
+import { countryRanking, clubTotal, ensureCoefficients } from './coefficients.js';
 
 export const CONTINENTAL_ID = 'CCC';
 export const CONTINENTAL_IDS = ['CCC', 'CEL', 'CCL'];
@@ -81,49 +82,27 @@ function firstSeason(game) {
     .every((n) => !game.competitions[n.leagueIds[0]].history.length);
 }
 
-// Every competition is filled up to 36 clubs with guest clubs (worlds that
-// have them): the real ones in the first season, later the guests by
-// reputation, with a little luck each season so the line-ups change.
 export const FULL_SIZE = 36;
-function addGuestClubs(game, out, rng) {
-  const pool = game.competitions[GUEST_COMP_ID]?.clubIds;
-  if (!pool?.length) return out;
-  const taken = new Set(Object.values(out).flat());
-  if (firstSeason(game)) {
-    const byName = new Map(pool.map((id) => [game.clubs[id].baseName || game.clubs[id].name, id]));
-    for (const id of CONTINENTAL_IDS) {
-      for (const n of GUEST_FIRST_SEASON[id] || []) {
-        const cid = byName.get(n);
-        if (cid && !taken.has(cid) && out[id].length < FULL_SIZE) { out[id].push(cid); taken.add(cid); }
-      }
-    }
-  }
-  const luck = new Map(pool.map((id) => [id, game.clubs[id].reputation + rng.normal(0, 4)]));
-  const ranked = pool.filter((id) => !taken.has(id)).sort((a, b) => luck.get(b) - luck.get(a));
-  for (const id of CONTINENTAL_IDS) {
-    while (out[id].length < FULL_SIZE && ranked.length) out[id].push(ranked.shift());
-  }
-  return out;
-}
 
 // Clubs for all three competitions: { CCC: [...], CEL: [...], CCL: [...] }.
-export function qualifiers(game) {
+export function qualifiers(game, rng) {
+  const byName = new Map(Object.values(game.clubs).map((c) => [c.baseName || c.name, c.id]));
   if (firstSeason(game) && game.nations.ENG) {
-    const byName = new Map(Object.values(game.clubs).map((c) => [c.baseName || c.name, c.id]));
-    const real = Object.fromEntries(CONTINENTAL_IDS.map((id) => [id, FIRST_SEASON[id].map((n) => byName.get(n)).filter(Boolean)]));
-    // A renamed or missing club (an unusual world) falls back to the tables.
-    if (CONTINENTAL_IDS.every((id) => real[id].length === FIRST_SEASON[id].length)) return real;
+    // The real 2026/27 league phases: clubs of the league countries and the guests.
+    const real = Object.fromEntries(CONTINENTAL_IDS.map((id) => [id,
+      [...FIRST_SEASON[id], ...(GUEST_FIRST_SEASON[id] || [])].map((n) => byName.get(n)).filter(Boolean)]));
+    // A renamed or missing club (an unusual world) falls back to the rankings.
+    const want = (id) => FIRST_SEASON[id].length + (game.competitions[GUEST_COMP_ID] ? (GUEST_FIRST_SEASON[id] || []).length : 0);
+    if (CONTINENTAL_IDS.every((id) => real[id].length === want(id))) return real;
   }
+  if (game.nations.ENG) return rankedQualifiers(game, rng);
+  // Older fictional worlds: fixed places per country.
   const out = { CCC: [], CEL: [], CCL: [] };
   const nations = new Set(CONTINENTAL_IDS.flatMap((id) => Object.keys(quotasFor(game, id))));
   for (const nationId of nations) {
     const nation = game.nations[nationId];
     if (!nation) continue;
-    const top = game.competitions[nation.leagueIds[0]];
-    const last = top.history.at(-1);
-    let ids = last ? last.table.map((r) => r.clubId) : top.clubIds.slice().sort((a, b) => game.clubs[b].reputation - game.clubs[a].reputation);
-    // A club relegated last season can't qualify through the table.
-    ids = ids.filter((id) => game.clubs[id]?.compId === top.id);
+    const ids = tableOrder(game, nation);
     const cupWinner = game.competitions[nation.cupId]?.history.at(-1)?.winnerId;
     const taken = new Set();
     const take = (n) => { const got = ids.filter((id) => !taken.has(id)).slice(0, n); got.forEach((id) => taken.add(id)); return got; };
@@ -132,6 +111,58 @@ export function qualifiers(game) {
     if (el && cupWinner && game.clubs[cupWinner] && !taken.has(cupWinner)) { out.CEL.push(cupWinner); taken.add(cupWinner); el--; }
     out.CEL.push(...take(el));
     out.CCL.push(...take(quotasFor(game, 'CCL')[nationId] || 0));
+  }
+  return out;
+}
+
+// A league country's top division in last season's finishing order (by
+// reputation before the first season); relegated clubs can't qualify.
+function tableOrder(game, nation) {
+  const top = game.competitions[nation.leagueIds[0]];
+  const last = top.history.at(-1);
+  const ids = last ? last.table.map((r) => r.clubId) : top.clubIds.slice().sort((a, b) => game.clubs[b].reputation - game.clubs[a].reputation);
+  return ids.filter((id) => game.clubs[id]?.compId === top.id);
+}
+
+// Real-country worlds: places by the country ranking (coefficients.js).
+// League countries send their clubs in table order (the cup winner takes the
+// first Continental League place if it isn't in the Champions Cup); guest
+// countries their strongest guest clubs, with a little luck each season.
+// Places a country can't fill go to the others, best-ranked first.
+function rankedQualifiers(game, rng) {
+  const out = { CCC: [], CEL: [], CCL: [] };
+  const taken = new Set();
+  const guests = game.competitions[GUEST_COMP_ID]?.clubIds || [];
+  const luck = new Map(guests.map((id) => [id, game.clubs[id].reputation + rng.normal(0, 4)]));
+  const ranking = countryRanking(game);
+  const orders = new Map(ranking.map(({ nationId }) => {
+    const nation = game.nations[nationId];
+    const ids = nation.leagueIds.length ? tableOrder(game, nation)
+      : guests.filter((id) => game.clubs[id].nationId === nationId).sort((a, b) => luck.get(b) - luck.get(a));
+    return [nationId, ids];
+  }));
+  const next = (nationId) => (orders.get(nationId) || []).find((id) => !taken.has(id));
+  const put = (comp, id) => { out[comp].push(id); taken.add(id); };
+  for (const { nationId, places } of ranking) {
+    const nation = game.nations[nationId];
+    for (let i = 0; i < places.CCC; i++) { const id = next(nationId); if (id) put('CCC', id); }
+    let el = places.CEL;
+    const cupWinner = game.competitions[nation.cupId]?.history.at(-1)?.winnerId;
+    if (el && cupWinner && game.clubs[cupWinner] && !taken.has(cupWinner)) { put('CEL', cupWinner); el--; }
+    for (let i = 0; i < el; i++) { const id = next(nationId); if (id) put('CEL', id); }
+    for (let i = 0; i < places.CCL; i++) { const id = next(nationId); if (id) put('CCL', id); }
+  }
+  // Unfilled places: one more club from each country in ranking order, round after round.
+  for (const comp of CONTINENTAL_IDS) {
+    let progress = true;
+    while (out[comp].length < FULL_SIZE && progress) {
+      progress = false;
+      for (const { nationId } of ranking) {
+        if (out[comp].length >= FULL_SIZE) break;
+        const id = next(nationId);
+        if (id) { put(comp, id); progress = true; }
+      }
+    }
   }
   return out;
 }
@@ -160,9 +191,20 @@ function leagueSchedule(game, ids, M, rng) {
   for (let k = 1; k < n / 2 && even.length < M / 2; k++) if ((n / gcd(n, k)) % 2 === 0) even.push(k);
   const exact = even.length === M / 2;
   const dists = exact ? even : Array.from({ length: M / 2 }, (_, i) => i + 1);
+  // Seeding (real-country worlds): four pots by club coefficient, alternating
+  // round the circle, so the clubs at the chosen distances come from other pots.
+  const seeded = game.coefficients && n % 4 === 0;
+  const pots = seeded ? (() => {
+    const order = ids.slice().sort((x, y) => clubTotal(game, y) - clubTotal(game, x));
+    return [0, 1, 2, 3].map((k) => order.slice((k * n) / 4, ((k + 1) * n) / 4));
+  })() : null;
   let best = null;
   for (let attempt = 0; attempt < 400; attempt++) {
-    const ring = rng.shuffle(ids.slice());
+    let ring;
+    if (pots) {
+      const shuffled = pots.map((pot) => rng.shuffle(pot.slice()));
+      ring = ids.map((_, i) => shuffled[i % 4][Math.floor(i / 4)]);
+    } else ring = rng.shuffle(ids.slice());
     let clashes = 0;
     for (const k of dists) for (let i = 0; i < n; i++) if (nat(ring[i]) === nat(ring[(i + k) % n])) clashes++;
     if (!best || clashes < best.clashes) best = { ring, clashes };
@@ -238,7 +280,8 @@ function continentalDates(game, dates, id, leagueDays, koRounds) {
 export function initContinental(game, dates, rng) {
   if (!game.competitions[CONTINENTAL_ID]) return;
   createContinental(game);
-  const q = addGuestClubs(game, qualifiers(game), rng);
+  if (game.nations.ENG) ensureCoefficients(game);
+  const q = qualifiers(game, rng);
   for (const id of CONTINENTAL_IDS) {
     const comp = game.competitions[id];
     comp.clubIds = q[id] || [];

@@ -10,7 +10,7 @@ import { Rng } from './rng.js';
 import { ensurePersonalities } from './morale.js';
 import { ensureManager } from './board.js';
 import { startNationalJobs } from './nationaljob.js';
-import { makeManager, addGuests } from './worldgen.js';
+import { makeManager, addGuests, addLeagueCountries } from './worldgen.js';
 
 // Each entry upgrades a save from version `from` to `from + 1`.
 const MIGRATIONS = {
@@ -118,10 +118,21 @@ const MIGRATIONS = {
     if (game.nations.ENG) addGuests(game);
     game.version = 15;
   },
+  // The league countries beyond the original six (top 25 by coefficient, plus
+  // Iran) and the coefficients. The new leagues play from the next season.
+  15: (game) => {
+    if (game.nations.ENG) addLeagueCountries(game);
+    game.version = 16;
+  },
 };
 
+// Fractions are kept to three decimals (energy, fatigue, training progress,
+// rating sums...): 85.75319999999999 is saved as 85.753. Whole numbers, such
+// as the random-number state and money, are untouched.
+const round3 = (k, v) => (typeof v === 'number' && !Number.isInteger(v) ? Math.round(v * 1000) / 1000 : v);
+
 export function serialize(game) {
-  return JSON.stringify({ format: 'touchline-save', savedAt: new Date().toISOString(), game });
+  return JSON.stringify({ format: 'touchline-save', savedAt: new Date().toISOString(), game }, round3);
 }
 
 export function deserialize(text) {

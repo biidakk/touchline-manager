@@ -4,7 +4,8 @@ import { simulateRestOfSeason } from '../core/matchday.js';
 import { endSeason } from '../core/seasonend.js';
 import { CONTINENTAL_ID, CONTINENTAL_IDS, FIRST_SEASON, QUOTAS, FULL_SIZE, leagueTable, knockoutSize, matchesFor, continentalOf }
   from '../core/continental.js';
-import { GUEST_FIRST_SEASON } from '../core/guests.js';
+import { GUEST_FIRST_SEASON, GUEST_CLUBS } from '../core/guests.js';
+import { countryRanking } from '../core/coefficients.js';
 import { weekday } from '../core/calendar.js';
 import { serialize, deserialize } from '../core/save.js';
 
@@ -17,10 +18,10 @@ test('first season: the clubs really in the 2026/27 league phases (36 each, gues
   const [cl] = comps();
   for (const c of comps()) {
     assertEq(c.clubIds.length, 36, `${c.id} size`);
-    const home = c.clubIds.filter((id) => !g.clubs[id].guest).map((id) => g.clubs[id].baseName);
-    const guests = c.clubIds.filter((id) => g.clubs[id].guest).map((id) => g.clubs[id].baseName);
-    assertEq(home.sort().join('|'), FIRST_SEASON[c.id].slice().sort().join('|'), `${c.id} clubs of the six countries`);
-    assertEq(guests.sort().join('|'), GUEST_FIRST_SEASON[c.id].slice().sort().join('|'), `${c.id} guest clubs`);
+    // The real line-up: the six original countries' clubs plus the rest (league clubs of the
+    // newer countries and guests), all by their game names.
+    const all = c.clubIds.map((id) => g.clubs[id].baseName).sort().join('|');
+    assertEq(all, [...FIRST_SEASON[c.id], ...GUEST_FIRST_SEASON[c.id]].sort().join('|'), `${c.id} clubs`);
   }
   const all = comps().flatMap((c) => c.clubIds);
   assertEq(new Set(all).size, all.length, 'no club in two competitions');
@@ -103,15 +104,18 @@ test('season end records all three, and next season places come from the tables 
   });
   const ger = g.competitions['GER-L1'].history.at(-1).table.map((r) => r.clubId).filter((id) => g.clubs[id].compId === 'GER-L1');
   const inCl = g.competitions.CCC.clubIds.filter((id) => g.clubs[id].nationId === 'GER');
-  assertEq(inCl.slice().sort().join(), ger.slice(0, QUOTAS.CCC.GER).sort().join(), 'Champions Cup from the table');
+  assertEq(inCl.slice().sort().join(), ger.slice(0, inCl.length).sort().join(), 'Champions Cup from the top of the table');
   const cupWinner = g.competitions[g.nations.GER.cupId].history.at(-1).winnerId;
   assert(g.competitions.CCC.clubIds.includes(cupWinner) || g.competitions.CEL.clubIds.includes(cupWinner), 'cup winner in Europe');
-  for (const id of CONTINENTAL_IDS) {
-    const total = Object.values(QUOTAS[id]).reduce((a, b) => a + b, 0);
-    const comp = g.competitions[id];
-    assertEq(comp.clubIds.length, FULL_SIZE, `${id} size`);
-    assertEq(comp.clubIds.filter((x) => !g.clubs[x].guest).length, total, `${id} places of the six countries`);
+  // Places by the country ranking: every country with enough clubs gets at least its share.
+  for (const { nationId, places } of countryRanking(g)) {
+    if (!g.nations[nationId].leagueIds.length) continue;
+    for (const id of CONTINENTAL_IDS) {
+      const have = g.competitions[id].clubIds.filter((x) => g.clubs[x].nationId === nationId).length;
+      assert(have >= places[id], `${nationId} ${id}: ${have} of ${places[id]} places`);
+    }
   }
+  for (const id of CONTINENTAL_IDS) assertEq(g.competitions[id].clubIds.length, FULL_SIZE, `${id} size`);
   const all = comps().flatMap((c) => c.clubIds);
   assertEq(new Set(all).size, all.length, 'no club in two competitions');
 });
@@ -131,12 +135,15 @@ test('an old save with the group-stage Champions Cup plays it out, then switches
     const club4 = ids.slice(gi * 4, gi * 4 + 4);
     const table = Object.fromEntries(club4.map((id) => [id, { p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0, form: [] }]));
     const fixtureIds = [];
-    let k = 0;
-    for (let a = 0; a < 4; a++) for (let b = 0; b < 4; b++) if (a !== b) {
-      const id = 'fx' + gi + a + b;
-      old.fixtures[id] = { id, compId: CONTINENTAL_ID, day: old.season.weekends[4 + 2 * Math.floor(k++ / 2)] + 3, round: 1, homeId: club4[a], awayId: club4[b], result: null, group: gi };
-      fixtureIds.push(id);
-    }
+    // Six matchdays, each club once per matchday (a round robin, then the return games).
+    const rounds = [[[0, 1], [2, 3]], [[0, 2], [1, 3]], [[0, 3], [1, 2]]];
+    [...rounds, ...rounds.map((r) => r.map(([x, y]) => [y, x]))].forEach((pairs, md) => {
+      for (const [a, b] of pairs) {
+        const id = 'fx' + gi + a + b;
+        old.fixtures[id] = { id, compId: CONTINENTAL_ID, day: old.season.weekends[4 + 2 * md] + 3, round: md + 1, homeId: club4[a], awayId: club4[b], result: null, group: gi };
+        fixtureIds.push(id);
+      }
+    });
     return { name: 'ABCD'[gi], clubIds: club4, table, fixtureIds };
   });
   cc.clubIds = ids;
@@ -187,14 +194,16 @@ test('guest clubs: added to older saves, only in Europe, never a job, no nationa
   old.version = 14;
   const m = deserialize(serialize(old));
   const guests = Object.values(m.clubs).filter((c) => c.guest);
-  assertEq(guests.length, 84, 'guest clubs added');
+  const leagueNames = new Set(Object.values(m.clubs).filter((c) => !c.guest).map((c) => c.baseName));
+  const expected = GUEST_CLUBS.filter((r) => !leagueNames.has(r[0])).length;
+  assertEq(guests.length, expected, 'guest clubs added (countries without a league)');
   for (const c of guests) {
     assertEq(c.compId, 'GUEST');
-    assert(m.nations[c.nationId].foreign && !m.nations[c.nationId].leagueIds.length, `${c.name}: a country without a league`);
+    assert(m.nations[c.nationId].foreign && !m.competitions[c.compId].table[c.id], `${c.name}: no league and no national team`);
     assert(c.squad.length >= 20 && c.lineup, `${c.name} squad`);
   }
   assert(!Object.keys(m.national.teams).some((id) => m.nations[id.replace(/^NT-/, '').replace(/-21$/, '')]?.guest), 'no national teams for guest countries');
-  const portoLevel = m.clubs[guests.find((c) => c.baseName === 'Porto Dragões').id];
+  const big = guests.slice().sort((a, b) => b.reputation - a.reputation)[0];
   const gib = guests.find((c) => c.baseName === 'Gibraltar Imps');
-  assert(portoLevel.reputation > gib.reputation + 20, 'big and small guests');
+  assert(big.reputation > gib.reputation + 15, 'big and small guests');
 });

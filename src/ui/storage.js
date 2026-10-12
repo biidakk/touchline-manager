@@ -1,5 +1,5 @@
 // IndexedDB storage for save games (localStorage's ~5 MB cap is too small for
-// long careers). Values are serialized JSON strings.
+// long careers). Values are serialized JSON strings, compressed (see put).
 
 const DB = 'touchline-manager';
 const STORE = 'saves';
@@ -23,8 +23,30 @@ async function tx(mode, fn) {
   });
 }
 
-export const put = (key, text) => tx('readwrite', (s) => s.put(text, key));
-export const get = (key) => tx('readonly', (s) => s.get(key));
+// Values are stored gzip-compressed where the browser can (CompressionStream:
+// Safari 16.4+, Chrome, Edge): a 20 MB save takes a few MB. Older entries
+// (plain strings) still load.
+const canZip = typeof CompressionStream === 'function' && typeof DecompressionStream === 'function';
+
+async function zip(text) {
+  const stream = new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'));
+  return { gz: await new Response(stream).arrayBuffer() };
+}
+
+async function unzip(value) {
+  const stream = new Blob([value.gz]).stream().pipeThrough(new DecompressionStream('gzip'));
+  return new Response(stream).text();
+}
+
+export async function put(key, text) {
+  const value = canZip ? await zip(text) : text;
+  return tx('readwrite', (s) => s.put(value, key));
+}
+
+export async function get(key) {
+  const value = await tx('readonly', (s) => s.get(key));
+  return value && typeof value === 'object' && value.gz ? unzip(value) : value;
+}
 export const remove = (key) => tx('readwrite', (s) => s.delete(key));
 
 export function downloadText(filename, text) {

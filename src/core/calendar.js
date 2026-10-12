@@ -77,8 +77,16 @@ export function aggregate(game, f) {
   return { h: f.result.h + first.a, a: f.result.a + first.h };
 }
 
+// Clubs meet each other twice; small leagues more often so their season has
+// about as many matches as the others (12 clubs: three times, 10: four).
+export const meetingsFor = (n) => (n <= 10 ? 4 : n <= 12 ? 3 : 2);
+
 export function scheduleLeague(game, comp, dates, rng) {
-  const rounds = roundRobin(comp.clubIds, rng);
+  const double = roundRobin(comp.clubIds, rng);
+  const half = double.length / 2;
+  const m = meetingsFor(comp.clubIds.length);
+  const rounds = m === 4 ? [...double, ...double.map((r) => r.map(([h, a]) => [a, h]))]
+    : m === 3 ? [...double, ...double.slice(0, half)] : double;
   const W = dates.weekends.length;
   const R = rounds.length;
   comp.fixtureIds = [];

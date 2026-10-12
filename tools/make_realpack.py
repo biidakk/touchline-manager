@@ -16,6 +16,20 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'private', 'realpack')
+SRC_NEW = os.path.join(ROOT, 'private', 'realpack-new')
+
+
+def public_league_names():
+    """The newer countries' public league and cup names, from src/core/europe.js."""
+    path = os.path.join(ROOT, 'src', 'core', 'europe.js')
+    if not os.path.exists(path):
+        return {}
+    text = open(path, encoding='utf-8').read()
+    start = text.find('= [')
+    if start < 0:
+        return {}
+    nations = json.loads(text[start + 2:text.rindex(']') + 1])
+    return {n['id']: {'leagues': n['leagues'], 'cup': n['cup']} for n in nations}
 OUT = os.path.join(ROOT, 'realpack.json')
 POS = {'G', 'D', 'M', 'F'}
 
@@ -61,12 +75,29 @@ def main():
         pack['guests'] = json.load(open(guest_file, encoding='utf-8'))
     problems = []
     total = 0
-    for fn in sorted(os.listdir(SRC)):
-        if not fn.endswith('.json'):
-            continue
-        with open(os.path.join(SRC, fn), encoding='utf-8') as f:
+    # The six original countries (private/realpack, keyed by game name) and the
+    # newer league countries (private/realpack-new, keyed by real name; the game
+    # names come from private/new-club-names.json, made by tools/make_leagues.py).
+    names_path = os.path.join(ROOT, 'private', 'new-club-names.json')
+    new_names = json.load(open(names_path, encoding='utf-8')) if os.path.exists(names_path) else {}
+    public = public_league_names()
+    files = [(os.path.join(SRC, fn), False) for fn in sorted(os.listdir(SRC)) if fn.endswith('.json')]
+    if os.path.isdir(SRC_NEW):
+        files += [(os.path.join(SRC_NEW, fn), True) for fn in sorted(os.listdir(SRC_NEW)) if fn.endswith('.json')]
+    for path, keyed_by_real in files:
+        fn = os.path.basename(path)
+        with open(path, encoding='utf-8') as f:
             data = json.load(f)
         clubs = data.get('clubs', {})
+        if keyed_by_real:
+            clubs = {new_names[c.get('real') or r]: {**c, 'real': c.get('real') or r} for r, c in clubs.items() if (c.get('real') or r) in new_names}
+            league_id = data.get('league', fn[:-5])
+            nat, tier = league_id[:3], int(league_id[-1])
+            if nat in public:
+                if data.get('leagueName') and tier <= len(public[nat]['leagues']):
+                    pack['leagues'][public[nat]['leagues'][tier - 1]] = data['leagueName']
+                if data.get('cupName') and tier == 1:
+                    pack['cups'][public[nat]['cup']] = data['cupName']
         n = 0
         for name, c in clubs.items():
             seen = set()

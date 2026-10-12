@@ -3,7 +3,7 @@ import { Rng } from '../core/rng.js';
 import { generateWorld, startCareer } from '../core/worldgen.js';
 import { FORMATIONS, ROLE_POS } from '../core/data.js';
 import { autoLineup } from '../core/ai.js';
-import { weekday } from '../core/calendar.js';
+import { weekday, meetingsFor } from '../core/calendar.js';
 
 const world = generateWorld({ seed: 'test-seed' });
 
@@ -28,15 +28,17 @@ test('same seed gives the same world, different seed a different one', () => {
   assert(JSON.stringify(other) !== JSON.stringify(world), 'different seed produced an identical world');
 });
 
-test('3+ countries, each with 2 tiers of 16-18 clubs and a cup', () => {
+test('league countries: the original six with 2 tiers of 16-18 clubs, the others 1-2 tiers of 10-20; a cup each', () => {
   const playable = Object.values(world.nations).filter((n) => n.leagueIds.length);
   assert(playable.length >= 3, 'fewer than 3 playable countries');
   for (const n of playable) {
-    assertEq(n.leagueIds.length, 2, n.name + ' tiers:');
+    const original = !n.foreign;
+    if (original) assertEq(n.leagueIds.length, 2, n.name + ' tiers:');
     let total = 0;
     for (const id of n.leagueIds) {
       const c = world.competitions[id];
-      assertBetween(c.clubIds.length, 16, 18, c.name + ' size');
+      if (original) assertBetween(c.clubIds.length, 16, 18, c.name + ' size');
+      else assertBetween(c.clubIds.length, 10, 20, c.name + ' size');
       assert(c.clubIds.length % 2 === 0, c.name + ' has an odd number of clubs');
       total += c.clubIds.length;
     }
@@ -84,7 +86,7 @@ test('first tier is stronger than second tier in every country', () => {
     const ps = comp.clubIds.flatMap((id) => world.clubs[id].squad.map((p) => world.players[p].skill));
     return ps.reduce((a, b) => a + b, 0) / ps.length;
   };
-  for (const n of Object.values(world.nations).filter((x) => x.leagueIds.length)) {
+  for (const n of Object.values(world.nations).filter((x) => x.leagueIds.length > 1)) {
     const [t1, t2] = n.leagueIds.map((id) => world.competitions[id]);
     const a1 = avg(t1);
     const a2 = avg(t2);
@@ -93,16 +95,19 @@ test('first tier is stronger than second tier in every country', () => {
   }
 });
 
-test('league fixtures form a valid double round robin on Saturdays', () => {
+test('league fixtures: everyone meets everyone (twice; 3-4 times in small leagues) on Saturdays', () => {
   for (const comp of Object.values(world.competitions).filter((c) => c.type === 'league')) {
     const fx = comp.fixtureIds.map((id) => world.fixtures[id]);
     const n = comp.clubIds.length;
-    assertEq(fx.length, n * (n - 1), comp.name + ' fixture count:');
+    const m = meetingsFor(n);
+    assertEq(fx.length, (m * n * (n - 1)) / 2, comp.name + ' fixture count:');
     const pairs = new Set();
+    const count = {};
     const perRound = {};
     for (const f of fx) {
       const key = f.homeId + '>' + f.awayId;
-      assert(!pairs.has(key), 'duplicate fixture ' + key);
+      count[key] = (count[key] || 0) + 1;
+      assert(count[key] <= Math.ceil(m / 2), 'too many fixtures ' + key);
       pairs.add(key);
       assertEq(weekday(f.day), 6, 'league match not on a Saturday:');
       perRound[f.round] = perRound[f.round] || new Set();

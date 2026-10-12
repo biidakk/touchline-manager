@@ -204,6 +204,22 @@ Object.assign(STYLES, {
       'Hadžić', 'Begić', 'Krajnc', 'Zupan', 'Mlakar', 'Ivanov', 'Georgiev', 'Dimitrov', 'Petrov', 'Hoxha', 'Krasniqi',
       'Berisha', 'Gashi', 'Šimić', 'Brozović', 'Vlašić'],
   },
+  persian: {
+    first: ['Ali', 'Mohammad', 'Mehdi', 'Reza', 'Hossein', 'Amir', 'Saeed', 'Milad', 'Sardar', 'Alireza', 'Karim', 'Omid',
+      'Morteza', 'Vahid', 'Ehsan', 'Majid', 'Arash', 'Hamed', 'Masoud', 'Mohammadreza', 'Payam', 'Shahab', 'Yasin',
+      'Abolfazl', 'Aria', 'Danial', 'Farshad', 'Kaveh', 'Ramin', 'Soroush'],
+    last: ['Ahmadi', 'Hosseini', 'Mohammadi', 'Rezaei', 'Karimi', 'Moradi', 'Jafari', 'Rahimi', 'Ghasemi', 'Kazemi',
+      'Hashemi', 'Mousavi', 'Ebrahimi', 'Sadeghi', 'Azizi', 'Nouri', 'Taheri', 'Shahbazi', 'Gholami', 'Ansari', 'Rostami',
+      'Bagheri', 'Heydari', 'Safari', 'Amiri', 'Nazari', 'Farahani', 'Esmaeili', 'Kiani', 'Zare', 'Torabi', 'Nemati',
+      'Pouraliganji', 'Khalilzadeh', 'Ghoddos', 'Beiranvand'],
+  },
+  israeli: {
+    first: ['Yonatan', 'Omer', 'Itay', 'Daniel', 'Eden', 'Dor', 'Liel', 'Shon', 'Roy', 'Gaby', 'Mohammad', 'Tai', 'Ofir',
+      'Eran', 'Yarden', 'Noam', 'Idan', 'Shay', 'Avi', 'Oscar', 'Mahmoud', 'Ilay', 'Netanel', 'Osher', 'Stav'],
+    last: ['Cohen', 'Levi', 'Mizrahi', 'Peretz', 'Biton', 'Dahan', 'Avraham', 'Friedman', 'Azulay', 'Malka', 'Katz',
+      'Hadad', 'Ohana', 'Gabay', 'Ben Haim', 'Shitrit', 'Elbaz', 'Abu Fani', 'Khalaili', 'Glazer', 'Turgeman', 'Sabag',
+      'Amar', 'Vaknin', 'Nachmias', 'Saba', 'Golan', 'Barak'],
+  },
   eastern: {
     first: ['Jakub', 'Kacper', 'Szymon', 'Mateusz', 'Bartosz', 'Kamil', 'Michał', 'Oleksandr', 'Andriy', 'Mykola',
       'Dmytro', 'Artem', 'Bohdan', 'Valeriy', 'Dominik', 'Ádám', 'Bence', 'Dániel', 'Andrei', 'Alexandru', 'Ionuț',

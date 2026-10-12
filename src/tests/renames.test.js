@@ -6,7 +6,7 @@ import { serialize, deserialize } from '../core/save.js';
 test('the real-country world: six countries, two divisions each, named managers', () => {
   const g = generateWorld({ seed: 'real' });
   // Countries with leagues (the guest countries of the European competitions have none).
-  const nations = Object.values(g.nations).filter((n) => n.leagueIds.length);
+  const nations = Object.values(g.nations).filter((n) => n.leagueIds.length && !n.foreign);
   assertEq(nations.map((n) => n.id).join(), 'ENG,ESP,ITA,GER,FRA,CZE');
   for (const n of nations) assertEq(n.leagueIds.length, 2, `${n.name} divisions`);
   assert(Object.values(g.clubs).every((c) => c.manager && c.manager.name.includes(' ')), 'club without a manager');

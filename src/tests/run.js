@@ -25,6 +25,7 @@ import './records.test.js';
 import './club.test.js';
 import './realpack.test.js';
 import './preseason.test.js';
+import './coefficients.test.js';
 
 const out = document.getElementById('results');
 const summary = document.getElementById('summary');

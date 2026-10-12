@@ -10,7 +10,8 @@ import { retireChance, youthIntake, maintainAiSquad, ensureUserSquad, ACADEMY_MA
 import { emptyLedger, boardExpectation } from './worldgen.js';
 import { settleSeason, expectedWageBill, wageBill } from './finance.js';
 import { executeTransfer } from './transfers.js';
-import { closeContinentals } from './continental.js';
+import { closeContinentals, continentalComps } from './continental.js';
+import { recordSeason } from './coefficients.js';
 import { aiExpansions, seasonEndPitches } from './stadium.js';
 import { ageReports, potText, potEstimate } from './scouting.js';
 import { returnLoans } from './loans.js';
@@ -71,8 +72,11 @@ export function endSeason(game) {
   const summary = { year, leagues: [], cups: [], user: {}, retiredUser: [], youthUser: [], releasedUser: [] };
 
   // ---- results, history, awards, prize money ----
+  // Countries whose leagues didn't play this season (added to an older save in
+  // mid-season) have no results yet: they start next season.
+  const playedLeagues = (n) => n.leagueIds.length && game.competitions[n.leagueIds[0]].fixtureIds?.length > 0;
   const finalTables = {};
-  for (const nation of Object.values(game.nations).filter((n) => n.leagueIds.length)) {
+  for (const nation of Object.values(game.nations).filter(playedLeagues)) {
     for (const compId of nation.leagueIds) {
       const comp = game.competitions[compId];
       const rows = sortedTable(game, comp);
@@ -113,6 +117,8 @@ export function endSeason(game) {
 
   // All continental finals of the season; summary.continental is the Champions Cup's.
   summary.continentals = closeContinentals(game, year);
+  // European results become the season's coefficient points (real-country worlds).
+  if (game.coefficients) recordSeason(game, year, continentalComps(game));
   summary.continental = summary.continentals.find((c) => c.level === 1) || null;
   summary.national = closeNational(game, year);
   summary.nationalJob = seasonEndNational(game);
@@ -146,8 +152,9 @@ export function endSeason(game) {
   }
 
   // ---- promotion and relegation ----
-  for (const nation of Object.values(game.nations).filter((n) => n.leagueIds.length)) {
+  for (const nation of Object.values(game.nations).filter(playedLeagues)) {
     const [top, second] = nation.leagueIds.map((id) => game.competitions[id]);
+    if (!second) continue; // one division: nobody goes up or down
     const down = summary.leagues.find((l) => l.compId === top.id).relegated;
     const up = summary.leagues.find((l) => l.compId === second.id).promoted;
     top.clubIds = top.clubIds.filter((id) => !down.includes(id)).concat(up);

@@ -123,7 +123,7 @@ export function render(root, ctx, params = {}) {
       : st.view === 'scorers' ? scorersView(comp) : st.view === 'awards' ? awardsView() : historyView(comp);
 
     root.innerHTML = `${clubTopbar(ctx, { title: 'League tables' })}
-    <div class="panel" style="left:20px;top:92px;width:282px;height:608px">
+    <div class="panel scroll" style="left:20px;top:92px;width:282px;height:608px;overflow-y:auto">
       ${nations.map((nat) => `<h2 class="row" style="margin-top:8px">${flag(nat.flag, 24)} ${esc(nat.name)}</h2>
         <ul class="menu-list" style="margin-bottom:12px">${nat.leagueIds.map((id) => `<li data-action="comp" data-id="${id}" style="${id === st.compId ? 'background:var(--row-me)' : ''}">${esc(g.competitions[id].name)}</li>`).join('')}</ul>`).join('')}
     </div>

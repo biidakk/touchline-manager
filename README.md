@@ -8,7 +8,7 @@ A football (soccer) management game, inspired by the layout of Czech Soccer Mana
 - **From the source:** download this repository and double-click `start.bat` (needs Python).
 
 **The world:**
-- **Countries:** England, Spain, Italy, Germany, France and the Czech Republic, each with two divisions (18 clubs; 16 in the Czech leagues) and a national cup.
+- **Countries:** the 25 strongest UEFA countries by coefficient plus Iran, each with a national cup. England, Spain, Italy, Germany, France and the Czech Republic have two divisions (18 clubs; 16 in the Czech leagues); Portugal, the Netherlands, Belgium, Turkey, Greece, Poland, Denmark, Norway, Cyprus, Switzerland, Austria, Scotland, Sweden, Croatia, Israel, Hungary, Ukraine, Serbia and Romania their top division (10–18 clubs, as in 2026/27; small leagues play each other three or four times); Iran its top two divisions. Only the original six have national teams.
 - **Clubs:** real cities, with names, kit colours and stadiums close to the real clubs (for example "Manchester Blue", "Madrid Blancos", "FC Plzeň"), but not their real names.
 - **Players and managers:** realistic names for each country, combined at random. A combination can occasionally match a real person by chance.
 - **Graphics:** crests are generated from the kit colours (no real logos), and all graphics are CSS/SVG made for this project.
@@ -53,7 +53,7 @@ The published game uses near-real club names and generated players. For your own
 - **Older careers:** saves from before v2.0 keep their fictional world.
 
 ## How to play
-1. **New career:** enter your name (every new career gets a freshly generated world), browse the six countries and their two divisions, and choose a club. The board tells you what it expects.
+1. **New career:** enter your name (every new career gets a freshly generated world), browse the countries and their divisions, and choose a club. The board tells you what it expects.
 2. **Hub:**
    - **Menu:** My Team, Other Teams, Season Schedule, My Career, Search, Transfer Market, Training, Finances, plus your league and cup.
    - **Panels:** your last result and next three fixtures (Full schedule for the rest), news, the transfer ticker, your club card and the season table.
@@ -102,9 +102,11 @@ The published game uses near-real club names and generated players. For your own
      - **Main shirt sponsor** (when the old contract has run out): three companies offer a 1-, 3- or 5-season deal. The short deal pays the most per season; longer deals pay less but lock the money in (useful before a hard season) and come with a signing bonus. Offers follow your club's level when you sign.
      - **Pre-season tour:** pre-season lasts two weeks, and you take the squad on one of three tours, each with three friendlies (Wednesday, Saturday and Wednesday before the first league weekend) against foreign clubs of your level. The **mountain training camp** is cheapest and builds teamwork most (+10); the **seaside tour** costs about twice as much and lifts morale most; the **summer tour** in the USA costs most and brings stronger opponents, but its appearance fees grow with your club's name and more than pay for it at the biggest clubs. Friendlies count for nothing: no table, appearances, goals, records, suspensions or board verdicts, but players tire, find form, get injured and play together as in any match.
 10. **Continental competitions:** the Continental Champions Cup (Tuesdays), the Continental League and the Continental Conference (Thursdays), in the current league-phase format.
-   - **36 clubs each:** the six countries' clubs plus **guest clubs** from 33 other countries (Portugal, the Netherlands, Turkey, Belgium, Scotland, Greece and many more: 84 clubs with near-real names, generated squads and their own name styles). Guests play only in Europe: they have no league, never offer you a job, stay out of the AI transfer market and don't bid for your players, but you can buy their players. Open them from any link or under Other Teams → Guests.
-   - **First season:** the clubs that really play in the 2026/27 league phases: from the six countries 22 in the Champions Cup, 14 in the Continental League and 6 in the Conference, and the 66 real guest clubs filling the rest. With your real-teams file the guests carry their real names (kept in the private files, never published).
-   - **Later seasons:** places come from the final tables (Champions Cup: England and Spain 5, Italy and Germany 4, France 3, Czech Republic 1; Continental League: England and France 3, the others 2; Conference: 1 each). The national cup winner takes its country's first Continental League place unless it is already in the Champions Cup. The rest of each competition is filled with guest clubs by reputation, with a little luck each season so the line-ups change. A club plays in one competition only.
+   - **36 clubs each,** from the league countries and **guest clubs** of the smaller UEFA countries (Slovenia, Azerbaijan, Slovakia, Bulgaria, Armenia, Finland and others, plus a few lower-division clubs) that play only in Europe: they have no league, never offer you a job, stay out of the AI transfer market and don't bid for your players, but you can buy their players. Open them from any link or under Other Teams → Guest clubs.
+   - **First season:** exactly the clubs that really play in the 2026/27 league phases. With your real-teams file all clubs, guests included, carry their real names (kept in the private files, never published).
+   - **Coefficients** (Cups → Coefficients): country and club coefficients start from the real UEFA figures at the end of 2025/26 (Iran, not a UEFA member, starts 17th) and then follow the game's results: 2 points a win and 1 a draw in any of the three competitions, a bonus for the league phase (6 / 2 / 1) and 1 for each knockout round from the last 16. A country's season score is its clubs' points divided by the number of clubs it entered, and its ranking adds up the last five seasons. A club's coefficient is its own last five seasons, or 20 % of its country's if that is more.
+   - **Places by ranking:** 1st–4th: 4 Champions Cup, 2 Continental League, 1 Conference place; 5th: 3/2/1; 6th: 2/2/1; 7th–10th: 2/1/1; 11th–17th: 1/1/1; 18th–25th: 0/1/2; 26th–28th: 0/1/1; 29th–30th: 0/1/0. League countries fill them from last season's table (the cup winner takes the first Continental League place unless it is already in the Champions Cup), guest countries with their strongest guest clubs (a little luck each season). Places a country can't fill go to the others, best-ranked first. A club plays in one competition only.
+   - **Seeding:** the league-phase draw puts the clubs in four pots by club coefficient; nobody meets a club from its own pot.
    - **League phase** (autumn to winter, away from international weeks and national cup rounds): one table of 36. Every club plays 8 different opponents (6 in the Conference) on 8 (6) matchdays, half at home, with as few clubs from its own country as can be arranged. Places 1–8 go to the round of 16, 9–24 play the knockout play-offs, 25–36 are out.
    - **Knockouts in spring:** the top places go straight to the last 16; the next places play two-legged **knockout play-offs** (the better-placed club at home in the second leg; when there are fewer clubs than places, the best of them go through without playing); the rest are out. Then round of 16, quarter-finals and semi-finals over **two legs**, and a one-match final.
    - **Two-legged ties:** the aggregate score decides (no away-goals rule). If it's level after the second leg, extra time and penalties follow. The pre-match screen shows the first-leg score, the live match shows the aggregate, and the cup screen lists both legs.
@@ -169,7 +171,7 @@ The published game uses near-real club names and generated players. For your own
 - Save files are versioned, and older saves are upgraded automatically.
 
 ## Tests
-With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 124 tests. They cover:
+With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 130 tests. They cover:
 - **World generation:** world, fixtures, cup draws.
 - **Lineup rules.**
 - **Live-match mechanics.**
@@ -218,6 +220,8 @@ src/core/                     game logic: no DOM access, testable
   newsfeed.js     extra news: previews, big results, hat-tricks, leaders, big transfers, board verdicts
   continental.js  the three European competitions: qualification, league phase, knockouts, history
   guests.js       guest countries and clubs for the European competitions, the real 2026/27 guests
+  europe.js       the league countries beyond the original six (generated by tools/make_leagues.py)
+  coefficients.js country and club coefficients, places by ranking; coefdata.js the real starting values
   stadium.js      crowd demand, stadium expansion (user and AI)
   scouting.js     hidden potential, scouting staff levels, assignments and reports
   loans.js        loans in both directions, AI loan offers, B-team partner club

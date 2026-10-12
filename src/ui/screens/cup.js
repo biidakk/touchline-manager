@@ -71,10 +71,10 @@ export function render(root, ctx, params = {}) {
 
     root.innerHTML = `${clubTopbar(ctx, { title: cup.name })}
     <div class="panel" style="left:20px;top:92px;width:282px;height:600px">
-      <ul class="menu-list">${cups.map((c) => `<li data-action="cup" data-id="${c.id}" style="${c.id === st.cupId ? 'background:var(--row-me)' : ''}">
+      <ul class="menu-list scroll" style="max-height:300px">${g.coefficients ? `<li data-action="rankings">${icon('star')} Coefficients</li>` : ''}${cups.map((c) => `<li data-action="cup" data-id="${c.id}" style="${c.id === st.cupId ? 'background:var(--row-me)' : ''}">
         ${c.nationId ? flag(g.nations[c.nationId].flag, 22) : icon('star')} ${c.type === 'continental' && c.name.length > 18 ? `<span class="phone-hide">${esc(c.name)}</span><span class="phone-only">${esc(c.name.replace(/^Continental /, ''))}</span>` : esc(c.name)}</li>`).join('')}</ul>
       <h2 style="margin-top:18px">Past winners</h2>
-      <div class="scroll" style="max-height:330px">${cup.history.slice().reverse().map((h) => `<div class="row" style="padding:3px 0;border-bottom:1px solid var(--row-line)">
+      <div class="scroll" style="max-height:220px">${cup.history.slice().reverse().map((h) => `<div class="row" style="padding:3px 0;border-bottom:1px solid var(--row-line)">
         <span class="muted" style="width:62px">${y(h.year)}</span><b>${clubLink(g, h.winnerId, { crest: 18, short: true })}</b></div>`).join('') || '<div class="empty">First edition in progress.</div>'}</div>
     </div>
     <div class="panel" style="left:320px;top:92px;width:940px;height:540px;display:flex;flex-direction:column">
@@ -91,6 +91,7 @@ export function render(root, ctx, params = {}) {
   bindTopbar(root, ctx);
   bindActions(root, {
     cup: (el) => { st.cupId = el.dataset.id; st.round = null; draw(); },
+    rankings: () => ctx.go('rankings'),
     round: (el) => { st.round = el.dataset.i === 'groups' ? 'groups' : Number(el.dataset.i); draw(); },
     report: (el) => ctx.modal(matchReport(g, g.fixtures[el.dataset.id]), { title: 'Match report' }),
     back: () => ctx.back(),

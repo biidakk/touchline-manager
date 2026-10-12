@@ -203,7 +203,8 @@ function releaseQueuedOffers(game) {
   game.offerQueue = (game.offerQueue || []).filter((o) => o.due > game.day);
   for (const q of due) {
     const p = game.players[q.playerId];
-    if (!p || p.clubId !== user.id || p.loan || game.offers.some((o) => o.playerId === q.playerId)) continue;
+    // A rival club's bid in the meantime doesn't stop this one; a second bid from the same club does.
+    if (!p || p.clubId !== user.id || p.loan || game.offers.some((o) => o.playerId === q.playerId && o.clubId === q.clubId)) continue;
     const { due: _, ...rest } = q;
     const offer = { ...rest, id: 'o' + (game.ids.offer = (game.ids.offer || 0) + 1), day: game.day, expires: game.day + 7, seen: false };
     game.offers.push(offer);

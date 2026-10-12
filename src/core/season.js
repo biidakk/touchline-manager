@@ -59,7 +59,7 @@ export function leagueProgress(game, clubId) {
   const club = game.clubs[clubId];
   const comp = game.competitions[club.compId];
   const row = comp.table[clubId];
-  const total = (comp.clubIds.length - 1) * 2;
+  const total = comp.rounds || (comp.clubIds.length - 1) * 2;
   return {
     seasonPct: Math.round((row.p / total) * 100),
     pointsPct: row.p ? Math.round((row.pts / (row.p * 3)) * 100) : 0,

@@ -1,12 +1,14 @@
 // Static game data: nations, formations, kit colours.
 
 import { REAL_NATIONS } from './realworld.js';
+import { EUROPE_NATIONS } from './europe.js';
 
-export const GAME_VERSION = 15;
+export const GAME_VERSION = 16;
 export const START_YEAR = 2026;
 
-// New careers are played in the real-country world (see realworld.js).
-export const NATIONS = REAL_NATIONS;
+// New careers are played in the real-country world (see realworld.js), with
+// more league countries from europe.js (no national teams of their own).
+export const NATIONS = [...REAL_NATIONS, ...EUROPE_NATIONS.map((n) => ({ ...n, foreign: true }))];
 
 // The original fictional world (kept for reference; older saves carry their
 // own nations and keep playing in them).

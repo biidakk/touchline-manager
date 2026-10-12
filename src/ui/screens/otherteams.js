@@ -41,10 +41,10 @@ export function render(root, ctx, params = {}) {
 
     root.innerHTML = `${clubTopbar(ctx, { title: 'Other teams' })}
     <div class="panel" style="left:20px;top:92px;width:282px;height:600px;display:flex;flex-direction:column">
-      <div class="row" style="gap:6px;flex-wrap:wrap">${nations.flatMap((n) => n.leagueIds).map((id) => {
+      <select class="field" id="comp-pick" style="width:100%">${nations.flatMap((n) => n.leagueIds).map((id) => {
         const c = g.competitions[id];
-        return `<button class="btn btn-small ${id === st.compId ? '' : 'btn-blue'}" style="min-width:0;padding:0 8px" data-action="comp" data-id="${id}" title="${esc(c.name)}">${flag(g.nations[c.nationId].flag, 16)} ${c.tier}</button>`;
-      }).join('')}${g.competitions[GUEST_COMP_ID] ? `<button class="btn btn-small ${guests ? '' : 'btn-blue'}" style="min-width:0;padding:0 8px" data-action="comp" data-id="${GUEST_COMP_ID}" title="Clubs from other countries that play in the European competitions">${icon('star')} Guests</button>` : ''}</div>
+        return `<option value="${id}" ${id === st.compId ? 'selected' : ''}>${esc(g.nations[c.nationId].name)} · ${esc(c.name)}</option>`;
+      }).join('')}${g.competitions[GUEST_COMP_ID] ? `<option value="${GUEST_COMP_ID}" ${guests ? 'selected' : ''}>Guest clubs (European competitions only)</option>` : ''}</select>
       <h2 style="margin:12px 0 6px">${esc(comp.name)}</h2>
       <div class="scroll" style="flex:1"><table class="data">${table.map((r, i) => `<tr class="click ${r.clubId === st.clubId ? 'sel' : ''} ${r.clubId === g.userClubId ? 'me' : ''}" data-action="club" data-id="${r.clubId}">
         <td class="num" style="width:22px">${guests ? flag(g.nations[g.clubs[r.clubId].nationId].flag, 16) : `${i + 1}.`}</td><td style="width:24px">${crest(g.clubs[r.clubId].crest, 20)}</td><td>${esc(g.clubs[r.clubId].name)}</td></tr>`).join('')}</table></div>
@@ -90,6 +90,12 @@ export function render(root, ctx, params = {}) {
   }
 
   bindTopbar(root, ctx);
+  root.addEventListener('change', (e) => {
+    if (e.target.id !== 'comp-pick') return;
+    st.compId = e.target.value;
+    st.clubId = g.competitions[st.compId].clubIds.find((id) => id !== g.userClubId) || g.competitions[st.compId].clubIds[0];
+    draw();
+  });
   bindActions(root, {
     comp: (el) => {
       st.compId = el.dataset.id;

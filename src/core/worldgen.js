@@ -174,7 +174,12 @@ function makeClub(game, rng, nation, comp, rep, usedTowns, usedNames, tpl = null
 export function addGuests(game) {
   if (game.competitions[GUEST_COMP_ID]) return;
   const rng = new Rng({ s: hashSeed(`${game.seed}:guests`) });
+  // Countries with a league of their own keep their entry; their clubs play
+  // through the league, except a guest club that isn't in it (e.g. a cup winner
+  // from a lower division in the first season).
+  const league = (id) => !!game.nations[id]?.leagueIds.length;
   for (const n of GUEST_NATIONS) {
+    if (league(n.id)) continue;
     const have = game.nations[n.id];
     // A players-only nation from a real-teams file keeps its entry and becomes a guest country.
     if (have) Object.assign(have, { style: n.style, strength: n.strength, foreign: true, guest: true });
@@ -187,7 +192,9 @@ export function addGuests(game) {
     clubIds: [], table: {}, history: [] };
   game.competitions[comp.id] = comp;
   const usedNames = new Set(Object.values(game.clubs).map((c) => c.name));
+  const inLeague = new Set(Object.values(game.clubs).map((c) => c.baseName || c.name));
   for (const [name, short, nationId, level, primary, secondary, pattern, stadium, capacity] of GUEST_CLUBS) {
+    if (inLeague.has(name)) continue;
     const n = GUEST_NATIONS.find((x) => x.id === nationId);
     const club = makeClub(game, rng, n, comp, guestReputation(level, n.strength), new Set(), usedNames,
       [name, short, primary, secondary, pattern, stadium, capacity]);
@@ -197,6 +204,48 @@ export function addGuests(game) {
 }
 
 export const isGuest = (club) => !!club?.guest;
+
+// Older saves: the league countries added since (europe.js). A guest club of
+// such a country joins its league with its squad and history; the other clubs
+// are made new. The leagues and cups are scheduled from the next season (the
+// current season's calendar is already fixed).
+export function addLeagueCountries(game) {
+  const rng = new Rng({ s: hashSeed(`${game.seed}:leagues`) });
+  const usedNames = new Set(Object.values(game.clubs).map((c) => c.name));
+  const byBase = new Map(Object.values(game.clubs).map((c) => [c.baseName || c.name, c]));
+  const guests = game.competitions[GUEST_COMP_ID];
+  for (const n of NATIONS.filter((x) => x.leagues && x.foreign)) {
+    if (game.nations[n.id]?.leagueIds.length) continue;
+    const nation = game.nations[n.id] || (game.nations[n.id] = { id: n.id, name: n.name, baseName: n.name, adj: n.adj, flag: n.flag, kit: null });
+    Object.assign(nation, { style: n.style, strength: n.strength, leagueIds: [], cupId: null, nationalTeam: null, foreign: true });
+    delete nation.guest;
+    const cup = { id: `${n.id}-CUP`, type: 'cup', nationId: n.id, name: n.cup, baseName: n.cup, clubIds: [], rounds: [], alive: [], history: [] };
+    n.leagues.forEach((leagueName, t) => {
+      const comp = { id: `${n.id}-L${t + 1}`, type: 'league', nationId: n.id, tier: t + 1, name: leagueName, baseName: leagueName,
+        clubIds: [], table: {}, fixtureIds: [], promote: t === 1 ? 3 : 0, relegate: t === 0 && n.leagues.length > 1 ? 3 : 0, history: [] };
+      game.competitions[comp.id] = comp;
+      nation.leagueIds.push(comp.id);
+      for (const tpl of n.clubs[t]) {
+        let club = byBase.get(tpl[0]);
+        if (club?.guest) {
+          // The guest becomes a league club.
+          delete club.guest;
+          if (guests) guests.clubIds = guests.clubIds.filter((id) => id !== club.id);
+          club.compId = comp.id;
+          comp.clubIds.push(club.id);
+        } else {
+          club = makeClub(game, rng, n, comp, guestReputation(tpl[7], n.strength), new Set(), usedNames, tpl);
+          club.lineup = autoLineup(game, club);
+        }
+        comp.table[club.id] = { p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0, form: [] };
+        cup.clubIds.push(club.id);
+      }
+    });
+    game.competitions[cup.id] = cup;
+    nation.cupId = cup.id;
+    // Guest clubs of this country that aren't in its league stay guests.
+  }
+}
 
 export function generateWorld({ seed = Date.now(), managerName = 'Manager' } = {}) {
   const rng = new Rng({ s: hashSeed(String(seed)) });
@@ -217,7 +266,7 @@ export function generateWorld({ seed = Date.now(), managerName = 'Manager' } = {
 
   for (const n of NATIONS) {
     game.nations[n.id] = { id: n.id, name: n.name, baseName: n.name, adj: n.adj, style: n.style, flag: n.flag,
-      kit: n.kit || null, strength: n.strength, leagueIds: [], cupId: null, nationalTeam: null };
+      kit: n.kit || null, strength: n.strength, leagueIds: [], cupId: null, nationalTeam: null, ...(n.foreign ? { foreign: true } : {}) };
   }
 
   const usedNames = new Set();
@@ -229,14 +278,16 @@ export function generateWorld({ seed = Date.now(), managerName = 'Manager' } = {
     n.leagues.forEach((leagueName, t) => {
       const size = n.clubs ? n.clubs[t].length : n.sizes[t];
       const comp = { id: `${n.id}-L${t + 1}`, type: 'league', nationId: n.id, tier: t + 1, name: leagueName, baseName: leagueName,
-        clubIds: [], table: {}, fixtureIds: [], promote: t === 1 ? 3 : 0, relegate: t === 0 ? 3 : 0, history: [] };
+        clubIds: [], table: {}, fixtureIds: [], promote: t === 1 ? 3 : 0, relegate: t === 0 && n.leagues.length > 1 ? 3 : 0, history: [] };
       game.competitions[comp.id] = comp;
       nation.leagueIds.push(comp.id);
       for (let i = 0; i < size; i++) {
         // Real-country leagues set their own level; the old fictional ones used a fixed one plus strength.
         const top = n.top ? n.top[t] : (t === 0 ? 88 : 58) + n.strength;
         const spread = t === 0 ? 28 : 26;
-        const rep = clamp(top - (i * spread) / (size - 1) + rng.normal(0, 3), 20, 95);
+        // Countries from europe.js give each club's level (its researched squad strength).
+        const level = n.clubs?.[t]?.[i]?.[7];
+        const rep = level ? guestReputation(level, n.strength) : clamp(top - (i * spread) / (size - 1) + rng.normal(0, 3), 20, 95);
         const club = makeClub(game, rng, n, comp, rep, usedTowns, usedNames, n.clubs ? n.clubs[t][i] : null);
         cup.clubIds.push(club.id);
       }
