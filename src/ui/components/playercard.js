@@ -51,7 +51,7 @@ export function playerDetailHtml(game, p) {
           <span>Personality</span><b>${personalityText(game, p)}</b>
           ${mine ? `<span>Morale</span><b>${moraleBadge(p)}</b>` : ''}
           ${!mine ? `<span>Scouting</span><b>${scoutStatus(game, p)}</b>` : ''}
-          <span>This season</span><b>${s.apps} apps, ${s.goals} goals, ${s.assists} assists, avg ${avg}</b>
+          <span>This season</span><b>${s.apps} apps, ${s.goals} goals, ${s.assists} assists, avg ${avg}${s.youthApps ? ` · U-19: ${s.youthApps} apps, ${s.youthGoals || 0} goals` : ''}</b>
           <span>Career</span><b>${p.stats.career.apps} apps, ${p.stats.career.goals} goals, ${careerAssists(p)} assists</b>
           ${p.awards?.length ? `<span>Awards</span><b style="white-space:normal">${awardsText(p)}</b>` : ''}
           ${p.intl ? `<span>International</span><b>${p.intl.caps} caps, ${p.intl.goals} goals${p.intl.u21Caps ? ` · U21 ${p.intl.u21Caps} caps, ${p.intl.u21Goals} goals` : ''}</b>` : ''}
@@ -67,6 +67,7 @@ export function playerDetailHtml(game, p) {
           ${!mine && !academy && club ? `<span>Asking price</span><b>${fmtMoney(askingPrice(game, p))}</b>` : ''}
           ${p.listed ? '<span>Transfer list</span><b class="good">Listed</b>' : ''}
         </div>
+        ${mine || p.loan?.parentId === game.userClubId ? growthChart(game, p) : ''}
       </div>
     </div>
     <h2 style="margin-top:16px;font-size:16px">Career history</h2>
@@ -75,6 +76,28 @@ export function playerDetailHtml(game, p) {
 }
 
 const yr = (y) => `${y}/${String(y + 1).slice(2)}`;
+
+// Monthly progress (skill, technique, physique) as a small line chart.
+function growthChart(game, p) {
+  const pts = (p.growth || []).concat([[game.day, p.skill, p.tec ?? p.skill, p.phy ?? p.skill]]);
+  if (pts.length < 3) return '<p class="muted" style="font-size:12.5px;margin-top:10px">His progress chart starts next month.</p>';
+  const W = 250;
+  const H = 96;
+  const vals = pts.flatMap((r) => r.slice(1));
+  const lo = Math.max(0, Math.min(...vals) - 3);
+  const hi = Math.min(100, Math.max(...vals) + 3);
+  const x = (i) => 4 + (i * (W - 8)) / (pts.length - 1);
+  const y = (v) => H - 4 - ((v - lo) * (H - 8)) / Math.max(1, hi - lo);
+  const line = (k, color, w) => `<polyline fill="none" stroke="${color}" stroke-width="${w}" points="${pts.map((r, i) => `${x(i).toFixed(1)},${y(r[k]).toFixed(1)}`).join(' ')}"/>`;
+  const first = pts[0];
+  const d = p.skill - first[1];
+  return `<div style="margin-top:10px"><div class="row" style="justify-content:space-between;font-size:12.5px">
+      <b>Progress since ${fmtDate(first[0], false)}</b><span class="${d > 0 ? 'good' : d < 0 ? 'bad' : 'muted'}">${d > 0 ? '+' : ''}${d} skill</span></div>
+    <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="background:rgba(3,25,70,0.45);border-radius:6px;margin-top:4px">
+      ${line(2, '#6cb4ee', 1.5)}${line(3, '#5be38a', 1.5)}${line(1, '#ffd54f', 2.5)}
+      <text x="6" y="12" fill="#cfe0ff" font-size="9">${hi}</text><text x="6" y="${H - 6}" fill="#cfe0ff" font-size="9">${lo}</text></svg>
+    <div class="muted" style="font-size:11.5px"><span style="color:#ffd54f">■</span> skill <span style="color:#6cb4ee">■</span> technique <span style="color:#5be38a">■</span> physique</div></div>`;
+}
 
 const careerAssists = (p) => p.stats.career.assists
   ?? (p.history || []).reduce((a, h) => a + (h[5] || 0), 0) + (p.stats.season.assists || 0);

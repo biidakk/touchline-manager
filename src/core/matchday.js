@@ -21,6 +21,9 @@ import { Rng } from './rng.js';
 import { tickSkillMarks } from './attributes.js';
 import { spellFor, clubMatchRecords } from './records.js';
 import { applyFriendly, scheduleWinterFriendlies, WINTER_BREAK_START } from './preseason.js';
+import { youthLeagueDay } from './youthleague.js';
+import { recordGrowth } from './development.js';
+import { checkMatchAchievements } from './achievements.js';
 
 // The user's matches: his club's, and his national team's if he manages one.
 export const isUserFixture = (game, f) => {
@@ -63,6 +66,17 @@ export function createFixtureMatch(game, f, opts = {}) {
   });
 }
 
+// For the report's "why": the starting elevens' average skill, the average
+// energy of the players on the pitch at the end, and each side's intent.
+export function matchAnalysis(game, m) {
+  const mean = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
+  return {
+    skill: m.sides.map((s) => Math.round(mean(s.played.slice(0, 11).map((id) => game.players[id]?.skill || 0)) * 10) / 10),
+    energy: m.sides.map((s) => Math.round(mean(s.slots.filter(Boolean).map((id) => s.energy[id] ?? 100)))),
+    intent: m.sides.map((s) => s.tactics?.intent ?? 50),
+  };
+}
+
 function updateForm(p, rating, rng) {
   if (rating >= 7.2 && rng.chance(0.55)) p.form = Math.min(2, p.form + 1);
   else if (rating <= 5.8 && rng.chance(0.55)) p.form = Math.max(-2, p.form - 1);
@@ -94,6 +108,7 @@ export function applyResult(game, f, m) {
     result.stats = [hs.stats, as.stats];
     result.events = evs.filter((e) => e.type !== 'kickoff');
     result.lineups = m.sides.map((s) => ({ formation: s.formation, played: s.played, ratings: s.rating }));
+    result.analysis = matchAnalysis(game, m);
   }
   f.result = result;
 
@@ -212,6 +227,7 @@ export function dailyUpdate(game) {
   boardDay(game);
   nationalDay(game);
   const date = new Date(game.day * DAY_MS);
+  if (date.getUTCDate() === 1) recordGrowth(game);
   if (date.getUTCDate() === 1 && game.season.phase === 'season') {
     monthlyFinances(game);
     if (date.getUTCMonth() === 0 || date.getUTCMonth() === 3) warnExpiringContracts(game);
@@ -219,6 +235,7 @@ export function dailyUpdate(game) {
   }
   dailyMarket(game);
   if (game.day === WINTER_BREAK_START(game.season.year)) scheduleWinterFriendlies(game);
+  youthLeagueDay(game);
   progressConstruction(game);
   progressScouting(game);
 }
@@ -338,7 +355,10 @@ export function finishUserMatch(game, f, m) {
   if (isNational(game, f)) {
     applyNationalResult(game, f, m);
     nationalAfterMatch(game, f);
-  } else applyResult(game, f, m);
+  } else {
+    applyResult(game, f, m);
+    checkMatchAchievements(game, f);
+  }
   endDay(game);
 }
 

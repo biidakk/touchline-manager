@@ -146,7 +146,7 @@ export function render(root, ctx) {
     </div>
     <div class="panel" style="left:376px;top:408px;width:884px;height:226px;display:flex;flex-direction:column">
       <div class="panel-head"><h2>${st.tab === 'seasons' ? 'Season by season' : 'Clubs managed'}</h2>
-        <div class="seg"><button class="${st.tab === 'seasons' ? 'on' : ''}" data-action="tab" data-v="seasons">Seasons</button><button class="${st.tab === 'clubs' ? 'on' : ''}" data-action="tab" data-v="clubs">Clubs</button></div></div>
+        <div class="seg"><button class="${st.tab === 'seasons' ? 'on' : ''}" data-action="tab" data-v="seasons">Seasons</button><button class="${st.tab === 'clubs' ? 'on' : ''}" data-action="tab" data-v="clubs">Clubs</button><button data-action="fame">${icon('trophy')} Hall of Fame</button></div></div>
       <div class="scroll" style="flex:1">${st.tab === 'seasons' ? seasonsHtml : clubsHtml}</div>
     </div>
     ${sacked ? '' : '<button class="btn btn-blue" style="position:absolute;left:1050px;top:648px;width:210px" data-action="back">Back</button>'}`;
@@ -156,6 +156,7 @@ export function render(root, ctx) {
   bindActions(root, {
     back: () => ctx.back(),
     tab: (el) => { st.tab = el.dataset.v; draw(); },
+    fame: () => ctx.go('fame'),
     accept: async (el) => {
       const g = ctx.game;
       const c = g.clubs[el.dataset.id];

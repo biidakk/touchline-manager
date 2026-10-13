@@ -66,6 +66,7 @@ export function render(root, ctx) {
           <td class="num">${p.skill}/${potText(g, p)}</td><td class="num">${p.stats.season.apps} apps</td><td class="num">${dev(p)}</td></tr>`).join('') || '<tr><td class="empty">None</td></tr>'}</tbody>
       </table></div>
     </div>
+    <button class="btn" style="position:absolute;left:820px;top:648px;width:210px" data-action="u19">U-19 league</button>
     <button class="btn btn-blue" style="position:absolute;left:1050px;top:648px;width:210px" data-action="back">Back</button>`;
 
     root.querySelector('#partner').addEventListener('change', (e) => {
@@ -84,6 +85,7 @@ export function render(root, ctx) {
       draw();
     },
     tob: (el) => { ctx.toast(loanToPartner(g, el.dataset.id).message); draw(); },
+    u19: () => ctx.go('u19'),
     release: async (el) => {
       const p = g.players[el.dataset.id];
       if (!(await ctx.confirm(`Release ${p.first} ${p.last} from the academy? He will leave the club.`, { ok: 'Release' }))) return;

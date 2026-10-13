@@ -596,3 +596,19 @@ html.phone select.plan { height: 36px; font-size: 17px; }
 html.phone .panel h2.ng-h { margin-top: 12px; margin-bottom: 6px; }
 html.phone .ng-countries li { padding: 2px 6px; }
 .ng-btn { white-space: nowrap; padding: 0 10px; }
+/* Match report: why we won / lost */
+.report .why { background: rgba(3, 25, 70, 0.45); border: 1px solid var(--seg-line); border-radius: 8px; padding: 8px 14px; margin: 10px 0; }
+.report .why h3 { margin: 0 0 4px; font-size: 15px; }
+.report .why ul { margin: 0 0 0 18px; line-height: 1.45; }
+html.phone .report .why { font-size: 19px; }
+/* Hub news: filter tabs and important items */
+.news-tabs button { padding: 2px 0; font-size: 11.5px; }
+html.phone .news-tabs button { font-size: 14px; padding: 3px 0; }
+.news-item.important { border-left: 3px solid var(--gold); padding-left: 6px; }
+/* Hall of Fame */
+.fame-trophy { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; border-bottom: 1px solid var(--row-line); }
+.fame-trophy .ico { width: 26px; height: 26px; color: var(--gold); flex: none; }
+.fame-achs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; align-content: start; }
+.fame-ach { padding: 6px 8px; border-radius: 6px; background: rgba(3, 25, 70, 0.35); opacity: 0.55; }
+.fame-ach.on { opacity: 1; background: rgba(47, 134, 239, 0.35); box-shadow: inset 0 0 0 1px var(--gold); }
+html.phone .fame-achs { grid-template-columns: 1fr; }

@@ -293,7 +293,8 @@ export function trainingDay(game) {
       if (train) {
         const share = SHARE[plan.focus];
         const gap = clamp((p.potential - p.skill) / 8, 0, 1);
-        const playF = 0.8 + 0.5 * clamp(p.stats.season.apps / teamPlayed, 0, 1);
+        // U-19 games count too (a little less than first-team games).
+        const playF = 0.8 + 0.5 * clamp((p.stats.season.apps + 0.7 * (p.stats.season.youthApps || 0)) / teamPlayed, 0, 1);
         const fresh = p.energy / 100;
         const mind = moraleDevFactor(p);
         for (const attr of ['tec', 'phy']) {

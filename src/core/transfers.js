@@ -129,8 +129,18 @@ export function executeTransfer(game, playerId, toClubId, fee, { years = 3, wage
     const s = from.savedLineups?.[k];
     if (s) { s.slots = s.slots.map((id) => (id === playerId ? null : id)); s.bench = s.bench.filter((id) => id !== playerId); }
   }
-  from.budget += fee;
-  from.finance.season.transfersOut += fee;
+  // A sell-on clause: the club named in it gets its share of this fee.
+  let sellOnPaid = 0;
+  if (p.sellOn && p.sellOn.clubId !== from.id && game.clubs[p.sellOn.clubId]) {
+    sellOnPaid = Math.round((fee * p.sellOn.pct) / 1000) * 1000;
+    const holder = game.clubs[p.sellOn.clubId];
+    holder.budget += sellOnPaid;
+    holder.finance.season.transfersOut += sellOnPaid;
+    if (holder.id === game.userClubId && sellOnPaid > 0) addNews(game, `Sell-on clause: ${p.first} ${p.last} moves to ${to.name} and we receive ${money(game, sellOnPaid)} (${Math.round(p.sellOn.pct * 100)}%).`, 'transfer');
+    delete p.sellOn;
+  }
+  from.budget += fee - sellOnPaid;
+  from.finance.season.transfersOut += fee - sellOnPaid;
   to.budget -= fee;
   to.finance.season.transfersIn += fee;
   p.clubId = to.id;
@@ -156,13 +166,14 @@ export function executeTransfer(game, playerId, toClubId, fee, { years = 3, wage
 // ---- the user buying ----
 
 // Result: { status: 'accepted'|'counter'|'rejected', message, counter? }
-export function evaluateBid(game, playerId, fee) {
+// cash: what is actually paid (a swap deal adds a player's worth to the bid).
+export function evaluateBid(game, playerId, fee, { cash = fee } = {}) {
   const p = game.players[playerId];
   const user = game.clubs[game.userClubId];
   if (!openWindow(game)) return { status: 'rejected', message: 'The transfer window is closed.' };
   if (p.clubId === user.id) return { status: 'rejected', message: 'He already plays for you.' };
   if (p.loan) return { status: 'rejected', message: 'He is on loan; he can only be bought from his own club after the loan.' };
-  if (fee > user.budget) return { status: 'rejected', message: 'You cannot afford that fee.' };
+  if (cash > user.budget) return { status: 'rejected', message: 'You cannot afford that fee.' };
   const will = willJoin(game, p, user);
   if (!will.ok) return { status: 'rejected', message: will.reason };
   const seller = game.clubs[p.clubId];
@@ -207,16 +218,57 @@ export function unlistPlayer(game, playerId) {
   delete p.askingPrice;
 }
 
-export function acceptOffer(game, offerId) {
+// sellOn: keep 15 % of a future sale for 10 % less now (buying clubs accept that trade).
+export const SELL_ON = { pct: 0.15, discount: 0.1 };
+export function acceptOffer(game, offerId, { sellOn = false } = {}) {
   const o = (game.offers || []).find((x) => x.id === offerId);
   if (o && o.type === 'loan') return acceptLoanOffer(game, offerId);
   if (!o || !openWindow(game)) return false;
   const p = game.players[o.playerId];
   const buyer = game.clubs[o.clubId];
-  if (!p || buyer.budget < o.fee || game.clubs[game.userClubId].squad.length <= 16) return false;
-  executeTransfer(game, o.playerId, o.clubId, o.fee);
-  addNews(game, `Sold: ${p.first} ${p.last} joins ${buyer.name} for ${money(game, o.fee)}.`, 'transfer');
+  const fee = sellOn ? Math.round((o.fee * (1 - SELL_ON.discount)) / 1000) * 1000 : o.fee;
+  if (!p || buyer.budget < fee || game.clubs[game.userClubId].squad.length <= 16) return false;
+  executeTransfer(game, o.playerId, o.clubId, fee);
+  if (sellOn) p.sellOn = { clubId: game.userClubId, pct: SELL_ON.pct };
+  addNews(game, `Sold: ${p.first} ${p.last} joins ${buyer.name} for ${money(game, fee)}${sellOn ? ` with a ${Math.round(SELL_ON.pct * 100)}% sell-on clause` : ''}.`, 'transfer');
   return true;
+}
+
+// ---- swap deals: a player of the user's as part of a bid ----
+
+// What the selling club thinks one of the user's players is worth to them:
+// 90 % of his value if he would help them, nothing if he is far below their level (8 or more).
+export function swapWorth(game, p, seller) {
+  if (!p || p.loan || p.clubId !== game.userClubId) return 0;
+  const age = ageOf(p, game.season.year);
+  if (p.skill < clubLevel(game, seller) - 8 || age >= 33) return 0;
+  return Math.round((playerValue(p, game.season.year) * 0.9) / 1e4) * 1e4;
+}
+
+// A bid of cash plus a player. Same answers as evaluateBid, plus the player's worth.
+export function evaluateSwap(game, playerId, fee, swapId) {
+  const target = game.players[playerId];
+  const seller = game.clubs[target.clubId];
+  const swap = game.players[swapId];
+  const worth = swapWorth(game, swap, seller);
+  if (!worth) return { status: 'rejected', message: `${seller.name} aren't interested in ${swap.first} ${swap.last}.` };
+  if (swap.contractEnd < game.season.year + 1 && !willJoin(game, swap, seller).ok) return { status: 'rejected', message: `${swap.first} ${swap.last} won't move to ${seller.name}.` };
+  const r = evaluateBid(game, playerId, fee + worth, { cash: fee });
+  if (r.status === 'counter') {
+    const cash = Math.max(0, r.counter - worth);
+    return { ...r, counter: cash, message: `${seller.name} would take ${swap.last} plus ${money(game, cash)}.` };
+  }
+  return { ...r, worth, message: r.status === 'accepted' ? `${seller.name} accept ${swap.last} plus ${money(game, fee)}.` : r.message };
+}
+
+export function buySwap(game, playerId, fee, swapId, years, wage) {
+  const target = game.players[playerId];
+  const seller = game.clubs[target.clubId];
+  const swap = game.players[swapId];
+  executeTransfer(game, swapId, seller.id, 0, { years: 3 });
+  if (seller.lineup) seller.lineup = autoLineup(game, seller);
+  addNews(game, `${swap.first} ${swap.last} joins ${seller.name} in the deal for ${target.first} ${target.last}.`, 'transfer');
+  return buyPlayer(game, playerId, fee, years, wage);
 }
 
 // Turning a bid down: a club that really wants the player (high interest) may

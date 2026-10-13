@@ -2,7 +2,7 @@
 // offers received) and transfer history.
 
 import { searchPlayers, askingPrice, wageDemand, evaluateBid, buyPlayer, openWindow, nextWindow, acceptOffer, rejectOffer,
-  unlistPlayer, willJoin } from '../../core/transfers.js';
+  unlistPlayer, willJoin, evaluateSwap, buySwap, swapWorth } from '../../core/transfers.js';
 import { fmtDate } from '../../core/calendar.js';
 import { ageOf } from '../../core/valuation.js';
 import { crest, flag } from '../components/svg.js';
@@ -177,6 +177,12 @@ export function render(root, ctx, params = {}) {
       <label class="lbl" style="margin-top:16px">Your offer (${esc(currencySymbol(g))})</label>
       <div class="row"><input class="field" id="bid" style="flex:1" value="${st.bid ?? Math.round(toShown(g, price))}">
         <select class="field" id="years">${[1, 2, 3, 4, 5].map((y) => `<option value="${y}" ${y === 3 ? 'selected' : ''}>${y} yr</option>`).join('')}</select></div>
+      <div class="row" style="margin-top:6px"><label class="lbl" style="margin:0 6px 0 0">Swap</label>
+        <select class="field" id="swap" style="flex:1" title="Offer one of your players as part of the deal">
+          <option value="">No player</option>
+          ${user.squad.map((id) => g.players[id]).filter((x) => !x.loan).sort((a, b) => b.skill - a.skill)
+            .map((x) => `<option value="${x.id}" ${st.swap === x.id ? 'selected' : ''}>${esc(x.last)} (${x.pos}, ${x.skill}) · worth ${fmtMoneyShort(swapWorth(g, x, C(p.clubId)))}</option>`).join('')}
+        </select></div>
       ${st.msg ? `<div class="notice-inline">${esc(st.msg)}</div>` : ''}
       <div class="row" style="margin-top:12px">
         <button class="btn btn-small" data-action="offer" ${openWindow(g) ? '' : 'disabled'}>Make offer</button>
@@ -270,13 +276,17 @@ export function render(root, ctx, params = {}) {
       const fee = Math.round(toEuros(g, Number(String(root.querySelector('#bid').value).replace(/[^0-9.]/g, ''))));
       const years = Number(root.querySelector('#years').value);
       if (!fee) { st.msg = 'Enter a fee.'; draw(); return; }
-      const r = evaluateBid(g, st.sel, fee);
+      const swapId = root.querySelector('#swap')?.value || '';
+      st.swap = swapId;
+      const r = swapId ? evaluateSwap(g, st.sel, fee, swapId) : evaluateBid(g, st.sel, fee);
       if (r.status === 'accepted') {
         const p = g.players[st.sel];
         // The fee is agreed; the player's contract is negotiated before anything is paid.
         const deal = await negotiateContract(ctx, p, user, years);
         if (!deal) { st.msg = `No contract with ${p.first} ${p.last}: the transfer is off.`; draw(); return; }
-        buyPlayer(g, st.sel, fee, deal.years, deal.wage);
+        if (swapId) buySwap(g, st.sel, fee, swapId, deal.years, deal.wage);
+        else buyPlayer(g, st.sel, fee, deal.years, deal.wage);
+        st.swap = '';
         g.shortlist = g.shortlist.filter((id) => id !== st.sel);
         st.sel = null;
         st.msg = '';
@@ -296,7 +306,9 @@ export function render(root, ctx, params = {}) {
       const k = await ctx.choose(`Ask ${C(p.clubId).name} to loan you ${p.first} ${p.last} until the end of the season? Loan fee ${fmtMoney(loanFee(g, p))}. How much of his wage (${fmtMoney(p.wage)} a year) will you pay?`,
         [{ key: '1', label: '100% of his wage' }, { key: '0.75', label: '75%' }, { key: '0.5', label: '50%' }]);
       if (!k) return;
-      const r = borrowPlayer(g, st.sel, Number(k));
+      const option = await ctx.confirm(`Add an option to buy ${p.first} ${p.last} for ${fmtMoney(askingPrice(g, p))} at any time during the loan? The loan fee goes up by 25%.`,
+        { ok: 'With option', cancel: 'Loan only' });
+      const r = borrowPlayer(g, st.sel, Number(k), { option });
       st.msg = r.message;
       if (r.status === 'accepted') { st.sel = null; await ctx.save({ silent: true }); ctx.toast(r.message); }
       draw();

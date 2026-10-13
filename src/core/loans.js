@@ -12,7 +12,7 @@ import { addNews } from './season.js';
 import { freeNumber } from './development.js';
 import { repairLineup } from './lineup.js';
 import { autoLineup } from './ai.js';
-import { openWindow, willJoin } from './transfers.js';
+import { openWindow, willJoin, askingPrice } from './transfers.js';
 import { money } from './currency.js';
 
 export const isOnLoan = (p) => !!(p && p.loan);
@@ -165,14 +165,41 @@ export function evaluateLoanRequest(game, playerId, wageShare) {
   return { status: 'accepted', fee, message: `${owner.name} agree to loan him for ${money(game, fee)} and ${Math.round(wageShare * 100)}% of his wage.` };
 }
 
-export function borrowPlayer(game, playerId, wageShare) {
+// option: an option to buy him at today's asking price at any time before the
+// loan ends, for a loan fee 25 % higher.
+export const OPTION_FEE = 1.25;
+export function borrowPlayer(game, playerId, wageShare, { option = false } = {}) {
   const r = evaluateLoanRequest(game, playerId, wageShare);
   if (r.status !== 'accepted') return r;
   const p = game.players[playerId];
   const from = game.clubs[p.clubId].name;
-  startLoan(game, playerId, game.userClubId, { fee: r.fee, wageShare });
-  addNews(game, `On loan: ${p.first} ${p.last} joins from ${from} until the end of the season.`, 'loan');
-  return { status: 'accepted', message: `${p.first} ${p.last} joins on loan.` };
+  const fee = option ? Math.round((r.fee * OPTION_FEE) / 1000) * 1000 : r.fee;
+  if (fee > game.clubs[game.userClubId].budget) return { status: 'rejected', message: 'You cannot afford the loan fee with an option to buy.' };
+  const price = option ? askingPrice(game, p) : null;
+  startLoan(game, playerId, game.userClubId, { fee, wageShare });
+  if (option) p.loan.option = price;
+  addNews(game, `On loan: ${p.first} ${p.last} joins from ${from} until the end of the season${option ? `, with an option to buy for ${money(game, price)}` : ''}.`, 'loan');
+  return { status: 'accepted', message: `${p.first} ${p.last} joins on loan${option ? ' (option to buy)' : ''}.` };
+}
+
+// Buying a loanee through his option: the agreed price, his parent club lets him go.
+export function exerciseOption(game, playerId) {
+  const p = game.players[playerId];
+  const user = game.clubs[game.userClubId];
+  if (!p?.loan?.option || p.clubId !== user.id) return { ok: false, message: 'There is no option to buy him.' };
+  const price = p.loan.option;
+  if (price > user.budget) return { ok: false, message: 'You cannot afford the option price.' };
+  const parent = game.clubs[p.loan.parentId];
+  user.budget -= price;
+  user.finance.season.transfersIn += price;
+  parent.budget += price;
+  parent.finance.season.transfersOut += price;
+  delete p.loan;
+  p.contractEnd = Math.max(p.contractEnd, game.season.year + 3);
+  game.transfers.unshift({ id: 't' + (game.ids.transfer = (game.ids.transfer || 0) + 1), day: game.day, playerId, playerName: `${p.first[0]}. ${p.last}`,
+    fromId: parent.id, toId: user.id, fee: price, year: game.season.year });
+  addNews(game, `Option taken up: ${p.first} ${p.last} joins permanently from ${parent.name} for ${money(game, price)}.`, 'transfer');
+  return { ok: true, message: `${p.first} ${p.last} is now your player.` };
 }
 
 // ---- the user loaning out to AI clubs ----

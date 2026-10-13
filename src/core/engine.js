@@ -534,6 +534,8 @@ function shotOutcome(game, m, rng, i, shooter, conv, flags = {}) {
   const gkId = op.slots.find((id, k) => id && op.slotPos[k] === 'G');
   const r = rng.next();
   const ev = { side: i, playerId: shooter, ...flags };
+  // Expected goals: the chance this shot had of going in.
+  me.stats.xg = (me.stats.xg || 0) + conv;
   if (r < conv) {
     me.goals++;
     me.stats.onTarget++;

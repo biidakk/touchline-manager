@@ -174,12 +174,15 @@ test('stars of much bigger clubs and leagues refuse to drop down', () => {
 test('a rejected bid from a keen club can come back higher; offers pop up once', () => {
   const g = career('raise');
   const user = g.clubs[g.userClubId];
-  const p = g.players[user.squad.filter((id) => !user.lineup.slots.includes(id))[0]];
-  listPlayer(g, p.id, Math.round(p.value * 0.8));
-  const forHim = () => (g.offers || []).find((x) => x.playerId === p.id);
-  for (let i = 0; i < 45 && !forHim(); i++) startDay(g);
-  const o = forHim();
+  // Three players on the list (offers come from the end of pre-season).
+  const listed = user.squad.filter((id) => !user.lineup.slots.includes(id)).slice(0, 3);
+  for (const id of listed) listPlayer(g, id, Math.round(g.players[id].value * 0.8));
+  const anyOffer = () => (g.offers || []).find((x) => listed.includes(x.playerId) && !x.type);
+  for (let i = 0; i < 45 && !anyOffer(); i++) startDay(g);
+  const o = anyOffer();
   assert(o, 'no offer');
+  const p = g.players[o.playerId];
+  const forHim = () => (g.offers || []).find((x) => x.playerId === p.id && x.clubId === o.clubId);
   assert(o.seen === false && newOffers(g).includes(o), 'a new offer should wait to be shown');
   o.interest = 1; // sure to come back
   assert(rejectOffer(g, o.id), 'a fully keen club should come back');

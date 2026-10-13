@@ -131,6 +131,7 @@ export function startAcademy(game) {
 export function promoteYouth(game, club, id) {
   if (!(club.youth || []).includes(id)) return false;
   club.youth = club.youth.filter((x) => x !== id);
+  game.players[id].graduate = club.id; // an academy graduate of this club
   game.players[id].number = freeNumber(game, club);
   club.squad.push(id);
   return true;
@@ -204,4 +205,21 @@ export function ensureUserSquad(game, club, rng) {
   };
   while (club.squad.filter((id) => P(id).pos === 'G').length < 2) add('G');
   while (club.squad.length < 18) add(rng.pick(['D', 'M', 'F']));
+}
+
+// The user's players' progress, noted on the 1st of every month (skill,
+// technique, physique), for the growth chart on the player card. Three
+// years are kept; players who leave keep theirs until it runs out of date.
+export function recordGrowth(game) {
+  const club = game.clubs[game.userClubId];
+  if (!club) return;
+  const ids = new Set([...club.squad, ...(club.youth || [])]);
+  for (const p of Object.values(game.players)) if (p.loan?.parentId === club.id) ids.add(p.id);
+  for (const id of ids) {
+    const p = game.players[id];
+    if (!p) continue;
+    p.growth = p.growth || [];
+    p.growth.push([game.day, p.skill, p.tec ?? p.skill, p.phy ?? p.skill]);
+    if (p.growth.length > 36) p.growth.shift();
+  }
 }

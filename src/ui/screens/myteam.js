@@ -7,7 +7,7 @@ import { placePlayer, reshapeLineup, locate, roleTakers, styleShares, saveLineup
   slotPositions, repairLineup } from '../../core/lineup.js';
 import { releasePlayer } from '../../core/development.js';
 import { listPlayer, unlistPlayer, contractTerms, renewContract, openWindow, expiringContracts, leagueGamesLeft } from '../../core/transfers.js';
-import { partnerOf, loanToPartner, listForLoan, unlistForLoan, loanSuitors, loanToClub } from '../../core/loans.js';
+import { partnerOf, loanToPartner, listForLoan, unlistForLoan, loanSuitors, loanToClub, exerciseOption } from '../../core/loans.js';
 import { squadSummary, lineupSkill } from '../../core/ratings.js';
 import { ageOf } from '../../core/valuation.js';
 import { potText, potEstimate } from '../../core/scouting.js';
@@ -109,7 +109,8 @@ export function render(root, ctx) {
         <span>Contract · status</span><b>${p.contractEnd}${contractBadge(p)} · ${status}</b>
       </div>
       <div class="roles">${roleBtn('captainId', 'Captain')}${roleBtn('setPieceId', 'Set pieces')}${roleBtn('penaltyId', 'Penalties')}</div>
-      ${p.loan ? `<div class="muted" style="margin-top:8px;font-size:13px">On loan from <b>${esc(g.clubs[p.loan.parentId].name)}</b> until the end of the season (you pay ${Math.round(p.loan.wageShare * 100)}% of his wage).</div>`
+      ${p.loan ? `<div class="muted" style="margin-top:8px;font-size:13px">On loan from <b>${esc(g.clubs[p.loan.parentId].name)}</b> until the end of the season (you pay ${Math.round(p.loan.wageShare * 100)}% of his wage).</div>
+        ${p.loan.option ? `<button class="btn btn-small" style="margin-top:6px" data-action="option">Buy him for ${fmtMoneyShort(p.loan.option)} (option)</button>` : ''}`
         : `<div class="roles four" style="margin-top:6px">
         <button class="btn btn-small btn-blue" data-action="list" title="Put on the transfer list / take off">${p.listed ? 'Unlist' : 'Sell…'}</button>
         <button class="btn btn-small btn-blue ${p.loanListed ? 'on' : ''}" data-action="loan" title="Loan him out">Loan…</button>
@@ -382,6 +383,14 @@ export function render(root, ctx) {
     talk: async () => { await talkTo(ctx, st.sel); draw(); },
     advice: () => showAdvice(ctx),
     deselect: () => { st.sel = null; draw(); },
+    option: async () => {
+      const p = P(st.sel);
+      if (!(await ctx.confirm(`Take up the option: buy ${p.first} ${p.last} from ${g.clubs[p.loan.parentId].name} for ${fmtMoney(p.loan.option)}?`, { ok: 'Buy him' }))) return;
+      const r = exerciseOption(g, p.id);
+      ctx.toast(r.message);
+      if (r.ok) await ctx.save({ silent: true });
+      draw();
+    },
     loan: async () => {
       const p = P(st.sel);
       const partner = partnerOf(g);

@@ -30,11 +30,13 @@ import * as natteam from './screens/natteam.js';
 import * as deals from './screens/deals.js';
 import * as preseason from './screens/preseason.js';
 import * as rankings from './screens/rankings.js';
+import * as u19 from './screens/u19.js';
+import * as fame from './screens/fame.js';
 import { esc, setMoneyGame } from './util.js';
 import { showPlayer } from './components/playercard.js';
 
 const SCREENS = { title, newgame, hub, tables, soon, schedule, myteam, tactics, match, review, youth, career, cup, market,
-  finances, otherteams, search, stadium, national, training, natteam, deals, preseason, rankings };
+  finances, otherteams, search, stadium, national, training, natteam, deals, preseason, rankings, u19, fame };
 const SAVE_KEY = 'career';
 const PACK_KEY = 'realpack';
 

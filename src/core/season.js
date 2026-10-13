@@ -69,5 +69,5 @@ export function leagueProgress(game, clubId) {
 export function addNews(game, text, kind = 'info') {
   const id = 'n' + (game.ids.news = (game.ids.news || 0) + 1);
   game.news.unshift({ id, day: game.day, text, kind });
-  if (game.news.length > 60) game.news.length = 60;
+  if (game.news.length > 100) game.news.length = 100; // kept for the filter tabs on the hub
 }

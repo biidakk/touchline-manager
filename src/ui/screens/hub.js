@@ -18,6 +18,17 @@ import { clubLink, playerLink, linkClubsInText } from '../components/links.js';
 import { newOffers } from '../../core/transfers.js';
 import { marketPopups } from '../offers.js';
 import { contractReminder } from '../contracts.js';
+import { takeAchievementQueue } from '../../core/achievements.js';
+
+// News filter tabs: each news kind belongs to one group; some kinds are marked as important.
+const NEWS_TABS = [['all', 'All'], ['match', 'Games'], ['transfer', 'Deals'], ['squad', 'Squad'], ['club', 'Club']];
+const NEWS_GROUP = {
+  result: 'match', preview: 'match', league: 'match', cup: 'match', national: 'match',
+  transfer: 'transfer', offer: 'transfer', loan: 'transfer', contract: 'transfer',
+  injury: 'squad', player: 'squad', training: 'squad', youth: 'squad', staff: 'squad',
+  board: 'club', club: 'club', job: 'club', info: 'club', achievement: 'club',
+};
+const IMPORTANT = new Set(['board', 'contract', 'injury', 'offer', 'job', 'achievement']);
 
 const MENU = [
   ['team', 'My Team', 'myteam', 'My Team', 3],
@@ -32,7 +43,7 @@ const MENU = [
 ];
 
 export function render(root, ctx, params = {}) {
-  const st = { newsLimit: 4, transferScope: 'all', transferPage: 0 };
+  const st = { newsLimit: 4, transferScope: 'all', transferPage: 0, newsFilter: 'all' };
 
   function draw() {
     const g = ctx.game;
@@ -82,11 +93,12 @@ export function render(root, ctx, params = {}) {
         <div class="t3">${clubLink(g, opp.id)} (${last.homeId === club.id ? 'H' : 'A'}) <b>${scoreText(last)}</b></div></div></div>`;
     }
 
-    // News
-    const news = g.news.slice(0, st.newsLimit).map((n) => `<div class="news-item">
+    // News, filtered by kind; important items are marked.
+    const shown = g.news.filter((n) => st.newsFilter === 'all' || NEWS_GROUP[n.kind] === st.newsFilter);
+    const news = shown.slice(0, st.newsLimit).map((n) => `<div class="news-item ${IMPORTANT.has(n.kind) ? 'important' : ''}">
       <div class="txt" title="${esc(n.text)}">${linkClubsInText(g, n.text)}</div>
       <button class="x-btn" data-action="dismiss" data-id="${n.id}">x</button></div>`).join('');
-    const moreNews = Math.max(0, g.news.length - st.newsLimit);
+    const moreNews = Math.max(0, shown.length - st.newsLimit);
 
     // Transfers ticker
     const inLeague = (id) => g.clubs[id].compId === club.compId;
@@ -126,8 +138,9 @@ export function render(root, ctx, params = {}) {
       <button class="btn btn-small btn-blue" style="margin-top:auto" data-action="menu" data-screen="schedule" data-title="Season Schedule" data-m="2">Full schedule</button></div>
 
     <div class="panel" style="left:660px;top:92px;width:332px;height:282px;display:flex;flex-direction:column">
-      <h2>News</h2>
-      <div class="scroll" style="flex:1">${news || '<div class="empty">No news.</div>'}</div>
+      <h2 style="margin:0 0 4px">News</h2>
+      <div class="seg full news-tabs">${NEWS_TABS.map(([k, l]) => `<button class="${st.newsFilter === k ? 'on' : ''}" data-action="newsfilter" data-v="${k}">${l}</button>`).join('')}</div>
+      <div class="scroll" style="flex:1;margin-top:6px">${news || '<div class="empty">No news here.</div>'}</div>
       <div class="row" style="justify-content:space-between;font-weight:800;margin-top:6px">
         <span style="cursor:pointer" data-action="clearnews">Clear all</span>
         <span style="cursor:pointer" data-action="morenews">${moreNews ? `+${moreNews} more` : ''}</span>
@@ -189,7 +202,8 @@ export function render(root, ctx, params = {}) {
       draw();
     },
     report: (el) => ctx.modal(matchReport(ctx.game, ctx.game.fixtures[el.dataset.id]), { title: 'Match report' }),
-    clearnews: () => { ctx.game.news = []; draw(); },
+    clearnews: () => { ctx.game.news = st.newsFilter === 'all' ? [] : ctx.game.news.filter((n) => NEWS_GROUP[n.kind] !== st.newsFilter); draw(); },
+    newsfilter: (el) => { st.newsFilter = el.dataset.v; st.newsLimit = 4; draw(); },
     morenews: () => { st.newsLimit += 4; draw(); },
     tscope: (el) => { st.transferScope = el.dataset.v; st.transferPage = 0; draw(); },
     tpage: (el) => { st.transferPage = Number(el.dataset.p); draw(); },
@@ -242,6 +256,13 @@ export function render(root, ctx, params = {}) {
   // reminder about expiring contracts (three league games before the end).
   (async () => {
     if (newOffers(ctx.game).length || ctx.game.windowNews) { await marketPopups(ctx); draw(); }
+    const unlocked = takeAchievementQueue(ctx.game);
+    if (unlocked.length) {
+      await ctx.dialog(`<ul style="margin:0 0 0 18px;line-height:1.6">${unlocked.map((a) => `<li><b>${esc(a.title)}</b>${a.note ? ` · ${esc(a.note)}` : ''}<div class="muted" style="font-size:13px">${esc(a.text)}</div></li>`).join('')}</ul>`,
+        [{ key: 'ok', label: 'Great', blue: true }, { key: 'fame', label: 'Hall of Fame' }], { title: unlocked.length > 1 ? 'Achievements unlocked' : 'Achievement unlocked' })
+        .then((k) => { if (k === 'fame') ctx.go('fame'); });
+      await ctx.save({ silent: true });
+    }
     if (await contractReminder(ctx)) { await ctx.save({ silent: true }); ctx.go('myteam'); }
   })();
   if (params.seasonOver) ctx.toast('The season is over. Press Continue for the season review.');

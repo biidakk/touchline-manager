@@ -12,6 +12,7 @@ import { settleSeason, expectedWageBill, wageBill } from './finance.js';
 import { executeTransfer } from './transfers.js';
 import { closeContinentals, continentalComps } from './continental.js';
 import { recordSeason } from './coefficients.js';
+import { checkSeasonAchievements } from './achievements.js';
 import { aiExpansions, seasonEndPitches } from './stadium.js';
 import { ageReports, potText, potEstimate } from './scouting.js';
 import { returnLoans } from './loans.js';
@@ -136,6 +137,7 @@ export function endSeason(game) {
     pos: uh.pos, p: uh.p, w: uh.w, d: uh.d, l: uh.l, gf: uh.gf, ga: uh.ga, pts: uh.pts, cup: uh.cup, cont: uh.cont || null,
     trophies: trophies.map((t) => t.name) });
   const leaving = seasonEndBoard(game, summary, finalTables, trophies);
+  checkSeasonAchievements(game, summary);
   game.manager.history.at(-1).board = summary.user.board;
   game.history.seasons.push({ year, champions: summary.leagues.map((l) => ({ compId: l.compId, clubId: l.championId })),
     cups: [...summary.cups, ...summary.continentals].map((c) => ({ compId: c.compId, clubId: c.winnerId })),

@@ -2,7 +2,7 @@
 // players: accept, reject (a keen club may come back with more) or decide
 // later on the Transfer Market's Selling tab.
 
-import { newOffers, acceptOffer, rejectOffer } from '../core/transfers.js';
+import { newOffers, acceptOffer, rejectOffer, SELL_ON } from '../core/transfers.js';
 import { ageOf } from '../core/valuation.js';
 import { fmtDate } from '../core/calendar.js';
 import { crest } from './components/svg.js';
@@ -54,10 +54,11 @@ export async function reviewOffers(ctx) {
     const k = await ctx.dialog(offerHtml(g, o), [
       { key: 'later', label: 'Decide later', blue: true },
       { key: 'reject', label: 'Reject', blue: true },
+      ...(loan ? [] : [{ key: 'sellon', label: `${fmtMoneyShort(o.fee * (1 - SELL_ON.discount))} + ${Math.round(SELL_ON.pct * 100)}% sell-on` }]),
       { key: 'accept', label: loan ? 'Loan him' : `Sell for ${fmtMoneyShort(o.fee)}` },
     ], { title: loan ? 'Loan offer' : 'Transfer offer' });
-    if (k === 'accept') {
-      if (acceptOffer(g, o.id)) { changed = true; ctx.toast(`${p.first} ${p.last} ${loan ? 'loaned out' : 'sold'}`); }
+    if (k === 'accept' || k === 'sellon') {
+      if (acceptOffer(g, o.id, { sellOn: k === 'sellon' })) { changed = true; ctx.toast(`${p.first} ${p.last} ${loan ? 'loaned out' : 'sold'}`); }
       else ctx.toast('The deal could not be completed.');
     } else if (k === 'reject') rejectOffer(g, o.id);
   }
