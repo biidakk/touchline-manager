@@ -192,6 +192,26 @@ const ctx = {
     });
   },
 
+  // Like dialog, with form fields: resolves to { key, values } where values
+  // holds every input/select of the dialog by its name.
+  form(html, buttons, { title = '' } = {}) {
+    return new Promise((resolve) => {
+      const bg = document.createElement('div');
+      bg.className = 'modal-bg';
+      bg.innerHTML = `<div class="panel modal">${title ? `<h2>${esc(title)}</h2>` : ''}<div>${html}</div>
+        <div class="actions">${buttons.map((b) => `<button class="btn btn-small ${b.blue ? 'btn-blue' : ''}" data-k="${esc(b.key)}">${esc(b.label)}</button>`).join('')}</div></div>`;
+      bg.addEventListener('click', (e) => {
+        const b = e.target.closest('[data-k]');
+        if (!b) return;
+        const values = Object.fromEntries([...bg.querySelectorAll('[name]')].map((el) => [el.name, el.value]));
+        bg.remove();
+        resolve({ key: b.dataset.k, values });
+      });
+      stage.appendChild(bg);
+      bg.querySelector('input')?.focus();
+    });
+  },
+
   async hasSave() {
     try { return !!(await storage.get(SAVE_KEY)); } catch { return false; }
   },

@@ -391,6 +391,9 @@ table.rec-wrap td { white-space: normal; }
 .badge.C { background: #fff; color: #0b3b8c; }
 .badge.inj { background: #e53935; color: #fff; }
 .badge.sus { background: #ff9800; color: #fff; }
+.badge.contract { background: #ffd54f; color: #3b2a00; padding: 0 1px; margin: 0 4px 0 0; vertical-align: -2px; }
+.badge .ico-badge { width: 12px; height: 12px; stroke-width: 2.2; }
+html.phone .badge .ico-badge { width: 14px; height: 14px; }
 .badge.list { background: #f0a020; color: #fff; }
 .badge.loan { background: #8e44ad; color: #fff; }
 .myteam-actions .btn { height: 36px; font-size: 15px; }

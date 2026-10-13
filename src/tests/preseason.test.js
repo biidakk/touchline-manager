@@ -2,7 +2,7 @@ import { test, assert, assertEq, assertBetween, info } from './harness.js';
 import { generateWorld, startCareer } from '../core/worldgen.js';
 import { advanceToUserMatch, playUserMatchInstant, startDay, simulateRestOfSeason } from '../core/matchday.js';
 import { openWindow, listPlayer, newOffers, windows } from '../core/transfers.js';
-import { TOURS, FRIENDLY_DAYS, tourDue, tourMoney, tourOpponents, chooseTour, isFriendly } from '../core/preseason.js';
+import { TOURS, FRIENDLY_DAYS, tourDue, tourMoney, tourOpponents, chooseTour, isFriendly, WINTER_BREAK_START, winterFriendlyDays } from '../core/preseason.js';
 import { clubLevel } from '../core/finance.js';
 import { endSeason } from '../core/seasonend.js';
 import { serialize, deserialize } from '../core/save.js';
@@ -108,4 +108,28 @@ test('CONTINUE stops for offers at most once a week', () => {
   }
   for (let i = 1; i < stops.length; i++) assert(stops[i] - stops[i - 1] >= 7, `stops ${stops[i - 1]} and ${stops[i]} too close`);
   info(`Offer stops in the summer window: ${stops.length}`);
+});
+
+test('winter break: three friendlies in mid-January against clubs of your level', () => {
+  const g = career('winterfr', 'ENG-L1', 6);
+  const user = g.clubs[g.userClubId];
+  g.manager.board.standing = 100;
+  const start = WINTER_BREAK_START(g.season.year);
+  while (g.day < start) {
+    const f = startDay(g);
+    if (f) playUserMatchInstant(g, f);
+  }
+  const fx = Object.values(g.fixtures).filter((f) => f.winter && (f.homeId === user.id || f.awayId === user.id));
+  assertEq(fx.length, 3, 'three winter friendlies');
+  assertEq(fx.map((f) => f.day).sort().join(), winterFriendlyDays(g.season.year).join(), 'on the January Saturdays');
+  for (const f of fx) {
+    const opp = g.clubs[f.homeId === user.id ? f.awayId : f.homeId];
+    assert(opp.compId !== user.compId, 'not a league rival');
+  }
+  let played = 0;
+  for (let i = 0; i < 60 && played < 3; i++) {
+    const f = startDay(g);
+    if (f) { playUserMatchInstant(g, f); if (f.winter) played++; }
+  }
+  assertEq(played, 3, 'all three played');
 });

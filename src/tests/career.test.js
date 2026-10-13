@@ -110,7 +110,7 @@ test('career history, trophies and records are kept', () => {
   assertEq(g.manager.history.length, SEASONS, 'manager seasons');
   const user = g.clubs[g.userClubId];
   assertEq(user.history.length, SEASONS, 'club history');
-  for (const c of Object.values(g.competitions).filter((x) => x.type !== 'guest')) assertEq(c.history.length, SEASONS, `${c.name} history`);
+  for (const c of Object.values(g.competitions).filter((x) => x.type !== 'guest' && x.type !== 'friendly')) assertEq(c.history.length, SEASONS, `${c.name} history`);
   const won = g.manager.history.reduce((a, h) => a + h.trophies.length, 0);
   assertEq(g.history.trophies.length, won, 'trophies list');
   info(`User club: ${user.name}; trophies ${won}; finishes: ${g.manager.history.map((h) => `${h.tier}.${h.pos}`).join(' ')}`);

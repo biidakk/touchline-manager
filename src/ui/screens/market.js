@@ -10,6 +10,7 @@ import { formArrow } from '../components/pitch.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
 import { esc, fmtMoney, fmtMoneyShort, bindActions, fullName } from '../util.js';
 import { toShown, toEuros, currencySymbol } from '../../core/currency.js';
+import { negotiateContract } from '../contracts.js';
 import { clubLink, playerLink, linkClubsInText } from '../components/links.js';
 import { potText, potEstimate, scoutingOf, assignScout, cancelScout, setLevel, LEVELS, scoutingCost, attrText } from '../../core/scouting.js';
 import { scoutStatus } from '../components/playercard.js';
@@ -272,9 +273,10 @@ export function render(root, ctx, params = {}) {
       const r = evaluateBid(g, st.sel, fee);
       if (r.status === 'accepted') {
         const p = g.players[st.sel];
-        const wage = wageDemand(g, p, user);
-        if (!(await ctx.confirm(`${r.message} ${p.first} ${p.last} asks ${fmtMoney(wage)} a year for ${years} year(s). Sign him?`, { ok: 'Sign' }))) return;
-        buyPlayer(g, st.sel, fee, years);
+        // The fee is agreed; the player's contract is negotiated before anything is paid.
+        const deal = await negotiateContract(ctx, p, user, years);
+        if (!deal) { st.msg = `No contract with ${p.first} ${p.last}: the transfer is off.`; draw(); return; }
+        buyPlayer(g, st.sel, fee, deal.years, deal.wage);
         g.shortlist = g.shortlist.filter((id) => id !== st.sel);
         st.sel = null;
         st.msg = '';

@@ -17,6 +17,7 @@ import { esc, fmtMoney, fmtMoneyShort, fmt1, bindActions } from '../util.js';
 import { clubLink, playerLink, linkClubsInText } from '../components/links.js';
 import { newOffers } from '../../core/transfers.js';
 import { marketPopups } from '../offers.js';
+import { contractReminder } from '../contracts.js';
 
 const MENU = [
   ['team', 'My Team', 'myteam', 'My Team', 3],
@@ -237,7 +238,11 @@ export function render(root, ctx, params = {}) {
     return;
   }
   draw();
-  // Offers that arrived while away (e.g. on a match day) pop up here.
-  if (newOffers(ctx.game).length || ctx.game.windowNews) marketPopups(ctx).then(() => draw());
+  // Offers that arrived while away (e.g. on a match day) pop up here, then the
+  // reminder about expiring contracts (three league games before the end).
+  (async () => {
+    if (newOffers(ctx.game).length || ctx.game.windowNews) { await marketPopups(ctx); draw(); }
+    if (await contractReminder(ctx)) { await ctx.save({ silent: true }); ctx.go('myteam'); }
+  })();
   if (params.seasonOver) ctx.toast('The season is over. Press Continue for the season review.');
 }

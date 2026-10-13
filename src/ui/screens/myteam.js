@@ -6,7 +6,7 @@ import { autoLineup, slotSkill } from '../../core/ai.js';
 import { placePlayer, reshapeLineup, locate, roleTakers, styleShares, saveLineupSlot, loadLineupSlot, BENCH_SIZE,
   slotPositions, repairLineup } from '../../core/lineup.js';
 import { releasePlayer } from '../../core/development.js';
-import { listPlayer, unlistPlayer, contractTerms, renewContract, openWindow } from '../../core/transfers.js';
+import { listPlayer, unlistPlayer, contractTerms, renewContract, openWindow, expiringContracts, leagueGamesLeft } from '../../core/transfers.js';
 import { partnerOf, loanToPartner, listForLoan, unlistForLoan, loanSuitors, loanToClub } from '../../core/loans.js';
 import { squadSummary, lineupSkill } from '../../core/ratings.js';
 import { ageOf } from '../../core/valuation.js';
@@ -37,6 +37,15 @@ export function render(root, ctx) {
     return { zone, index: Number(idx) };
   }
 
+  // Contracts running out: flagged from seven league games before the end (worked out once a day).
+  let expiring = { day: -1, ids: new Set(), left: 0 };
+  const expiringIds = () => {
+    if (expiring.day !== g.day) expiring = { day: g.day, ids: new Set(expiringContracts(g, club.id).map((p) => p.id)), left: leagueGamesLeft(g, club.id) };
+    return expiring;
+  };
+  const contractBadge = (p) => (expiringIds().ids.has(p.id)
+    ? `<span class="badge contract" title="Contract ends after this season (${expiring.left} league game${expiring.left === 1 ? '' : 's'} left): offer a new one on the player card">${icon('contract', 'ico-badge')}</span>` : '');
+
   function badges(p, roles) {
     let b = '';
     if (roles.captainId === p.id) b += '<span class="badge C">C</span>';
@@ -66,7 +75,7 @@ export function render(root, ctx) {
         ? `<span class="oop-skill" title="Out of position (plays as ${slotPos[si]}): ${p.skill} → ${slotSkill(p, slotPos[si])}">${slotSkill(p, slotPos[si])}</span>`
         : skillMark(p);
       return `<tr data-pid="${id}" data-drop="${drop}" draggable="true" class="${st.sel === id ? 'sel' : ''} ${un ? 'unavail' : ''}">
-        <td class="num">${p.number}</td><td><b>${esc(fullName(p))}</b>${badges(p, roles)}</td><td class="c">${oop ? `<span class="oop-skill">${slotPos[si]}</span>` : p.pos}</td>
+        <td class="num">${p.number}</td><td>${contractBadge(p)}<b>${esc(fullName(p))}</b>${badges(p, roles)}</td><td class="c">${oop ? `<span class="oop-skill">${slotPos[si]}</span>` : p.pos}</td>
         <td class="num">${ageOf(p, year)}</td><td>${flag(g.nations[p.nationId].flag, 20)}</td>
         <td class="num">${skillCell}</td><td class="num">${potText(g, p, { short: true })}</td><td class="c">${formArrow(p.form)}</td>
         <td class="num">${Math.round(p.energy)}%</td></tr>`;
@@ -97,7 +106,7 @@ export function render(root, ctx) {
         <span class="phone-hide">TEC · PHY · height</span><b class="phone-hide">${p.tec} · ${p.phy} · ${p.height} cm</b>
         <span>Morale</span><b><button class="linkbtn" data-action="talk" title="Talk to him">${moraleBadge(p, true)}</button></b>
         <span>Value · wage</span><b>${fmtMoneyShort(p.value)} · ${fmtMoneyShort(p.wage)}</b>
-        <span>Contract · status</span><b>${p.contractEnd} · ${status}</b>
+        <span>Contract · status</span><b>${p.contractEnd}${contractBadge(p)} · ${status}</b>
       </div>
       <div class="roles">${roleBtn('captainId', 'Captain')}${roleBtn('setPieceId', 'Set pieces')}${roleBtn('penaltyId', 'Penalties')}</div>
       ${p.loan ? `<div class="muted" style="margin-top:8px;font-size:13px">On loan from <b>${esc(g.clubs[p.loan.parentId].name)}</b> until the end of the season (you pay ${Math.round(p.loan.wageShare * 100)}% of his wage).</div>`
@@ -220,7 +229,7 @@ export function render(root, ctx) {
     const cell = (p, key) => {
       const s = p.stats.season;
       switch (key) {
-        case 'name': return `<b>${esc(fullName(p))}</b>${badges(p, roles)}`;
+        case 'name': return `${contractBadge(p)}<b>${esc(fullName(p))}</b>${badges(p, roles)}`;
         case 'pos': return p.pos;
         case 'age': return ageOf(p, year);
         case 'nat': return flag(g.nations[p.nationId].flag, 20);
@@ -422,6 +431,7 @@ export function render(root, ctx) {
         String(Math.min(3, t.maxYears)), { ok: 'Offer contract' });
       if (v === null) return;
       const r = renewContract(g, p.id, Math.max(1, Math.round(Number(v) || 1)));
+      expiring.day = -1; // the contract icon goes at once
       ctx.toast(r.message);
       draw();
     },

@@ -130,6 +130,7 @@ ${lights}
 }
 
 const ICONS = {
+  contract: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M9.5 12h6M9.5 15h6M9.5 18h4"/>',
   team: '<circle cx="9" cy="8" r="3.2"/><path d="M3 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14c3.3-.6 6 1.5 6 4.5"/>',
   shirt: '<path d="M8 3 4 5.5 2.5 10l3 1.3V21h13v-9.7l3-1.3L20 5.5 16 3c-.6 1.6-2.2 2.5-4 2.5S8.6 4.6 8 3z"/>',
   history: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/>',

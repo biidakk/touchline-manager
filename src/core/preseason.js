@@ -8,7 +8,7 @@
 
 import { Rng, hashSeed } from './rng.js';
 import { expectedWageBill, clubLevel } from './finance.js';
-import { newFixture } from './calendar.js';
+import { newFixture, dayOf, nextWeekday } from './calendar.js';
 import { addNews } from './season.js';
 
 export const FRIENDLY_ID = 'FRIENDLY';
@@ -95,6 +95,41 @@ export function chooseTour(game, tourKey) {
   club.tour = { year: game.season.year, key: tour.key, fixtureIds };
   addNews(game, `Pre-season: ${tour.name} in ${tour.place} with friendlies against ${opponents.map((id) => game.clubs[id].name).join(', ')}.`, 'club');
   return { ok: true, message: `${tour.name} booked.` };
+}
+
+// Winter break: three friendlies for the user's club against random clubs of
+// about its level from outside its league, on the Saturdays of mid-January
+// (two at home). Scheduled when the break starts.
+export const WINTER_BREAK_START = (year) => dayOf(year, 12, 20);
+export function winterFriendlyDays(year) {
+  const first = nextWeekday(dayOf(year + 1, 1, 8), 6);
+  return [first, first + 7, first + 14];
+}
+
+export function scheduleWinterFriendlies(game) {
+  const club = game.clubs[game.userClubId];
+  if (!club || game.manager?.sacked || club.winterFriendlies === game.season.year) return [];
+  club.winterFriendlies = game.season.year;
+  const comp = ensureFriendlies(game);
+  const rng = new Rng({ s: hashSeed(`${game.seed}:winter:${club.id}:${game.season.year}`) });
+  const target = clubLevel(game, club);
+  const pool = Object.values(game.clubs).filter((c) => c.id !== club.id && c.compId !== club.compId && !c.guest);
+  let near = [];
+  for (const width of [3, 5, 8, 99]) {
+    near = pool.filter((c) => Math.abs(clubLevel(game, c) - target) <= width);
+    if (near.length >= 3) break;
+  }
+  const opps = rng.shuffle(near).slice(0, 3);
+  const busy = new Set(Object.values(game.fixtures).filter((f) => f.homeId === club.id || f.awayId === club.id).map((f) => f.day));
+  const ids = [];
+  winterFriendlyDays(game.season.year).forEach((day, i) => {
+    const opp = opps[i];
+    if (!opp || busy.has(day) || day <= game.day) return;
+    const [h, a] = i === 1 ? [opp.id, club.id] : [club.id, opp.id];
+    ids.push(newFixture(game, comp.id, day, i + 1, h, a, { friendly: 'winter', winter: true }).id);
+  });
+  if (ids.length) addNews(game, `Winter break: friendlies against ${opps.slice(0, ids.length).map((c) => c.name).join(', ')} in January.`, 'club');
+  return ids;
 }
 
 // Friendlies change nothing that counts; players still tire, get injured,

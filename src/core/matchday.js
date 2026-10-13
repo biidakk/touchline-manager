@@ -20,7 +20,7 @@ import { addNews, sortedTable } from './season.js';
 import { Rng } from './rng.js';
 import { tickSkillMarks } from './attributes.js';
 import { spellFor, clubMatchRecords } from './records.js';
-import { applyFriendly } from './preseason.js';
+import { applyFriendly, scheduleWinterFriendlies, WINTER_BREAK_START } from './preseason.js';
 
 // The user's matches: his club's, and his national team's if he manages one.
 export const isUserFixture = (game, f) => {
@@ -218,6 +218,7 @@ export function dailyUpdate(game) {
     if (date.getUTCMonth() === 0) boardVerdict(game);
   }
   dailyMarket(game);
+  if (game.day === WINTER_BREAK_START(game.season.year)) scheduleWinterFriendlies(game);
   progressConstruction(game);
   progressScouting(game);
 }

@@ -12,6 +12,7 @@ import { bigTransfer } from './newsfeed.js';
 import { aiLoanOffers, acceptLoanOffer } from './loans.js';
 import { contractMood, onContractSigned } from './morale.js';
 import { money } from './currency.js';
+import { countryRanking } from './coefficients.js';
 
 // ---- windows ----
 
@@ -19,7 +20,8 @@ export function windows(game) {
   const y = game.season.year;
   return [
     { name: 'summer', open: game.season.start - 14, close: dayOf(y, 8, 31) },
-    { name: 'winter', open: dayOf(y + 1, 1, 1), close: dayOf(y + 1, 1, 31) },
+    // The winter window runs through the winter break into early February.
+    { name: 'winter', open: dayOf(y, 12, 27), close: dayOf(y + 1, 2, 7) },
   ];
 }
 
@@ -36,16 +38,47 @@ export function nextWindow(game) {
 const isStarter = (game, club, id) => !!club.lineup && club.lineup.slots.includes(id);
 
 // What an AI club asks for one of its players.
+// Listed players go for about their value (their club's own asking price);
+// settled ones cost more: a regular starter 1.6x, a player who plays often
+// 1.4x, a squad player 1.3x, and one who hardly plays 1.1x (his club is less
+// attached to him and he is keener to move).
 export function askingPrice(game, p) {
   const year = game.season.year;
   const club = game.clubs[p.clubId];
-  let mult = 1.2;
+  const round = (v) => (v >= 1e6 ? Math.round(v / 1e5) * 1e5 : Math.round(v / 1e4) * 1e4);
+  // A listed player: his club's price, adjusted only for the league.
+  if (p.listed && p.askingPrice) return round(p.askingPrice * leaguePriceFactor(game, club?.nationId));
+  let mult = 1.3;
   if (p.listed) mult = 1.0;
   else if (club && isStarter(game, club, p.id)) mult = 1.6;
+  else if (club) {
+    const played = game.competitions[club.compId]?.table?.[club.id]?.p || 0;
+    if (played >= 5) {
+      const share = p.stats.season.apps / played;
+      mult = share >= 0.5 ? 1.4 : share < 0.2 ? 1.1 : 1.3;
+    }
+  }
   if (ageOf(p, year) <= 21 && p.potential - p.skill >= 10) mult += 0.25;
   if (p.contractEnd <= year + 1) mult *= 0.8; // contract running out
+  // Players from the strongest leagues cost more, from the smaller ones less.
+  mult *= leaguePriceFactor(game, club?.nationId);
   const v = playerValue(p, year) * mult;
   return v >= 1e6 ? Math.round(v / 1e5) * 1e5 : Math.round(v / 1e4) * 1e4;
+}
+
+// By the selling country's coefficient rank: top five x1.35, 6-10 x1.15,
+// 11-20 x1.0, below that x0.85 (worlds without coefficients: x1). The ranking
+// only changes at season end, so it is worked out once a season.
+const rankCache = new WeakMap();
+export function leaguePriceFactor(game, nationId) {
+  if (!game.coefficients || !nationId) return 1;
+  let c = rankCache.get(game);
+  if (!c || c.year !== game.season.year) {
+    c = { year: game.season.year, rank: new Map(countryRanking(game).map((r) => [r.nationId, r.rank])) };
+    rankCache.set(game, c);
+  }
+  const rank = c.rank.get(nationId) || 99;
+  return rank <= 5 ? 1.35 : rank <= 10 ? 1.15 : rank <= 20 ? 1 : 0.85;
 }
 
 // Yearly wage a player asks to join (or stay at) a club.
@@ -136,15 +169,22 @@ export function evaluateBid(game, playerId, fee) {
   const ask = askingPrice(game, p);
   const posCount = seller.squad.filter((id) => game.players[id].pos === p.pos).length;
   if (posCount <= (p.pos === 'G' ? 2 : 4)) return { status: 'rejected', message: `${seller.name} cannot spare a ${p.pos === 'G' ? 'goalkeeper' : 'player in that position'}.` };
-  if (fee >= ask) return { status: 'accepted', message: `${seller.name} accept your offer.` };
-  if (fee >= ask * 0.75) return { status: 'counter', counter: ask, message: `${seller.name} want ${money(game, ask)}.` };
+  // A listed player is for sale: his club takes a little less and talks from lower bids.
+  const accept = p.listed ? 0.9 : 1;
+  const talk = p.listed ? 0.6 : 0.75;
+  if (fee >= ask * accept) return { status: 'accepted', message: `${seller.name} accept your offer.` };
+  if (fee >= ask * talk) {
+    const counter = Math.round((ask * accept) / 1e4) * 1e4;
+    return { status: 'counter', counter, message: `${seller.name} want ${money(game, counter)}.` };
+  }
   return { status: 'rejected', message: `${seller.name} reject the offer as far too low.` };
 }
 
-export function buyPlayer(game, playerId, fee, years = 3) {
+// wage: the one agreed in the contract talks (default: his demand).
+export function buyPlayer(game, playerId, fee, years = 3, agreedWage = null) {
   const user = game.clubs[game.userClubId];
   const p = game.players[playerId];
-  const wage = wageDemand(game, p, user);
+  const wage = agreedWage ?? wageDemand(game, p, user);
   const fromName = game.clubs[p.clubId].name;
   const t = executeTransfer(game, playerId, user.id, fee, { years, wage });
   addNews(game, `Signed: ${p.first} ${p.last} joins from ${fromName} for ${money(game, fee)}.`, 'transfer');
@@ -219,6 +259,56 @@ function releaseQueuedOffers(game) {
 export const newOffers = (game) => (game.offers || []).filter((o) => o.seen === false && game.players[o.playerId]);
 
 // ---- contracts ----
+
+// League games the club still has to play this season.
+export function leagueGamesLeft(game, clubId) {
+  const comp = game.competitions[game.clubs[clubId]?.compId];
+  if (!comp?.fixtureIds) return Infinity;
+  let n = 0;
+  for (const id of comp.fixtureIds) {
+    const f = game.fixtures[id];
+    if (f && !f.result && (f.homeId === clubId || f.awayId === clubId)) n++;
+  }
+  return n;
+}
+
+// A contract runs out at the end of the season in its last year; it is flagged
+// from seven league games before (a document icon in the squad list).
+export const CONTRACT_WARN_GAMES = 7;
+export const CONTRACT_REMIND_GAMES = 3;
+export const contractEndsThisSeason = (game, p) => !!p && !p.loan && p.contractEnd <= game.season.year;
+export function expiringContracts(game, clubId, games = CONTRACT_WARN_GAMES) {
+  const club = game.clubs[clubId];
+  if (!club || leagueGamesLeft(game, clubId) > games) return [];
+  return club.squad.map((id) => game.players[id]).filter((p) => contractEndsThisSeason(game, p));
+}
+
+// ---- negotiating a new player's contract (after his club accepts a bid) ----
+
+// What he wants: a yearly wage (more if he is ambitious, less if loyal) and a
+// length that suits his age (young players want long deals, veterans short).
+export function contractWish(game, p, club) {
+  const age = ageOf(p, game.season.year);
+  const mult = p.personality === 'ambitious' ? 1.1 : p.personality === 'loyal' ? 0.95 : 1;
+  const wage = Math.round((wageDemand(game, p, club) * mult) / 1000) * 1000;
+  const years = age >= 32 ? [1, 1] : age >= 30 ? [1, 2] : age >= 27 ? [2, 4] : age >= 23 ? [3, 5] : [4, 5];
+  return { wage, years, patience: p.personality === 'temperamental' ? 2 : 3 };
+}
+
+// One offer: { status: 'accepted' | 'counter' | 'walked', wage (agreed or asked), message }.
+// neg is the running negotiation ({ patience }); low offers use it up faster.
+export function respondToContract(game, p, club, neg, offer) {
+  const want = contractWish(game, p, club);
+  const [minY, maxY] = want.years;
+  // A length he doesn't like has to be paid for.
+  const lengthOk = offer.years >= minY && offer.years <= maxY;
+  const ask = Math.round((want.wage * (lengthOk ? 1 : 1.08)) / 1000) * 1000;
+  if (offer.wage >= ask * 0.97) return { status: 'accepted', wage: offer.wage, message: `${p.first} ${p.last} accepts: ${offer.years} year${offer.years > 1 ? 's' : ''} at ${money(game, offer.wage)} a year.` };
+  neg.patience -= offer.wage < ask * 0.75 ? 2 : 1;
+  if (neg.patience <= 0) return { status: 'walked', wage: ask, message: `${p.first} ${p.last} has had enough and breaks off the talks. The transfer is off.` };
+  const lengthText = lengthOk ? '' : ` He'd rather sign for ${minY === maxY ? `${minY} year${minY > 1 ? 's' : ''}` : `${minY}-${maxY} years`}.`;
+  return { status: 'counter', wage: ask, message: `${p.first} ${p.last} wants ${money(game, ask)} a year.${lengthText}` };
+}
 
 // Personality changes the price (ambitious +10%, loyal -8%); unhappy players refuse.
 export function contractTerms(game, p) {
@@ -311,12 +401,51 @@ function aiDeals(game, rng) {
   }
 }
 
+// When a window opens, AI clubs put a few players up for sale: surplus
+// squad players, ageing ones below the club's level, those who hardly play;
+// more at clubs in debt or with big squads. The listings end with the window.
+function aiTransferLists(game, rng) {
+  const year = game.season.year;
+  for (const club of Object.values(game.clubs)) {
+    if (club.id === game.userClubId || club.guest) continue;
+    const xi = new Set(club.lineup?.slots || []);
+    const level = clubLevel(game, club);
+    const played = game.competitions[club.compId]?.table?.[club.id]?.p || 0;
+    const cands = club.squad.map((id) => game.players[id]).filter((p) => !p.loan && !p.listed && !xi.has(p.id))
+      .map((p) => {
+        const age = ageOf(p, year);
+        let score = 0;
+        if (age >= 31 && p.skill < level) score += 2;
+        if (played >= 5 && p.stats.season.apps / played < 0.2) score += 2;
+        if (p.skill < level - 6) score += 1;
+        if (p.contractEnd <= year) score += 1;
+        return { p, score: score + rng.next() };
+      }).filter((x) => x.score >= 1.5).sort((a, b) => b.score - a.score);
+    const n = Math.min(cands.length, rng.int(0, 2) + (club.squad.length > 25 ? 1 : 0) + (club.budget < 0 ? 1 : 0));
+    for (const { p } of cands.slice(0, n)) {
+      p.listed = true;
+      p.aiListed = true;
+      p.askingPrice = Math.round((playerValue(p, year) * rng.float(0.85, 1.0)) / 1e4) * 1e4;
+    }
+  }
+}
+
+function endAiTransferLists(game) {
+  for (const p of Object.values(game.players)) {
+    if (!p.aiListed) continue;
+    p.listed = false;
+    delete p.aiListed;
+    delete p.askingPrice;
+  }
+}
+
 export function dailyMarket(game) {
   const w = openWindow(game);
   if (!w) {
     // The day after a window shuts: offers lapse and the user is told.
     const shut = windows(game).find((x) => x.close === game.day - 1);
     if (shut && game.season.phase === 'season') {
+      endAiTransferLists(game);
       game.windowNews = { kind: 'closed', name: shut.name };
       addNews(game, `The ${shut.name} transfer window has closed.`, 'transfer');
     }
@@ -325,9 +454,14 @@ export function dailyMarket(game) {
     return;
   }
   const rng = new Rng(game.rng);
+  // Once per window (the summer one opens on the season's first day).
+  const listKey = `${game.season.year}:${w.name}`;
+  if (game.aiListsMade !== listKey) { game.aiListsMade = listKey; aiTransferLists(game, rng); }
   // AI clubs trade from the last week of pre-season (as before the friendlies
   // were added, so the market keeps its size).
-  if (game.day >= game.season.start - 7 || w.name !== 'summer') aiDeals(game, rng);
+  // Winter: AI clubs trade in January only, as before the window was made longer.
+  const y = game.season.year;
+  if (w.name === 'summer' ? game.day >= game.season.start - 7 : game.day >= dayOf(y + 1, 1, 1) && game.day <= dayOf(y + 1, 1, 31)) aiDeals(game, rng);
   // Nobody bids for the user's players during the pre-season friendlies.
   if (game.day <= game.season.start - 3 && w.name === 'summer') return;
   aiOffersForUser(game, rng);

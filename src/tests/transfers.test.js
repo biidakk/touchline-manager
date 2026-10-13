@@ -1,7 +1,9 @@
 import { test, assert, assertEq, assertBetween, info } from './harness.js';
 import { generateWorld, startCareer } from '../core/worldgen.js';
 import { openWindow, windows, askingPrice, evaluateBid, buyPlayer, listPlayer, acceptOffer, renewContract, searchPlayers,
-  willJoin, rejectOffer, newOffers } from '../core/transfers.js';
+  willJoin, rejectOffer, newOffers, leaguePriceFactor, expiringContracts, leagueGamesLeft, contractWish, respondToContract }
+  from '../core/transfers.js';
+import { ageOf } from '../core/valuation.js';
 import { loanSuitors, loanToClub } from '../core/loans.js';
 import { advanceToUserMatch, playUserMatchInstant, startDay, simulateRestOfSeason } from '../core/matchday.js';
 import { endSeason } from '../core/seasonend.js';
@@ -13,7 +15,7 @@ function career(seed, comp = 'ENG-L1', idx = 6) {
   return startCareer(w, w.competitions[comp].clubIds[idx], 'Market');
 }
 
-test('transfer windows: pre-season to 31 August and January', () => {
+test('transfer windows: pre-season to 31 August, and 27 December to 7 February', () => {
   const g = career('win');
   const y = g.season.year;
   assert(openWindow(g), 'window should be open in pre-season');
@@ -21,6 +23,8 @@ test('transfer windows: pre-season to 31 August and January', () => {
   assert(!openWindow(g, dayOf(y, 9, 1)), '1 Sep closed');
   assert(!openWindow(g, dayOf(y, 12, 10)), 'December closed');
   assert(openWindow(g, dayOf(y + 1, 1, 15)), 'January open');
+  assert(openWindow(g, dayOf(y, 12, 27)) && openWindow(g, dayOf(y + 1, 2, 7)), 'winter: 27 December to 7 February');
+  assert(!openWindow(g, dayOf(y + 1, 2, 8)), '8 February closed');
   assertEq(windows(g).length, 2);
 });
 
@@ -147,7 +151,7 @@ test('CONTINUE stops when the winter window opens', () => {
     else if (g.stopReason === 'window') stopped = true;
   }
   assert(stopped, 'never stopped at the winter window');
-  assertEq(g.day, dayOf(g.season.year + 1, 1, 1));
+  assertEq(g.day, dayOf(g.season.year, 12, 27));
 });
 
 test('stars of much bigger clubs and leagues refuse to drop down', () => {
@@ -223,4 +227,76 @@ test('loaning out: a choice of clubs of his level, and he goes to the one picked
   assertEq(p.clubId, pick.clubId);
   assertEq(user.budget, before + pick.fee, 'loan fee received');
   info(`${list.length} clubs: ${list.map((s) => `${g.clubs[s.clubId].name} ${s.starter ? 'starter' : 'squad'}`).join(', ')}`);
+});
+
+test('prices: players from the strongest leagues cost more, from small ones less', () => {
+  const g = career('leagueprice');
+  const f = (n) => leaguePriceFactor(g, n);
+  assertEq(f('ENG'), 1.35, 'top five');
+  assertEq(f('POR'), 1.15, '6-10');
+  assertEq(f('SCO'), 1, '11-20');
+  assertEq(f('ROU'), 0.85, '21 and below');
+  // Same player, moved between countries: the price follows the league.
+  const p = Object.values(g.players).find((x) => g.clubs[x.clubId]?.nationId === 'ENG' && !x.listed);
+  const eng = askingPrice(g, p);
+  const ro = Object.values(g.clubs).find((c) => c.nationId === 'ROU');
+  const home = p.clubId;
+  p.clubId = ro.id;
+  const rou = askingPrice(g, p);
+  p.clubId = home;
+  assert(eng > rou * 1.4, `England ${eng} vs Romania ${rou}`);
+});
+
+test('expiring contracts are flagged seven league games before the end', () => {
+  const g = career('expiry');
+  const user = g.clubs[g.userClubId];
+  const p = g.players[user.squad[3]];
+  p.contractEnd = g.season.year;
+  assertEq(expiringContracts(g, user.id).length > 0, false, 'not yet at the start');
+  for (let i = 0; i < 400 && leagueGamesLeft(g, user.id) > 7; i++) {
+    const f = advanceToUserMatch(g);
+    if (f) playUserMatchInstant(g, f);
+    delete g.stopReason;
+  }
+  assert(expiringContracts(g, user.id).some((x) => x.id === p.id), 'flagged with 7 games left');
+  assert(!expiringContracts(g, user.id, 3).length || leagueGamesLeft(g, user.id) <= 3, 'the reminder waits for 3 games');
+});
+
+test('contract talks: a fair offer is accepted, low ones use up his patience', () => {
+  const g = career('talks');
+  const user = g.clubs[g.userClubId];
+  const p = Object.values(g.players).find((x) => x.clubId !== user.id && ageOf(x, g.season.year) >= 24 && ageOf(x, g.season.year) <= 28);
+  const wish = contractWish(g, p, user);
+  const ok = respondToContract(g, p, user, { patience: 3 }, { wage: wish.wage, years: wish.years[0] });
+  assertEq(ok.status, 'accepted', ok.message);
+  const neg = { patience: 3 };
+  const low = respondToContract(g, p, user, neg, { wage: Math.round(wish.wage * 0.9), years: wish.years[0] });
+  assertEq(low.status, 'counter', low.message);
+  assert(low.wage >= wish.wage * 0.97, 'he names his price');
+  const insulting = respondToContract(g, p, user, neg, { wage: Math.round(wish.wage * 0.5), years: wish.years[0] });
+  assertEq(insulting.status, 'walked', 'a very low offer ends the talks');
+  const odd = respondToContract(g, p, user, { patience: 3 }, { wage: wish.wage, years: 1 });
+  if (wish.years[0] > 1) assertEq(odd.status, 'counter', 'a length he does not want costs more');
+});
+
+test('AI transfer lists: clubs list surplus players for each window; listed players are cheaper and easier to buy', () => {
+  const g = career('lists');
+  const user = g.clubs[g.userClubId];
+  user.budget = 1e9;
+  startDay(g);
+  const listed = Object.values(g.players).filter((p) => p.aiListed);
+  assert(listed.length > 50, `only ${listed.length} players listed at the start of the window`);
+  const p = listed.find((x) => willJoin(g, x, user).ok && g.clubs[x.clubId].squad.filter((id) => g.players[id].pos === x.pos).length > 5);
+  assert(p, 'a listed player who would join');
+  const ask = askingPrice(g, p);
+  assertEq(evaluateBid(g, p.id, Math.round(ask * 0.9)).status, 'accepted', 'a listed player goes for 90 % of the price');
+  assertEq(evaluateBid(g, p.id, Math.round(ask * 0.65)).status, 'counter', 'and his club talks from lower bids');
+  const listedPrice = ask;
+  p.listed = false; delete p.aiListed; const keep = p.askingPrice; delete p.askingPrice;
+  assert(askingPrice(g, p) > listedPrice, `unlisted ${askingPrice(g, p)} vs listed ${listedPrice}`);
+  p.listed = true; p.aiListed = true; p.askingPrice = keep;
+  const close = windows(g).find((w) => w.name === 'summer').close;
+  while (g.day <= close) startDay(g);
+  assertEq(Object.values(g.players).filter((x) => x.aiListed).length, 0, 'the lists end with the window');
+  info(`Listed at the start of the summer window: ${listed.length} players`);
 });

@@ -37,7 +37,7 @@ test('a whole season simulates: every fixture played, cups won, tables consisten
 
   for (const comp of Object.values(g.competitions)) {
     if (comp.type === 'national') continue; // tested in national.test.js
-    if (comp.type === 'guest') continue; // guest clubs have no league
+    if (comp.type === 'guest' || comp.type === 'friendly') continue; // no league table
     if (comp.type === 'continental') {
       assert(comp.winnerId, 'continental cup has no winner');
       continue;
@@ -71,8 +71,8 @@ test('a whole season simulates: every fixture played, cups won, tables consisten
 test('season statistics are recorded on players', () => {
   const ps = Object.values(g.players);
   const goals = ps.reduce((s, p) => s + p.stats.season.goals, 0);
-  // Club goals only: internationals count as caps and international goals instead.
-  const fixtureGoals = Object.values(g.fixtures).filter((f) => g.competitions[f.compId].type !== 'national')
+  // Club goals only: internationals count as caps and international goals instead; friendlies don't count.
+  const fixtureGoals = Object.values(g.fixtures).filter((f) => !['national', 'friendly'].includes(g.competitions[f.compId].type))
     .reduce((s, f) => s + f.result.h + f.result.a, 0);
   assertEq(goals, fixtureGoals, 'player goals vs fixture goals:');
   const top = ps.slice().sort((a, b) => b.stats.season.goals - a.stats.season.goals)[0];
