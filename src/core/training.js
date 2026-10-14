@@ -19,6 +19,7 @@ import { personName } from './names.js';
 import { moraleDevFactor } from './morale.js';
 import { expectedWageBill } from './finance.js';
 import { money } from './currency.js';
+import { academyGrowth } from './facilities.js';
 
 export const ROLES = ['fitness', 'technical', 'goalkeeping', 'physio', 'youth', 'assistant'];
 export const ROLE_LABEL = {
@@ -160,6 +161,27 @@ export function fireCoach(game, role) {
   return { ok: true, message: `${c.name} has left (compensation ${money(game, fee)}).` };
 }
 
+// Contracts run at most this many seasons ahead.
+export const COACH_MAX_YEARS = 3;
+
+// A new deal: a raise of 5% per extra season (good coaches know their worth).
+export function extendQuote(game, c, years) {
+  const until = Math.min(c.until + years, game.season.year + COACH_MAX_YEARS);
+  const added = until - c.until;
+  return { until, added, wage: added > 0 ? Math.round((c.wage * (1 + 0.05 * added + (c.stars >= 4 ? 0.05 : 0))) / 1000) * 1000 : c.wage };
+}
+
+export function extendCoach(game, role, years) {
+  const club = game.clubs[game.userClubId];
+  const c = club.staff?.[role];
+  if (!c) return { ok: false, message: 'No coach in that role.' };
+  const q = extendQuote(game, c, years);
+  if (q.added <= 0) return { ok: false, message: `${c.name}'s contract already runs until ${c.until}.` };
+  c.until = q.until;
+  c.wage = q.wage;
+  return { ok: true, message: `${c.name} has signed a new contract until ${q.until}.` };
+}
+
 export const staffWages = (club) => ROLES.reduce((s, r) => s + (club.staff?.[r]?.wage || 0), 0);
 
 // The staff cost already built into every club's running costs (AI clubs have
@@ -172,7 +194,7 @@ export function seasonEndStaff(game, nextYear) {
   for (const role of ROLES) {
     const c = club?.staff?.[role];
     if (c && c.until < nextYear) {
-      addNews(game, `${c.name}'s contract as ${ROLE_LABEL[role].toLowerCase()} has ended. Hire a replacement on the Training screen.`, 'staff');
+      addNews(game, `${c.name}'s contract as ${ROLE_LABEL[role].toLowerCase()} has ended. Hire a replacement under Training > Staff.`, 'staff');
       club.staff[role] = null;
     }
   }
@@ -238,7 +260,7 @@ export function trainingDay(game) {
     const matchDay = today.has(club.id);
     const fit = starsFor(game, club, 'fitness');
     const coach = { tec: coachFactor(starsFor(game, club, 'technical')), phy: coachFactor(fit), gk: coachFactor(starsFor(game, club, 'goalkeeping')) };
-    const youthCoach = coachFactor(starsFor(game, club, 'youth'));
+    const youthCoach = coachFactor(starsFor(game, club, 'youth')) * academyGrowth(game, club);
     const physio = starsFor(game, club, 'physio');
     const physioRec = 0.91 + 0.03 * physio;
     const injDays = physioDays(game, club);

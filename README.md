@@ -101,6 +101,8 @@ The published game uses near-real club names and generated players. For your own
    - **Ground plan:** a ground has up to eight stands: the main stand and side stand along the touchlines, two ends behind the goals and four corners. Smaller grounds miss some (shown dashed). **Build a missing stand** (a corner needs both stands next to it); it is sized to match the rest of the ground.
    - **More seats:** enlarge all stands by +2,000, +5,000 or +10,000 seats. Building work is paid up front, takes a few months and only one project runs at a time. The table shows the extra ticket income at current demand.
    - **Pitch** (quality 1–10): wears by a point every season (two after a hard winter). A poor pitch blunts technical football for both teams and causes more injuries. Re-lay it to any better level; the top levels cost the most.
+   - **Facilities** (levels 1–6): the **youth academy** (better youngsters in the yearly intake, faster academy development) and the **stadium facilities** (comfort, catering, access: +5 % fans per level). Every club has the standard its reputation suggests; upgrading above it costs money, takes a few months and adds upkeep, and as the club grows the standard rises. One facility upgrade at a time, alongside stadium work.
+   - **Club reputation:** Local, Regional, National, Continental or Worldwide (with stars), shown on My Team, the Stadium and Other Teams. It rises and falls with your finishes, promotions and European titles, and the news tells you when it changes level.
    - AI clubs with packed stadiums expand too, and re-lay worn pitches when they can afford it.
    - **Why we won / lost:** every match report of your club explains the result in a few lines: expected goals (the chance quality the engine gives each shot), finishing and goalkeeping, the elevens' strength on paper, possession, fatigue at the end, red cards and your attacking intent.
 9. **Finances:** tickets (crowds depend on reputation, form and the opponent), TV & sponsors, prize money, player and staff wages, running costs, building work and transfers, shown season to date and for past seasons, plus your current deals.
@@ -155,6 +157,7 @@ The published game uses near-real club names and generated players. For your own
     - **Talking:** click Morale on the player card to see what's on his mind. **Encourage** him (once a month), **promise playing time** (he expects 4 starts in the next 8 matches; a broken promise is much worse than none), put him up for sale, or refuse his request.
     - Unhappy players get a coloured dot in the squad list, and players who want to leave get a red **!**. The Detail tab has Morale and Personality columns.
 15. **Staff** (Training screen): besides the three coaches, a **physio** (injuries last 20 % less at 5★ and 35 % longer without one; faster recovery), a **youth coach** (runs the academy's training; each star above your club's usual level adds about 2.5 to the potential of the yearly youth intake) and an **assistant manager**.
+    - **Manage** a coach to see his name, wage and contract, **extend** it by one or two seasons (a small raise; at most three seasons ahead), replace him or release him. The To do list warns about staff contracts ending in the summer.
     - **Assistant** (My Team → Assistant) gives advice before matches. What he notices depends on his stars: 1★ unavailable, out-of-position and tired players; 2★ fresher or better players left out; 3★ unhappy players and workload spikes; 4★ the next opponent (tall forwards, pace, their key player); 5★ a play style and attacking intent for the match. A good assistant also softens morale drops.
 16. **Your career** (hub → My Career):
     - **Board confidence** (0–100, also shown on the hub's club card) depends on recent results against what a club of your standing should get, your league position against the season's target (it counts more as the season goes on), trust earned in earlier seasons, and debt. Debt you inherited when you took over only counts if it grows; the board expects it halved each season. A new manager gets some time. Targets come from the club's reputation rank in its league and are set so that an average manager meets them roughly two seasons in three (the two favourites are asked to challenge for the title, meaning a top-three finish). My Career lists the reasons.
@@ -183,7 +186,7 @@ The published game uses near-real club names and generated players. For your own
 - Save files are versioned, and older saves are upgraded automatically.
 
 ## Tests
-With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 149 tests. They cover:
+With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 154 tests. They cover:
 - **World generation:** world, fixtures, cup draws.
 - **Lineup rules.**
 - **Live-match mechanics.**
@@ -237,6 +240,7 @@ src/core/                     game logic: no DOM access, testable
   europe.js       the league countries beyond the original six (generated by tools/make_leagues.py)
   coefficients.js country and club coefficients, places by ranking; coefdata.js the real starting values
   stadium.js      crowd demand, stadium expansion (user and AI)
+  facilities.js   youth academy and stadium facility levels, club reputation levels
   scouting.js     hidden potential, scouting staff levels, assignments and reports
   loans.js        loans in both directions, AI loan offers, B-team partner club
   national.js     national teams (senior and U21): call-ups, Nations Championship, caps

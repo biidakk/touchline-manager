@@ -2,6 +2,7 @@
 // fatigue, workload and development progress.
 
 import { ROLES, ROLE_LABEL, ROLE_INFO, FOCI, FOCUS_LABEL, INTENSITIES, INTENSITY_LABEL, hireCoach, fireCoach, severance, planFor,
+  extendQuote, extendCoach,
   acwr, defaultTraining, starsFor, coachFactor, physioDays } from '../../core/training.js';
 import { ageOf } from '../../core/valuation.js';
 import { potText } from '../../core/scouting.js';
@@ -55,12 +56,12 @@ export function render(root, ctx) {
     <div class="panel" style="left:20px;top:92px;width:440px;height:300px;padding-top:12px">
       <h2 style="margin-bottom:4px">Staff</h2>
       <table class="data compact staff">
-        <colgroup><col><col style="width:78px"><col style="width:76px"><col class="staff-bcol"></colgroup>
+        <colgroup><col><col style="width:78px"><col class="staff-wcol"><col class="staff-bcol"></colgroup>
         ${ROLES.map((r) => {
           const c = club.staff?.[r];
-          return `<tr title="${esc(ROLE_INFO[r])}"><td><b class="phone-hide">${ROLE_LABEL[r]}</b><b class="phone-only">${ROLE_SHORT[r]}</b><div class="muted staff-name phone-hide">${c ? `${esc(c.name)} · until ${c.until}` : `<span class="bad">${VACANT[r]}</span>`}</div></td>
-            <td>${stars(c?.stars || 0)}</td><td class="num">${c ? fmtMoneyShort(c.wage) : ''}</td>
-            <td class="num"><button class="btn btn-small ${c ? 'btn-blue' : ''} staff-btn" data-action="staff" data-role="${r}">${c ? 'Change' : 'Hire'}</button></td></tr>`;
+          return `<tr title="${esc(ROLE_INFO[r])}"><td><b class="phone-hide">${ROLE_LABEL[r]}</b><b class="phone-only">${ROLE_SHORT[r]}</b> <span class="muted phone-only staff-short">${c ? `${esc(c.name.split(' ').slice(-1)[0])} · <span class="${c.until <= year ? 'warn' : ''}">${c.until}</span>` : '<span class="bad">vacant</span>'}</span><div class="muted staff-name phone-hide">${c ? `${esc(c.name)} · <span class="${c.until <= year ? 'warn' : ''}">until ${c.until}</span>` : `<span class="bad">${VACANT[r]}</span>`}</div></td>
+            <td>${stars(c?.stars || 0)}</td><td class="num phone-hide">${c ? fmtMoneyShort(c.wage) : ''}</td>
+            <td class="num"><button class="btn btn-small ${c ? 'btn-blue' : ''} staff-btn" data-action="staff" data-role="${r}">${c ? 'Manage' : 'Hire'}</button></td></tr>`;
         }).join('')}</table>
     </div>
     <div class="panel" style="left:20px;top:404px;width:440px;height:288px;padding-top:12px">
@@ -101,19 +102,34 @@ export function render(root, ctx) {
 
   bindTopbar(root, ctx);
   bindActions(root, {
-    // One button per role: hire someone new (replacing the current coach) or release him.
+    // One button per role: extend the current coach's contract, replace him
+    // or release him; for a vacant role, hire someone.
     staff: async (el) => {
       const role = el.dataset.role;
       const current = club.staff?.[role];
-      const pool = (g.coachPool || []).filter((c) => c.role === role).sort((a, b) => b.stars - a.stars);
-      const options = pool.map((c) => ({ key: c.id, label: `Hire ${'★'.repeat(c.stars)} ${c.name} · ${fmtMoneyShort(c.wage)} a season · ${c.years} yr` }));
-      if (current) options.push({ key: '!release', label: `Release ${current.name} (compensation ${fmtMoneyShort(severance(g, current))})` });
-      if (!options.length) { ctx.toast('No coaches available until the summer.'); return; }
-      const what = current ? `${ROLE_LABEL[role]}: ${current.name} (${current.stars}★).${pool.length ? ` Replacing him costs ${fmtMoney(severance(g, current))} in compensation.` : ' No other coaches are available until the summer.'}`
-        : `Hire ${role === 'assistant' ? 'an' : 'a'} ${ROLE_LABEL[role].toLowerCase()}?`;
-      const k = await ctx.choose(what, options);
+      const pool = (g.coachPool || []).filter((c) => c.role === role).sort((a, b) => b.stars - a.stars || a.wage - b.wage);
+      const hireOptions = pool.map((c) => ({ key: c.id, label: `${'★'.repeat(c.stars)} ${c.name} · ${fmtMoneyShort(c.wage)} a season · ${c.years} yr` }));
+      let k;
+      if (current) {
+        const opts = [];
+        for (const yrs of [1, 2]) {
+          const q = extendQuote(g, current, yrs);
+          if (q.added === yrs) opts.push({ key: `!extend${yrs}`, label: `Extend until ${q.until} · ${fmtMoneyShort(q.wage)} a season` });
+        }
+        if (pool.length) opts.push({ key: '!replace', label: `Replace with another coach (${pool.length} available)` });
+        opts.push({ key: '!release', label: `Release (compensation ${fmtMoneyShort(severance(g, current))})` });
+        k = await ctx.choose(`<b>${ROLE_LABEL[role]}: ${esc(current.name)}</b> ${'★'.repeat(current.stars)}<br>
+          Wage ${fmtMoney(current.wage)} a season, contract until ${current.until}.<br><span class="muted">${esc(ROLE_INFO[role])}</span>`, opts, { html: true });
+        if (k === '!replace') {
+          k = await ctx.choose(`Replace ${current.name} (${current.stars}★)? Paying off his contract costs ${fmtMoney(severance(g, current))}.`, hireOptions);
+        }
+      } else {
+        if (!hireOptions.length) { ctx.toast('No coaches available until the summer.'); return; }
+        k = await ctx.choose(`Hire ${role === 'assistant' ? 'an' : 'a'} ${ROLE_LABEL[role].toLowerCase()}?<br><span class="muted">${esc(ROLE_INFO[role])}</span>`, hireOptions, { html: true });
+      }
       if (!k) return;
-      if (k === '!release') {
+      if (k.startsWith('!extend')) ctx.toast(extendCoach(g, role, Number(k.slice(7))).message);
+      else if (k === '!release') {
         if (!(await ctx.confirm(`Release ${current.name}? Compensation: ${fmtMoney(severance(g, current))}.`, { ok: 'Release' }))) return;
         ctx.toast(fireCoach(g, role).message);
       } else ctx.toast(hireCoach(g, k).message);

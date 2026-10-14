@@ -8,6 +8,7 @@ import { addNews } from './season.js';
 import { splitSkill } from './attributes.js';
 import { starsFor, aiStars } from './training.js';
 import { costScale } from './finance.js';
+import { academyPotential } from './facilities.js';
 
 export const TICKS_PER_SEASON = 9; // 1st of Sep, Oct, ..., May
 
@@ -107,7 +108,10 @@ export function youthIntake(game, club, rng, toAcademy = false) {
     club.budget -= fee;
     if (club.finance?.season) club.finance.season.scouting = (club.finance.season.scouting || 0) + fee;
   }
-  const n = (toAcademy ? rng.int(3, 6) : rng.int(2, 5)) + (isUser && coachEdge >= 1 && rng.chance(0.5) ? 1 : 0) + (extra ? 1 : 0);
+  // A better academy than the club's standard (see facilities.js).
+  const academyBonus = isUser ? academyPotential(game, club) : 0;
+  const n = (toAcademy ? rng.int(3, 6) : rng.int(2, 5)) + (isUser && coachEdge >= 1 && rng.chance(0.5) ? 1 : 0) + (extra ? 1 : 0)
+    + (academyBonus >= 4 ? 1 : 0);
   const abroad = plan.region === 'abroad';
   const foreign = Object.keys(game.nations).filter((id) => id !== nation.id && game.nations[id].leagueIds?.length);
   const made = [];
@@ -120,7 +124,7 @@ export function youthIntake(game, club, rng, toAcademy = false) {
     // youngsters and release the rest, so the ones who stay end up around it.
     // (Centring it higher makes the whole world inflate over the years.)
     const level = 30 + club.reputation * 0.55 + (game.nations[club.nationId].strength || 0);
-    p.potential = Math.round(clamp(rng.normal(level - 5 + 2.5 * coachEdge + (extra ? 2 : 0), abroad ? 9 : 7), 30, 95));
+    p.potential = Math.round(clamp(rng.normal(level - 5 + 2.5 * coachEdge + (extra ? 2 : 0) + academyBonus, abroad ? 9 : 7), 30, 95));
     p.skill = Math.round(clamp(p.potential - rng.normal(22, 5), 15, p.potential));
     splitSkill(p, rng);
     p.seasonStart = p.skill;

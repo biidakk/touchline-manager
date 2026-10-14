@@ -13,6 +13,7 @@ import { dailyMarket, windows, newOffers } from './transfers.js';
 import { afterResult, afterDay, boardVerdict, opponentPreview } from './newsfeed.js';
 import { checkContinental, applyContinentalResult } from './continental.js';
 import { progressConstruction } from './stadium.js';
+import { progressFacilities } from './facilities.js';
 import { progressScouting } from './scouting.js';
 import { isNational, playNationalFixture, prepareNational, applyNationalResult } from './national.js';
 import { nationalAfterMatch, nationalDay } from './nationaljob.js';
@@ -237,6 +238,7 @@ export function dailyUpdate(game) {
   if (game.day === WINTER_BREAK_START(game.season.year)) scheduleWinterFriendlies(game);
   youthLeagueDay(game);
   progressConstruction(game);
+  progressFacilities(game);
   progressScouting(game);
 }
 

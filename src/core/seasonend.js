@@ -18,6 +18,7 @@ import { ageReports, potText, potEstimate } from './scouting.js';
 import { returnLoans } from './loans.js';
 import { closeNational } from './national.js';
 import { seasonEndStaff } from './training.js';
+import { clubRepLevel } from './facilities.js';
 import { seasonEndMorale } from './morale.js';
 import { seasonEndBoard, newSeasonBoard } from './board.js';
 import { seasonEndNational } from './nationaljob.js';
@@ -144,6 +145,7 @@ export function endSeason(game) {
     awards: summary.leagues.map((l) => ({ compId: l.compId, topScorer: l.topScorer, bestPlayer: l.bestPlayer, youngPlayer: l.youngPlayer })) });
 
   // ---- reputation: finishing above or below expectations ----
+  const repBefore = user ? user.reputation : 0;
   for (const [compId, rows] of Object.entries(finalTables)) {
     const comp = game.competitions[compId];
     const byRep = comp.clubIds.slice().sort((a, b) => game.clubs[b].reputation - game.clubs[a].reputation);
@@ -166,6 +168,10 @@ export function endSeason(game) {
     for (const id of down) { game.clubs[id].compId = second.id; game.clubs[id].reputation = Math.max(15, game.clubs[id].reputation - 4); }
     if (up.includes(userId)) { summary.user.promoted = true; addNews(game, `Promotion! ${user.name} will play in the ${top.name} next season.`, 'league'); }
     if (down.includes(userId)) { summary.user.relegated = true; addNews(game, `${user.name} have been relegated to the ${second.name}.`, 'league'); }
+  }
+
+  if (user && clubRepLevel(user.reputation) !== clubRepLevel(repBefore)) {
+    addNews(game, `${user.name}'s reputation has ${user.reputation > repBefore ? 'grown' : 'fallen'}: the club is now seen as ${clubRepLevel(user.reputation).toLowerCase()}.`, 'club');
   }
 
   // ---- world awards, then players' season spells into their history and the

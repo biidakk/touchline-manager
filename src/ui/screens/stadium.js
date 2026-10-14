@@ -4,8 +4,14 @@ import { EXPANSIONS, MAX_CAPACITY, STANDS, expansionQuote, startExpansion, natur
   standQuote, startStand, pitchOf, pitchCost, improvePitch, PITCH_LABEL, stadiumMoney } from '../../core/stadium.js';
 import { demand, ticketPrice, costsPerYear, TICKET_PLANS } from '../../core/finance.js';
 import { fmtDate } from '../../core/calendar.js';
+import { FACILITIES, FACILITY_KEYS, MAX_LEVEL, facilitiesOf, standardLevel, upgradeQuote, startUpgrade, facilitiesUpkeep,
+  clubRepLevel, clubRepStars } from '../../core/facilities.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
 import { esc, fmtMoney, bindActions } from '../util.js';
+
+const pips = (n, std) => `<span class="pips" title="Level ${n} of ${MAX_LEVEL}; standard for the club's reputation: ${std}">${Array.from({ length: MAX_LEVEL },
+  (_, i) => `<i class="${i < n ? 'on' : ''}${i === std - 1 ? ' std' : ''}"></i>`).join('')}</span>`;
+const repStars = (rep) => `<span style="color:var(--gold)">${'★'.repeat(clubRepStars(rep))}</span><span class="dim">${'★'.repeat(5 - clubRepStars(rep))}</span>`;
 
 // Top-down plan of the ground: built stands in the club colour, missing ones
 // dashed, the one under construction striped.
@@ -64,6 +70,19 @@ export function render(root, ctx) {
         <td class="num">${extra > 0 ? `+${fmtMoney(extra)}` : '<span class="dim">-</span>'}</td>
         <td class="num"><button class="btn btn-small" data-action="${action}" ${data} ${e || !quote.seats || quote.cost > money ? 'disabled' : ''}>Build</button></td></tr>`;
     };
+    const fac = facilitiesOf(g, club);
+    const std = standardLevel(club);
+    const work = fac.work;
+    const facRows = FACILITY_KEYS.map((k) => {
+      const F = FACILITIES[k];
+      const q = upgradeQuote(g, club, k);
+      const gain = k === 'ground' ? '+5% fans' : 'Better youth';
+      return `<tr title="${esc(F.effect)}"><td><b>${F.label}</b> ${pips(fac[k], std)} <span class="muted phone-hide">${F.levels[fac[k]]}</span></td>
+        <td class="num">${q ? fmtMoney(q.cost) : ''}</td><td class="num">${q ? `${Math.round(q.days / 30)} mo` : ''}</td>
+        <td class="num">${q ? gain : '<span class="dim">Top level</span>'}</td>
+        <td class="num">${q ? `<button class="btn btn-small" data-action="facility" data-k="${k}" ${work || q.cost > money ? 'disabled' : ''}>Upgrade</button>` : ''}</td></tr>`;
+    }).join('');
+    const wprog = work ? Math.min(100, Math.round((100 * (g.day - work.start)) / (work.end - work.start))) : 0;
     const newStands = missingStands(club).map((st) => row(st.label, standQuote(club, st.key), 'stand', `data-k="${st.key}"`)).join('');
     const enlarge = EXPANSIONS.map((seats) => row('Enlarge all stands', expansionQuote(club, seats), 'build', `data-seats="${seats}"`)).join('');
     const progress = e ? Math.min(100, Math.round((100 * (g.day - e.start)) / (e.end - e.start))) : 0;
@@ -79,8 +98,9 @@ export function render(root, ctx) {
         <span>Fans per home game</span><b>${Math.round(s.avgDemand).toLocaleString('en-US')}</b>
         <span>Average crowd</span><b>${s.avgCrowd ? Math.round(s.avgCrowd).toLocaleString('en-US') : '-'}</b>
         <span>Sold out</span><b>${s.soldOut} of ${s.played} home games</b>
+        <span>Reputation</span><b>${clubRepLevel(club.reputation)} ${repStars(club.reputation)}</b>
         <span>Ticket price</span><b>${fmtMoney(price)} (${(TICKET_PLANS[club.deals?.ticket] || TICKET_PLANS.normal).label.toLowerCase()})</b>
-        <span>Upkeep and costs</span><b>${fmtMoney(costsPerYear(g, club))} / season</b>
+        <span>Upkeep and costs</span><b>${fmtMoney(costsPerYear(g, club) + facilitiesUpkeep(g, club))} / season</b>
       </div>
       <h2 style="margin-top:14px">Pitch</h2>
       <div class="row" style="gap:10px;align-items:center">
@@ -93,12 +113,14 @@ export function render(root, ctx) {
       <div class="panel-head"><h2>Building work</h2><span class="muted">Available: <b>${fmtMoney(money)}</b>${club.stadium.fund ? ` (incl. ${fmtMoney(club.stadium.fund)} from the board)` : ''}</span></div>
       ${e ? `<div class="notice-inline">Under construction: <b>${e.stand ? esc(STANDS.find((x) => x.key === e.stand).label) : 'bigger stands'}, +${e.seats.toLocaleString('en-US')} seats</b>, ready on ${fmtDate(e.end)}.
         <div class="bar" style="margin-top:8px"><i style="width:${progress}%"></i><b>${progress}%</b></div></div>` : ''}
+      ${work ? `<div class="notice-inline">Upgrading: <b>${FACILITIES[work.key].label} to ${FACILITIES[work.key].levels[work.to].toLowerCase()} (level ${work.to})</b>, ready on ${fmtDate(work.end)}.
+        <div class="bar" style="margin-top:8px"><i style="width:${wprog}%"></i><b>${wprog}%</b></div></div>` : ''}
       <div class="scroll" style="flex:1"><table class="data" style="margin-top:6px">
-        <thead><tr><th>Project</th><th class="num">Cost</th><th class="num">Takes</th><th class="num">Extra tickets / season</th><th></th></tr></thead>
-        <tbody>${newStands ? `<tr class="sep"><td colspan="5">New stands</td></tr>${newStands}` : ''}
+        <thead><tr><th>Project</th><th class="num">Cost</th><th class="num">Takes</th><th class="num">Gain / season</th><th></th></tr></thead>
+        <tbody><tr class="sep"><td colspan="5">Facilities <span class="muted" style="font-weight:400">· levels 1-${MAX_LEVEL}, standard for your reputation: ${std}</span></td></tr>${facRows}${newStands ? `<tr class="sep"><td colspan="5">New stands</td></tr>${newStands}` : ''}
           <tr class="sep"><td colspan="5">More seats</td></tr>${enlarge}</tbody>
       </table></div>
-      <p class="hint phone-hide">One project at a time; the stadium stays open. Extra ticket income only comes while the stadium would otherwise sell out. Corners need both stands next to them. Maximum ${MAX_CAPACITY.toLocaleString('en-US')} seats.</p>
+      <p class="hint phone-hide">Facilities above your reputation's standard cost upkeep but bring more fans and better youngsters; as the club grows the standard rises. One stadium project at a time; the stadium stays open. Extra ticket income only comes while the stadium would otherwise sell out. Corners need both stands next to them. Maximum ${MAX_CAPACITY.toLocaleString('en-US')} seats.</p>
     </div>
     <button class="btn btn-blue" style="position:absolute;left:1050px;top:648px;width:210px" data-action="back">Back</button>`;
   }
@@ -127,6 +149,12 @@ export function render(root, ctx) {
       const to = Number(root.querySelector('#pitchTo').value);
       confirmAndRun(`Re-lay the pitch to ${to}/10 (${PITCH_LABEL[to].toLowerCase()}) for ${fmtMoney(pitchCost(g, club, to))}?`,
         () => improvePitch(g, club, to));
+    },
+    facility: (el) => {
+      const k = el.dataset.k;
+      const q = upgradeQuote(g, club, k);
+      confirmAndRun(`Upgrade the ${FACILITIES[k].label.toLowerCase()} to ${FACILITIES[k].levels[q.to].toLowerCase()} (level ${q.to}) for ${fmtMoney(q.cost)}? Ready in about ${Math.round(q.days / 30)} months. ${FACILITIES[k].effect}`,
+        () => startUpgrade(g, club, k));
     },
     back: () => ctx.back(),
   });

@@ -12,7 +12,7 @@ import { acwr } from './training.js';
 import { moraleOf, moraleFactor } from './morale.js';
 import { lineupQuality } from './ratings.js';
 import { nextUserFixture } from './matchday.js';
-import { ROLES } from './training.js';
+import { ROLES, ROLE_LABEL } from './training.js';
 import { confidence } from './board.js';
 import { scoutingOf, LEVELS } from './scouting.js';
 import { ACADEMY_MAX_AGE } from './development.js';
@@ -171,6 +171,10 @@ export function clubChecklist(game) {
   const conf = confidence(game);
   if (conf < 40) add('bad', `The board's confidence is low (${conf}). Results have to improve.`, 'career', { title: 'My Career', milestone: 5 });
 
+  if (game.season.phase !== 'over' && game.day >= dayOf(year + 1, 1, 1)) {
+    const ending = ROLES.filter((r) => club.staff?.[r] && club.staff[r].until <= year);
+    if (ending.length) add('warn', `Staff contract${ending.length > 1 ? 's' : ''} ending this summer: ${ending.map((r) => `${club.staff[r].name} (${ROLE_LABEL[r].toLowerCase()})`).join(', ')}. Extend ${ending.length > 1 ? 'them' : 'it'} under Staff.`, 'training', { title: 'Training', milestone: 10 });
+  }
   const vacant = ROLES.filter((r) => !club.staff?.[r]);
   if (vacant.length) add('info', `Staff vacancies: ${vacant.join(', ')} coach${vacant.length > 1 ? 'es' : ''}.`, 'training', { title: 'Training', milestone: 10 });
 

@@ -124,12 +124,12 @@ const ctx = {
   },
 
   // Offers a few choices; resolves to the chosen key, or null when cancelled.
-  // options: [{ key, label }]
-  choose(message, options) {
+  // options: [{ key, label }]. html: the message is already HTML.
+  choose(message, options, { html = false } = {}) {
     return new Promise((resolve) => {
       const bg = document.createElement('div');
       bg.className = 'modal-bg';
-      bg.innerHTML = `<div class="panel modal"><p>${esc(message)}</p>
+      bg.innerHTML = `<div class="panel modal"><p>${html ? message : esc(message)}</p>
         <div style="display:flex;flex-direction:column;gap:8px">${options.map((o) => `<button class="btn btn-small" data-k="${esc(o.key)}">${esc(o.label)}</button>`).join('')}</div>
         <div class="actions"><button class="btn btn-small btn-blue" data-k="">Cancel</button></div></div>`;
       bg.addEventListener('click', (e) => {

@@ -14,6 +14,7 @@ import { recordsHtml, clubSeasonsHtml } from '../components/records.js';
 import { clubHistoryHtml, loadHistory } from '../components/clubhistory.js';
 import { GUEST_COMP_ID } from '../../core/guests.js';
 import { continentalOf } from '../../core/continental.js';
+import { clubRepLevel } from '../../core/facilities.js';
 
 const POS_ORDER = { G: 0, D: 1, M: 2, F: 3 };
 
@@ -58,7 +59,7 @@ export function render(root, ctx, params = {}) {
           <div class="row muted">${flag(nation.flag, 18)} ${esc(nation.name)} · ${guests ? esc(continentalOf(g, club.id)?.name || 'no European football this season') : `${esc(comp.name)} · ${pos}. place`} · Manager: ${esc(club.id === g.userClubId ? g.manager.name : club.manager?.name || 'caretaker')}</div>
           <div class="row" style="gap:28px;margin-top:12px;align-items:flex-start">
             <div class="fin-list" style="width:260px"><span>Stadium</span><b>${esc(club.stadium.name)}</b><span>Capacity</span><b>${club.stadium.capacity.toLocaleString('en-US')}</b>
-              <span>Reputation</span><b>${club.reputation}</b><span>Money</span><b>${fmtMoneyShort(club.budget)}</b></div>
+              <span>Reputation</span><b>${clubRepLevel(club.reputation)} (${club.reputation})</b><span>Money</span><b>${fmtMoneyShort(club.budget)}</b></div>
             <div class="fin-list" style="width:250px"><span>Quality (XI)</span><b>${lineupQuality(g, club).toFixed(1)}</b><span>Squad value</span><b>${fmtMoneyShort(sum.value)}</b>
               <span>Average age</span><b>${sum.age.toFixed(1)}</b><span>Teamwork</span><b>${club.teamwork ?? 60}</b></div>
             <div style="flex:1"><b>${icon('trophy')} Honours</b><div class="muted" style="font-size:13px;margin-top:4px;white-space:normal">${trophies.length

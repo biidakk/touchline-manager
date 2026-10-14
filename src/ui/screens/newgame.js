@@ -8,6 +8,7 @@ import { applyRealPack } from '../../core/realpack.js';
 import { pickFile } from '../storage.js';
 import { crest, jersey, flag } from '../components/svg.js';
 import { esc, fmtMoney, fmt1, bindActions, setMoneyGame } from '../util.js';
+import { clubRepLevel } from '../../core/facilities.js';
 
 const randomSeed = () => Math.random().toString(36).slice(2, 8).toUpperCase();
 
@@ -86,7 +87,7 @@ export function render(root, ctx, params = {}) {
         <span>Capacity:</span><b>${sel.stadium.capacity.toLocaleString('en-US')}</b>
         <span>Budget:</span><b>${fmtMoney(sel.budget)}</b>
         <span>Quality:</span><b>${fmt1(lineupQuality(g, sel))}</b>
-        <span>Reputation:</span><b style="color:var(--gold)">${stars(sel.reputation)}</b>
+        <span>Reputation:</span><b><span style="color:var(--gold)">${stars(sel.reputation)}</span> ${clubRepLevel(sel.reputation)}</b>
         <span>Replacing:</span><b>${esc(sel.manager?.name || '-')}</b>
       </div>
       <div style="margin-top:18px;text-align:left"><label class="lbl">Board expectation</label><b>${esc(boardExpectation(g, sel))}</b></div>

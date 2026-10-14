@@ -84,7 +84,7 @@ export function standQuote(club, key) {
 }
 
 // Money the board gave for the stadium is spent first.
-function pay(club, cost) {
+export function pay(club, cost) {
   const fund = Math.min(club.stadium.fund || 0, cost);
   club.stadium.fund = (club.stadium.fund || 0) - fund;
   club.budget -= cost - fund;

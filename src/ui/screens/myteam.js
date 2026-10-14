@@ -20,6 +20,7 @@ import { moraleOf, moraleLevel, personalityOf, PERSONALITY_LABEL } from '../../c
 import { moraleBadge, showPlayer } from '../components/playercard.js';
 import { talkTo, showAdvice } from '../components/talk.js';
 import { editClub } from '../components/clubeditor.js';
+import { clubRepLevel } from '../../core/facilities.js';
 
 const POS_ORDER = { G: 0, D: 1, M: 2, F: 3 };
 
@@ -196,7 +197,8 @@ export function render(root, ctx) {
       <button class="btn btn-small" style="position:absolute;right:8px;top:8px;min-width:0" data-action="stadium">Stadium</button>
       ${stadiumArt(club, 280, 168)}
       <div class="info"><div class="fin-list"><span>Stadium</span><b>${esc(club.stadium.name)}</b>
-        <span>Capacity</span><b>${club.stadium.capacity.toLocaleString('en-US')} seats</b></div></div></div>`}
+        <span>Capacity</span><b>${club.stadium.capacity.toLocaleString('en-US')} seats</b>
+        <span>Reputation</span><b>${clubRepLevel(club.reputation)}</b></div></div></div>`}
 
     ${sel ? '' : `<div class="myteam-actions" style="position:absolute;left:1010px;top:546px;width:228px;display:flex;flex-direction:column;gap:6px">
       <button class="btn btn-blue" data-action="youth">Youth (${(club.youth || []).length})</button>

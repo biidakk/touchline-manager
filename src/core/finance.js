@@ -9,6 +9,7 @@ import { naturalCrowd } from './stadium.js';
 import { scoutingCostPerYear } from './scouting.js';
 import { wageShareOf, loanedOutBy } from './loans.js';
 import { staffWages, expectedStaffWages } from './training.js';
+import { groundDemand, facilitiesUpkeep } from './facilities.js';
 import { money } from './currency.js';
 
 export const clubLevel = (game, club) => 30 + club.reputation * 0.55 + (game.nations[club.nationId].strength || 0);
@@ -94,7 +95,7 @@ export function demand(game, f) {
   const form = row ? row.form.slice(-5).reduce((a, x) => a + (x === 'W' ? 0.02 : x === 'L' ? -0.015 : 0), 0) : 0;
   const fill = clamp(0.3 + home.reputation / 200 + (away.reputation - 50) / 400 + form
     + (comp.type === 'cup' ? 0.08 : comp.type === 'continental' ? [0.2, 0.12, 0.07][(comp.level || 1) - 1] : 0), 0.15, 1);
-  return Math.round(naturalCrowd(home) * 1.25 * fill * ticketPlan(home).demand);
+  return Math.round(naturalCrowd(home) * 1.25 * fill * ticketPlan(home).demand * groundDemand(game, home));
 }
 
 // Gate receipts for the home side of a fixture.
@@ -115,7 +116,7 @@ function book(club, key, amount) {
 function monthlyCosts(game, club) {
   if (club.id !== game.userClubId) { book(club, 'costs', -costsPerYear(game, club) / 12); return; }
   const base = costsPerYear(game, club);
-  book(club, 'costs', -Math.max(base * 0.3, base - expectedStaffWages(game, club)) / 12);
+  book(club, 'costs', -(Math.max(base * 0.3, base - expectedStaffWages(game, club)) + facilitiesUpkeep(game, club)) / 12);
   const staff = staffWages(club);
   if (staff) book(club, 'staff', -staff / 12);
 }

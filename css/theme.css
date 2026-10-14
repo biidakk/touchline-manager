@@ -624,3 +624,16 @@ html.phone .fame-achs { grid-template-columns: 1fr; }
 .edit-grid { display: grid; grid-template-columns: auto 1fr; gap: 8px 10px; align-items: center; }
 .edit-grid input[type=color] { width: 56px; height: 32px; padding: 0; border: 1px solid var(--seg-line); border-radius: 6px; background: none; }
 .edit-preview { display: flex; gap: 14px; align-items: center; justify-content: center; margin-bottom: 10px; }
+
+/* Facility levels: six pips, the standard for the club's reputation outlined */
+.pips { display: inline-flex; gap: 3px; vertical-align: middle; margin: 0 4px; }
+.pips i { width: 9px; height: 13px; border-radius: 2px; background: rgba(255, 255, 255, 0.14); }
+.pips i.on { background: var(--gold); }
+.pips i.std { box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.85); }
+html.phone .pips i { width: 11px; height: 16px; }
+html.phone .staff .staff-short { font-size: 14px; }
+.staff { table-layout: fixed; }
+.staff td:first-child { overflow: hidden; }
+html.phone .staff td:first-child { white-space: nowrap; text-overflow: ellipsis; }
+.staff-wcol { width: 76px; }
+html.phone .staff-wcol { width: 0; }

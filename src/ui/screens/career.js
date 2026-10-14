@@ -14,6 +14,7 @@ import { sortedTable } from '../../core/season.js';
 import { fmtDate } from '../../core/calendar.js';
 import { esc, bindActions, fmtMoney } from '../util.js';
 import { clubLink, playerLink, linkClubsInText } from '../components/links.js';
+import { clubRepLevel } from '../../core/facilities.js';
 
 const y = (yr) => `${yr}/${String(yr + 1).slice(2)}`;
 const END = { sacked: 'sacked', resigned: 'resigned', left: 'moved on' };
@@ -32,8 +33,8 @@ export function render(root, ctx) {
       : job?.applied ? '<span class="dim">Applied</span>' : `<button class="btn btn-small btn-blue" data-action="apply" data-id="${c.id}">Apply</button>`;
     const expects = boardTarget(g, c).text;
     return `<div class="job-row">${clubLink(g, c.id, { crest: 30, text: '' })}
-      <div class="job-txt" title="${esc(`${c.name}, ${comp.name}, ${pos}. place, reputation ${c.reputation}. Board expects: ${expects.toLowerCase()}.`)}"><b>${clubLink(g, c.id)}</b>
-        <div class="muted">${esc(comp.name)} · ${pos}. · reputation ${c.reputation}</div>
+      <div class="job-txt" title="${esc(`${c.name}, ${comp.name}, ${pos}. place, reputation ${clubRepLevel(c.reputation).toLowerCase()} (${c.reputation}). Board expects: ${expects.toLowerCase()}.`)}"><b>${clubLink(g, c.id)}</b>
+        <div class="muted">${esc(comp.name)} · ${pos}. · ${clubRepLevel(c.reputation)}</div>
         <div class="dim">Board expects: ${esc(expects.toLowerCase())}</div></div>
       <div class="job-btns">${buttons}</div></div>`;
   }
