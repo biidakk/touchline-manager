@@ -576,7 +576,7 @@ html.phone .phone-only { display: inline; }
 .plans select.plan { width: 100%; }
 select.plan { height: 28px; font-size: 13px; padding: 0 4px; width: 100%; }
 .train-table .plan-col { width: 172px; }
-html.phone .train-table .plan-col { width: 236px; }
+html.phone .train-table .plan-col { width: 214px; }
 .train-table { table-layout: fixed; }
 .train-table td.ellip { overflow: hidden; text-overflow: ellipsis; }
 .load-dot { font-size: 18px; }
@@ -637,3 +637,23 @@ html.phone .staff .staff-short { font-size: 14px; }
 html.phone .staff td:first-child { white-space: nowrap; text-overflow: ellipsis; }
 .staff-wcol { width: 76px; }
 html.phone .staff-wcol { width: 0; }
+
+/* ---------- player attributes ---------- */
+.attr-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px 14px; font-size: 13.5px; }
+.attr-grid .a-head { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted, #9fb7e0); margin-bottom: 2px; }
+.attr-grid .a-row { display: flex; gap: 6px; align-items: baseline; padding: 1px 0; color: rgba(255, 255, 255, 0.62); }
+.attr-grid .a-row span:first-child { flex: 1; }
+.attr-grid .a-row.key { color: #fff; }
+.attr-grid .a-row.focus span:first-child::after { content: ' ●'; color: var(--gold); font-size: 10px; }
+.attr-grid .a-row b { min-width: 26px; text-align: right; }
+.attr-grid .a-d { font-size: 11px; min-width: 26px; }
+.attr-grid .a-top { color: var(--gold); }
+.attr-grid .a-good { color: #7ee2a0; }
+.attr-grid .a-low { color: #ff9b8a; }
+html.phone .attr-grid { font-size: 18px; gap: 4px 20px; }
+html.phone .attr-grid .a-head { font-size: 15px; }
+html.phone .attr-grid .a-d { font-size: 15px; }
+.train-table .focus-col { width: 58px; }
+.train-table .focus-btn { min-width: 0; width: 50px; height: 24px; padding: 0; font-size: 12px; }
+html.phone .train-table .focus-col { width: 70px; }
+html.phone .train-table .focus-btn { width: 62px; height: 32px; font-size: 15px; }

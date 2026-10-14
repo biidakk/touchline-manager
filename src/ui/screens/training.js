@@ -7,6 +7,8 @@ import { ROLES, ROLE_LABEL, ROLE_INFO, FOCI, FOCUS_LABEL, INTENSITIES, INTENSITY
 import { ageOf } from '../../core/valuation.js';
 import { potText } from '../../core/scouting.js';
 import { battery, skillMark } from '../components/pitch.js';
+import { chooseFocus } from '../components/playercard.js';
+import { ATTR_SHORT, ATTR_LABEL } from '../../core/attributes.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
 import { esc, fmtMoney, fmtMoneyShort, bindActions, fullName } from '../util.js';
 
@@ -72,18 +74,19 @@ export function render(root, ctx) {
       <p class="hint phone-hide" style="margin-top:4px">Harder training: faster development, more fatigue and injury risk. Recovery: no development, fatigue fades fast.</p>
     </div>
     <div class="panel" style="left:476px;top:92px;width:784px;height:540px;display:flex;flex-direction:column">
-      <div class="panel-head"><h2>Players</h2><span class="muted phone-hide" style="font-size:12.5px">Season: this season's gains (technique / physique). Load: workload risk. "=" follows the group plan.</span></div>
+      <div class="panel-head"><h2>Players</h2><span class="muted phone-hide" style="font-size:12.5px">Season: gains (technique / physique). Load: workload risk. Focus: one attribute trained extra.</span></div>
       <div class="scroll" style="flex:1"><table class="data compact train-table">
         <thead><tr><th>Player</th><th class="c" style="width:44px">Pos</th><th class="num" style="width:46px">Age</th><th class="num" style="width:80px">Skill</th><th class="num phone-hide" style="width:46px">TEC</th><th class="num phone-hide" style="width:46px">PHY</th>
-          <th class="c" style="width:66px">Season</th><th style="width:64px">Energy</th><th class="c" style="width:48px">Load</th><th class="plan-col">Plan</th></tr></thead>
+          <th class="c" style="width:66px">Season</th><th style="width:64px">Energy</th><th class="c" style="width:48px">Load</th><th class="c focus-col" title="Individual focus: one attribute trained extra">Focus</th><th class="plan-col">Plan</th></tr></thead>
         <tbody>${ps.map((p) => {
           const academy = (club.youth || []).includes(p.id);
           const eff = planFor(g, club, p);
-          return `<tr class="${p.injuryDays > 0 ? 'unavail' : ''}"><td class="ellip"><b>${esc(fullName(p))}</b>${academy ? ' <span class="muted">(acad.)</span>' : ''}${p.injuryDays > 0 ? ` <span class="badge inj">+${p.injuryDays}d</span>` : ''}</td>
+          return `<tr class="${p.injuryDays > 0 ? 'unavail' : ''}"><td class="ellip" title="${esc(fullName(p))}"><b>${esc(p.last.length > 12 ? p.last : `${p.first ? `${p.first[0]}. ` : ''}${p.last}`)}</b>${academy ? ' <span class="muted">(acad.)</span>' : ''}${p.injuryDays > 0 ? ` <span class="badge inj">+${p.injuryDays}d</span>` : ''}</td>
             <td class="c">${p.pos}</td><td class="num">${ageOf(p, year)}</td><td class="num"><b>${skillMark(p)}</b>/${potText(g, p, { short: true })}</td>
             <td class="num phone-hide">${p.tec}</td><td class="num phone-hide">${p.phy}</td>
             <td class="c">${delta(p.tec - (p.tecStart ?? p.tec))} / ${delta(p.phy - (p.phyStart ?? p.phy))}</td>
             <td>${battery(p.energy)}</td><td class="c">${light(p)}</td>
+            <td class="c"><button class="btn btn-small btn-blue focus-btn ${p.focus ? 'on' : ''}" data-action="focus" data-id="${p.id}" title="${p.focus ? `Focus: ${ATTR_LABEL[p.focus]}` : 'No individual focus'}">${p.focus ? ATTR_SHORT[p.focus] : '+'}</button></td>
             <td>${planSelect(`data-player="${p.id}"`, p.train, `= ${planText(eff)}`)}</td></tr>`;
         }).join('')}</tbody>
       </table></div>
@@ -134,6 +137,9 @@ export function render(root, ctx) {
         ctx.toast(fireCoach(g, role).message);
       } else ctx.toast(hireCoach(g, k).message);
       draw();
+    },
+    focus: async (el) => {
+      if (await chooseFocus(ctx, g.players[el.dataset.id])) draw();
     },
     back: () => { ctx.save({ silent: true }); ctx.back(); },
   });

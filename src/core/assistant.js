@@ -19,6 +19,7 @@ import { ACADEMY_MAX_AGE } from './development.js';
 import { decisionsDue } from './commercial.js';
 import { openWindow } from './transfers.js';
 import { dayOf } from './calendar.js';
+import { attrOf } from './attributes.js';
 
 const BEATEN_BY = { crosses: 'passing', through: 'crosses', passing: 'through' };
 const avg = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
@@ -102,8 +103,9 @@ export function assistantAdvice(game) {
       const myF = avg(ours('F').map((p) => p.height));
       const theirD = avg(theirs('D').map((p) => p.height));
       if (myF && theirD && myF - theirD >= 3) add('good', `Our forwards are taller than their defence (${Math.round(myF)} vs ${Math.round(theirD)} cm): crosses could pay off.`);
-      const pace = avg(ours('F').map((p) => p.phy)) - avg(theirs('D').map((p) => p.phy));
-      if (pace >= 5) add('good', `Our forwards are quicker and stronger than their defenders: through-balls could work.`);
+      const pace = avg(ours('F').map((p) => attrOf(p, 'pac'))) - avg(theirs('D').map((p) => attrOf(p, 'pac')));
+      if (pace >= 5) add('good', `Our forwards are quicker than their defenders (pace ${Math.round(avg(ours('F').map((p) => attrOf(p, 'pac'))))} vs ${Math.round(avg(theirs('D').map((p) => attrOf(p, 'pac'))))}): through-balls could work.`);
+      else if (pace <= -6) add('warn', `Their defenders are quicker than our forwards: through-balls will struggle.`);
       const star = ol.slots.filter(Boolean).map(P).sort((p, q) => q.skill - p.skill)[0];
       if (star) add('info', `Their key player is ${star.first} ${star.last} (${star.pos}, skill ${star.skill}).`);
       if (stars >= 5) {

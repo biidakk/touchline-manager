@@ -3,7 +3,7 @@
 
 import { FORMATIONS, ROLE_POS } from './data.js';
 import { positionFit, isAvailable, autoLineup } from './ai.js';
-import { aerial } from './attributes.js';
+import { aerial, attrOf } from './attributes.js';
 
 export const BENCH_SIZE = 7;
 
@@ -145,8 +145,8 @@ export function roleTakers(game, lineup) {
   const year = game.season.year;
   return {
     captainId: lineup.captainId ?? best(() => true, (p) => p.skill + Math.min(10, year - p.birthYear - 20)),
-    setPieceId: lineup.setPieceId ?? best((p) => p.pos === 'M' || p.pos === 'F', (p) => p.skill),
-    penaltyId: lineup.penaltyId ?? best((p) => p.pos === 'F' || p.pos === 'M', (p) => p.skill + (p.pos === 'F' ? 3 : 0)),
+    setPieceId: lineup.setPieceId ?? best((p) => p.pos !== 'G', (p) => attrOf(p, 'cro') + 0.5 * attrOf(p, 'fin')),
+    penaltyId: lineup.penaltyId ?? best((p) => p.pos === 'F' || p.pos === 'M', (p) => attrOf(p, 'fin')),
   };
 }
 
@@ -158,12 +158,12 @@ export function styleShares(game, lineup) {
   const wideRoles = new Set(['LB', 'RB', 'LWB', 'RWB', 'LM', 'RM', 'LW', 'RW']);
   const avg = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
   const of = (pred, val) => avg(lineup.slots.map((id, i) => (id && pred(i) ? val(game.players[id]) : null)).filter((x) => x !== null));
-  // Passing: midfield technique. Crosses: wide players' technique plus the
-  // forwards' power in the air. Through-balls: forwards' pace (physical).
+  // Passing: midfield passing. Crosses: wide players' crossing plus the
+  // forwards' power in the air. Through-balls: forwards' pace.
   const w = {
-    passing: of((i) => pos[i] === 'M', (p) => p.tec ?? p.skill),
-    crosses: 0.5 * of((i) => wideRoles.has(roles[i]), (p) => p.tec ?? p.skill) + 0.5 * of((i) => pos[i] === 'F', (p) => aerial(p)),
-    through: of((i) => pos[i] === 'F', (p) => p.phy ?? p.skill),
+    passing: of((i) => pos[i] === 'M', (p) => attrOf(p, 'pas')),
+    crosses: 0.5 * of((i) => wideRoles.has(roles[i]), (p) => attrOf(p, 'cro')) + 0.5 * of((i) => pos[i] === 'F', (p) => aerial(p)),
+    through: of((i) => pos[i] === 'F', (p) => attrOf(p, 'pac')),
   };
   const pw = Object.fromEntries(Object.entries(w).map(([k, v]) => [k, Math.pow(Math.max(1, v), 4)]));
   const total = pw.passing + pw.crosses + pw.through;

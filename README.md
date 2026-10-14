@@ -141,12 +141,16 @@ The published game uses near-real club names and generated players. For your own
     - **Records** (National Teams → Records): each national team's all-time top scorers, most caps, biggest win and heaviest defeat.
     - Every other national team is run by its own (AI) coach.
 12. **Player attributes:**
-    - **Skill** is the overall number. It is made of **TEC** (technique: passing, first touch, finishing) and **PHY** (physique: pace, strength, stamina). Keepers and defenders lean on PHY, midfielders on TEC.
+    - **Skill** is the overall number, the only one shown in lists and on the pitch. It is made of **TEC** (technique) and **PHY** (physique). Keepers and defenders lean on PHY, midfielders on TEC.
+    - **Detailed attributes** (player card): Finishing, Heading, Dribbling, Passing, Crossing, Tackling, Marking, Pace, Stamina and Strength, plus Reflexes and Handling for keepers. They are each player's profile around his TEC and PHY: the ones that matter for his position (shown bright) average out to them. Forwards finish, defenders tackle and mark, tall players head better and smaller ones are quicker, and players come in types (wingers, ball-winners, target men, speedsters...). Your own players show ▲▼ changes since the start of the season. Other clubs' attributes show once you scout the player.
+    - In matches they decide single moments: **finishing** for shots, penalties and free kicks, **heading** and **strength** (with height) in the air, **crossing** for crosses, corners and the crossing style, **pace** for through-balls (forwards against defenders), **stamina** for tiring. Set-piece and penalty takers are picked by crossing and finishing.
+    - With age **pace** fades first (from 29), while stamina and strength hold longer.
     - **Height** (cm) matters in the air: crosses and corners become aerial duels, and taller, stronger players win more of them and score more headers. Tall keepers claim more crosses.
     - In matches, TEC counts most for passing and chance creation, PHY for defending, through-ball runs and keeping going late in the game. Players with high PHY recover energy faster.
     - **Potential** caps how high skill can grow. Other clubs' TEC and PHY are shown as scouted ranges, like potential.
 13. **Training** (hub → Training, or My Team → Training):
     - **Coaching staff:** a fitness, a technical and a goalkeeping coach, rated 1–5 stars. Better coaches cost more but develop players faster (each star adds about 10 %). Coaches ask wages in line with the club: a staff as good as your rivals' costs about 8 % of a typical wage bill at any club. Without a coach, training is much less effective. Releasing a coach costs half of his remaining wage.
+    - **Individual focus** (Focus column, or Change on the player card): one attribute a player works on extra. It pulls ahead of the rest of its group (about +3 to +5 a season for a teenager, less with age) while his overall development stays the same. An attribute his position doesn't use (a defender's finishing) costs some of his normal development.
     - **Plans:** pick a focus (Balanced, Physical, Technical or Recovery) and an intensity (Light, Normal or Hard). Set them for the whole squad and per position group, and override them for single players in the players table.
     - **Trade-off:** harder training develops players faster, but it builds fatigue. Tired players have lower energy on match day, and sudden jumps in workload (the coloured dot) raise the injury risk. Players with high PHY handle hard training better. **Taper** eases training on the day before a match.
     - Typical season gain for a talented 18-year-old: Light about +3.5, Normal +5.5, Hard +7.
@@ -186,7 +190,7 @@ The published game uses near-real club names and generated players. For your own
 - Save files are versioned, and older saves are upgraded automatically.
 
 ## Tests
-With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 154 tests. They cover:
+With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 160 tests. They cover:
 - **World generation:** world, fixtures, cup draws.
 - **Lineup rules.**
 - **Live-match mechanics.**
@@ -224,7 +228,7 @@ src/core/                     game logic: no DOM access, testable
   matchday.js     daily calendar, applying results, cup rounds, monthly hooks
   lineup.js       lineup editing, formations, repairs, saved lineups, teamwork
   ai.js           position fit and AI lineup selection
-  attributes.js   TEC/PHY split, height, aerial ability
+  attributes.js   TEC/PHY split, height, aerial ability, the twelve detailed attributes (profiles, focus shifts)
   training.js     staff (coaches, physio, youth coach, assistant), training plans, daily fatigue/workload/development
   morale.js       personalities, morale and its reasons, transfer requests, promises
   board.js        board confidence, sackings, manager reputation, vacancies, job offers, changing clubs, AI managers

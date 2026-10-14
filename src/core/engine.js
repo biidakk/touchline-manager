@@ -6,7 +6,7 @@ import { Rng, clamp } from './rng.js';
 import { FORMATIONS, ROLE_POS } from './data.js';
 import { positionFit } from './ai.js';
 import { roleTakers } from './lineup.js';
-import { aerial, heightFactor } from './attributes.js';
+import { aerial, heightFactor, attrOf } from './attributes.js';
 import { acwrRisk, physioDays } from './training.js';
 import { moraleFactor } from './morale.js';
 import { pitchOf, pitchTechnique, pitchInjury } from './stadium.js';
@@ -14,7 +14,7 @@ import { demand } from './finance.js';
 
 // ---- tuning constants (checked by the calibration tests) ----
 const CHANCE_RATE = 0.24;      // chance probability per minute for an even side with all the ball
-const CONVERSION = 0.083;      // base goal probability of a chance
+const CONVERSION = 0.0855;     // base goal probability of a chance (an average forward's finishing)
 const POSS_EXP = 1.5;          // how strongly midfield quality decides possession
 const CHANCE_EXP = 1.5;        // how strongly attack vs defence decides chances
 const FINISH_EXP = 0.8;        // how strongly shooter vs keeper decides goals
@@ -54,7 +54,7 @@ function buildSide(game, club, lineup, tactics, ai) {
     const p = game.players[id];
     energy[id] = p.energy ?? 100;
     mood[id] = moraleFactor(p);
-    ageDrain[id] = (1 + Math.max(0, game.season.year - p.birthYear - 28) * 0.03) * (1.25 - (p.phy ?? 50) / 200);
+    ageDrain[id] = (1 + Math.max(0, game.season.year - p.birthYear - 28) * 0.03) * (1.25 - attrOf(p, 'sta') / 200);
     injRisk[id] = acwrRisk(p) * ((p.phy ?? 60) < 50 ? 1.15 : 1);
   }
   for (const id of lineup.slots) if (id) rating[id] = 6.2;
@@ -128,25 +128,33 @@ export function createMatch(game, fixture, opts = {}) {
 
 // ---- strength ----
 
-// Effective technical (t) and physical (p) ability of a player in a slot.
-// Tiredness costs physical ability much more than technique.
-function effAttrs(game, side, id, slotPos) {
+// How much of his technical (ft) and physical (fp) ability a player in a
+// slot brings right now. Tiredness costs physical ability much more than technique.
+function factors(game, side, id, slotPos) {
   const pl = game.players[id];
   const fit = positionFit(pl.pos, slotPos) * (1 + 0.02 * (pl.form || 0)) * (side.mood?.[id] ?? 1);
   const e = side.energy[id] / 100;
-  return { t: (pl.tec ?? pl.skill) * fit * (0.86 + 0.14 * e) * (side.pitchT ?? 1), p: (pl.phy ?? pl.skill) * fit * (0.62 + 0.38 * e) };
+  return { ft: fit * (0.86 + 0.14 * e) * (side.pitchT ?? 1), fp: fit * (0.62 + 0.38 * e) };
 }
 
-// A shooter's finishing: mostly technique, some power.
+// Effective technical (t) and physical (p) ability, plus his pace and crossing.
+function effAttrs(game, side, id, slotPos) {
+  const pl = game.players[id];
+  const f = factors(game, side, id, slotPos);
+  return { t: (pl.tec ?? pl.skill) * f.ft, p: (pl.phy ?? pl.skill) * f.fp, pac: attrOf(pl, 'pac') * f.fp, cro: attrOf(pl, 'cro') * f.ft };
+}
+
+// A shooter: mostly finishing, some power.
 function effSkill(game, side, id, slotPos) {
-  const a = effAttrs(game, side, id, slotPos);
-  return 0.7 * a.t + 0.3 * a.p;
+  const pl = game.players[id];
+  const f = factors(game, side, id, slotPos);
+  return 0.7 * attrOf(pl, 'fin') * f.ft + 0.3 * (pl.phy ?? pl.skill) * f.fp;
 }
 
 // The match "matrix": how technique (T) and physique (P) feed each part of play.
 //   possession (midfield)  0.7 T + 0.3 P      defending  0.4 T + 0.6 P
 //   attacking              0.6 T + 0.4 P      keeper     0.5 T + 0.5 P
-//   crosses: wide players' T;  through-balls: forwards' pace (P) vs defenders' P
+//   crosses: wide players' crossing;  through-balls: forwards' pace vs defenders' pace
 export function sideStrength(game, side) {
   const lines = { G: [], D: [], M: [], F: [] };
   const wide = [];
@@ -154,7 +162,7 @@ export function sideStrength(game, side) {
     if (!id) return;
     const a = effAttrs(game, side, id, side.slotPos[i]);
     lines[side.slotPos[i]].push(a);
-    if (WIDE_ROLES.has(side.slotRoles[i])) wide.push(a.t);
+    if (WIDE_ROLES.has(side.slotRoles[i])) wide.push(a.cro);
   });
   const mix = (line, wt) => avg(line.map((a) => wt * a.t + (1 - wt) * a.p));
   const d = mix(lines.D, 0.4) * lineCount(lines.D.length, 4);
@@ -171,8 +179,8 @@ export function sideStrength(game, side) {
     mid: (midPoss * 0.8 + d * 0.1 + f * 0.1) * capt,
     att: (f * 0.7 + midAtt * 0.3) * capt,
     wide: wide.length ? avg(wide) : outfield * 0.85,
-    pace: lines.F.length ? avg(lines.F.map((a) => a.p)) : outfield,
-    defPace: lines.D.length ? avg(lines.D.map((a) => a.p)) : outfield,
+    pace: lines.F.length ? avg(lines.F.map((a) => a.pac)) : outfield,
+    defPace: lines.D.length ? avg(lines.D.map((a) => a.pac)) : outfield,
   };
   // Style shifts what the attack is built on.
   const st = side.tactics.style;
@@ -491,7 +499,7 @@ function chance(game, m, rng, i, S) {
   let shooter;
   if (penalty) {
     shooter = me.slots.includes(me.penaltyId) ? me.penaltyId : onPitch(me).filter((id) => game.players[id].pos !== 'G')
-      .sort((x, y) => game.players[y].skill - game.players[x].skill)[0];
+      .sort((x, y) => attrOf(game.players[y], 'fin') - attrOf(game.players[x], 'fin'))[0];
   } else {
     shooter = pickPlayer(game, rng, me, { G: 0, D: 0.7, M: 2.4, F: 3.4 });
   }
@@ -503,7 +511,7 @@ function chance(game, m, rng, i, S) {
       (id) => ({ D: 0.8, M: 1, F: 3 }[game.players[id].pos]) * Math.pow(aerial(game.players[id]), 2));
     const winger = me.slots.find((id, k) => id && WIDE_ROLES.has(me.slotRoles[k]) && id !== target);
     m.ball = { side: i, zone: 0.92, carrier: target };
-    if (!aerialDuel(game, rng, me, target, op, winger ? game.players[winger].tec : null)) {
+    if (!aerialDuel(game, rng, me, target, op, winger ? attrOf(game.players[winger], 'cro') : null)) {
       push(m, { type: 'miss', side: i, playerId: target, header: true, duelLost: true });
       return;
     }
@@ -556,7 +564,7 @@ function shotOutcome(game, m, rng, i, shooter, conv, flags = {}) {
 }
 
 // A corner kick: a quarter of them reach a man in the box, where an aerial
-// duel decides whether he gets a header. The taker's delivery (technique) helps.
+// duel decides whether he gets a header. The taker's delivery (crossing) helps.
 function corner(game, m, rng, i, S) {
   const me = m.sides[i];
   const op = m.sides[1 - i];
@@ -569,7 +577,7 @@ function corner(game, m, rng, i, S) {
   if (!cands.length) return;
   // The tall ones go up for corners.
   const header = rng.weighted(cands, (id) => ({ D: 2, M: 1, F: 2 }[game.players[id].pos]) * Math.pow(aerial(game.players[id]), 2));
-  const delivery = taker ? (game.players[taker].tec ?? game.players[taker].skill) : S[i].mid;
+  const delivery = taker ? attrOf(game.players[taker], 'cro') : S[i].mid;
   if (!aerialDuel(game, rng, me, header, op, delivery)) return;
   me.stats.shots++;
   const conv = headerConversion(game, me, header, op, S, i, delivery);
@@ -586,7 +594,8 @@ function freeKick(game, m, rng, fouler, S) {
   if (!taker) return;
   me.stats.shots++;
   me.stats.freeKicks = (me.stats.freeKicks || 0) + 1;
-  const conv = clamp(FREE_KICK_CONV * Math.pow(game.players[taker].skill / Math.max(1, S[fouler].gk), FINISH_EXP), 0.02, 0.3);
+  const kickQ = 0.5 * attrOf(game.players[taker], 'fin') + 0.5 * attrOf(game.players[taker], 'cro');
+  const conv = clamp(FREE_KICK_CONV * Math.pow(kickQ / Math.max(1, S[fouler].gk), FINISH_EXP), 0.02, 0.3);
   push(m, { type: 'freekick', side: i, playerId: taker });
   shotOutcome(game, m, rng, i, taker, conv, { freekick: true });
 }
@@ -594,7 +603,7 @@ function freeKick(game, m, rng, fouler, S) {
 function penaltyShootout(game, m, rng) {
   const score = [0, 0];
   const takers = m.sides.map((s) => onPitch(s).filter((id) => game.players[id].pos !== 'G')
-    .sort((x, y) => game.players[y].skill - game.players[x].skill));
+    .sort((x, y) => attrOf(game.players[y], 'fin') - attrOf(game.players[x], 'fin')));
   const gks = m.sides.map((s, k) => {
     const id = s.slots.find((x, j) => x && s.slotPos[j] === 'G');
     return id ? game.players[id].skill : 30;
@@ -602,7 +611,7 @@ function penaltyShootout(game, m, rng) {
   const kicks = [];
   const kick = (i, n) => {
     const t = takers[i][n % takers[i].length];
-    const p = clamp(0.76 * Math.pow(game.players[t].skill / gks[1 - i], 0.3), 0.5, 0.92);
+    const p = clamp(0.76 * Math.pow(attrOf(game.players[t], 'fin') / gks[1 - i], 0.3), 0.5, 0.92);
     const ok = rng.next() < p;
     if (ok) score[i]++;
     kicks.push({ side: i, playerId: t, scored: ok });

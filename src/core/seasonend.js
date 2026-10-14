@@ -17,7 +17,8 @@ import { aiExpansions, seasonEndPitches } from './stadium.js';
 import { ageReports, potText, potEstimate } from './scouting.js';
 import { returnLoans } from './loans.js';
 import { closeNational } from './national.js';
-import { seasonEndStaff } from './training.js';
+import { seasonEndStaff, snapshotAttrs } from './training.js';
+import { shiftAttr } from './attributes.js';
 import { clubRepLevel } from './facilities.js';
 import { seasonEndMorale } from './morale.js';
 import { seasonEndBoard, newSeasonBoard } from './board.js';
@@ -247,6 +248,10 @@ export function endSeason(game) {
     p.seasonStart = p.skill;
     p.tecStart = p.tec;
     p.phyStart = p.phy;
+    // Pace goes first: from 29 a little of it turns into strength and stamina.
+    const age = nextYear - p.birthYear;
+    if (age >= 29) shiftAttr(p, 'pac', age >= 32 ? -2 : -1);
+    if (p.clubId === userId) snapshotAttrs(p); else delete p.at0;
     p.yellows = 0;
     p.suspension = 0;
     p.form = 0;

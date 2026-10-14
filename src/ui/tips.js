@@ -12,7 +12,8 @@ const TIPS = {
     <p>Watch the energy bars. Tired players play worse and get injured more easily.</p>`],
   market: ['Transfer Market', `<p>Search for players, put them on your shortlist and send scouts to find out their true potential.</p>
     <p>You can only sign players while a transfer window is open: summer, and from 27 December to 7 February.</p>`],
-  training: ['Training and staff', `<p>Pick a training focus for the squad and hire coaches. Better coaches develop players faster and cut injuries.</p>
+  training: ['Training and staff', `<p>Pick a training plan for the squad and hire coaches. Better coaches develop players faster and cut injuries.</p>
+    <p>Focus gives a player one attribute to work on extra, such as finishing for a striker.</p>
     <p>An assistant manager gives advice before matches; the more stars, the more he notices.</p>`],
   finances: ['Finances', '<p>Income from tickets, TV and sponsors pays the wages. Keep the club out of debt, or the board will lose patience.</p>'],
   youth: ['Youth academy', `<p>New youngsters arrive every summer. Choose what kind of players your youth scouts look for, promote the best ones by age 19 and send others to a B-team partner for match practice.</p>`],

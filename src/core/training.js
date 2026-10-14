@@ -12,7 +12,7 @@
 // High physical ability means less fatigue and faster recovery.
 
 import { Rng, clamp } from './rng.js';
-import { syncSkill, deriveSkill, markSkillChange } from './attributes.js';
+import { syncSkill, deriveSkill, markSkillChange, ATTR_WEIGHT, groupOf, shiftAttr, attrOf, ATTRS, ATTR_LABEL } from './attributes.js';
 import { playerValue } from './valuation.js';
 import { addNews } from './season.js';
 import { personName } from './names.js';
@@ -201,6 +201,28 @@ export function seasonEndStaff(game, nextYear) {
   refreshCoachPool(game);
 }
 
+// ---- individual focus: one attribute trained harder ----
+
+// Attribute points of daily focus drift at full rates (about +3-5 a season
+// for a young player on a normal plan, less with age).
+const FOCUS_RATE = 0.035;
+const focusAge = (a) => (a <= 21 ? 1 : a <= 25 ? 0.7 : a <= 29 ? 0.45 : 0.3);
+// Attributes that don't count towards his position (a defender's finishing)
+// still grow, but cost some of his normal development.
+const OFF_POSITION_COST = 0.8;
+
+export function setFocus(game, p, k) {
+  if (k && !ATTRS.includes(k)) return false;
+  if (!k) delete p.focus; else p.focus = k;
+  p.fx = 0;
+  return true;
+}
+export const focusLabel = (p) => (p.focus ? ATTR_LABEL[p.focus] : 'None');
+
+// The attributes as they were at the start of the season (own players: the
+// season's progress arrows on the player card).
+export const snapshotAttrs = (p) => { p.at0 = ATTRS.map((k) => attrOf(p, k)); };
+
 // ---- plans ----
 
 export function planFor(game, club, p) {
@@ -273,6 +295,7 @@ export function trainingDay(game) {
       if (!p) continue;
       if (!p.xp) p.xp = { tec: 0, phy: 0 };
       if (!p.load) p.load = { acute: 1.5, chronic: 1.5 };
+      if (club.id === user && !p.at0) snapshotAttrs(p);
       const age = year - p.birthYear;
       const injured = p.injuryDays > 0;
       if (injured) p.injuryDays--;
@@ -319,10 +342,17 @@ export function trainingDay(game) {
         const playF = 0.8 + 0.5 * clamp((p.stats.season.apps + 0.7 * (p.stats.season.youthApps || 0)) / teamPlayed, 0, 1);
         const fresh = p.energy / 100;
         const mind = moraleDevFactor(p);
+        const focusGrp = p.focus && club.id === user ? groupOf(p.focus) : null;
         for (const attr of ['tec', 'phy']) {
           // The academy is run by the youth coach.
           const cf = academy.has(id) ? youthCoach : p.pos === 'G' ? coach.gk : coach[attr];
-          const xp = K * share[attr] * I.gain * cf * ageCurve[attr](age) * gap * playF * fresh * mind * (1 + 0.1 * (p.form || 0));
+          let xp = K * share[attr] * I.gain * cf * ageCurve[attr](age) * gap * playF * fresh * mind * (1 + 0.1 * (p.form || 0));
+          if (focusGrp === attr) {
+            if (!ATTR_WEIGHT[p.pos][p.focus]) xp *= OFF_POSITION_COST;
+            // The focus attribute pulls ahead of the rest of his group.
+            p.fx = (p.fx || 0) + FOCUS_RATE * share[attr] * 2 * I.gain * cf * focusAge(age) * fresh * mind;
+            if (p.fx >= 1) { p.fx -= 1; shiftAttr(p, p.focus, 1); }
+          }
           if (xp > 0 && gainAttr(p, attr, xp)) changed = true;
         }
       }
