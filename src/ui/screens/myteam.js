@@ -78,14 +78,14 @@ export function render(root, ctx) {
       return `<tr data-pid="${id}" data-drop="${drop}" draggable="true" class="${st.sel === id ? 'sel' : ''} ${un ? 'unavail' : ''}">
         <td class="num">${p.number}</td><td>${contractBadge(p)}<b>${esc(fullName(p))}</b>${badges(p, roles)}</td><td class="c">${oop ? `<span class="oop-skill">${slotPos[si]}</span>` : p.pos}</td>
         <td class="num">${ageOf(p, year)}</td><td>${flag(g.nations[p.nationId].flag, 20)}</td>
-        <td class="num">${skillCell}</td><td class="num">${potText(g, p, { short: true })}</td><td class="c">${formArrow(p.form)}</td>
+        <td class="num">${skillCell}</td><td class="c">${formArrow(p.form)}</td>
         <td class="num">${Math.round(p.energy)}%</td></tr>`;
     };
     return [
       ...l.slots.map((id, i) => (id ? row(id, `slot:${i}`) : '')),
-      `<tr class="sep" data-drop="bench:-1"><td colspan="9">Substitutes (${l.bench.length}/${BENCH_SIZE})</td></tr>`,
+      `<tr class="sep" data-drop="bench:-1"><td colspan="8">Substitutes (${l.bench.length}/${BENCH_SIZE})</td></tr>`,
       ...l.bench.map((id, i) => row(id, `bench:${i}`)),
-      '<tr class="sep" data-drop="reserve"><td colspan="9">Reserves</td></tr>',
+      '<tr class="sep" data-drop="reserve"><td colspan="8">Reserves</td></tr>',
       ...reserves.map((id) => row(id, 'reserve')),
     ].join('');
   }
@@ -142,8 +142,8 @@ export function render(root, ctx) {
     return `
     <div class="panel scroll" style="left:16px;top:84px;width:384px;height:620px;padding:8px 6px">
       <table class="data squad-table">
-        <colgroup><col class="c-no" style="width:28px"><col><col style="width:22px"><col class="c-age" style="width:34px"><col class="c-nat" style="width:32px"><col class="c-sk" style="width:30px"><col class="c-pot" style="width:32px"><col class="c-form" style="width:20px"><col class="c-en" style="width:46px"></colgroup>
-        <thead><tr><th class="num">No</th><th>Player</th><th class="c">P</th><th class="num">Age</th><th>Nat</th><th class="num">Sk</th><th class="num">Pot</th><th class="c">F</th><th class="num">En</th></tr></thead>
+        <colgroup><col class="c-no" style="width:28px"><col><col style="width:22px"><col class="c-age" style="width:34px"><col class="c-nat" style="width:32px"><col class="c-sk" style="width:30px"><col class="c-form" style="width:20px"><col class="c-en" style="width:46px"></colgroup>
+        <thead><tr><th class="num">No</th><th>Player</th><th class="c">P</th><th class="num">Age</th><th>Nat</th><th class="num">Sk</th><th class="c">F</th><th class="num">En</th></tr></thead>
         <tbody>${squadRows(l, roles)}</tbody>
       </table>
     </div>
