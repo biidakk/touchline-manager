@@ -6,7 +6,7 @@ import { Rng, clamp } from './rng.js';
 import { FORMATIONS, ROLE_POS } from './data.js';
 import { positionFit } from './ai.js';
 import { roleTakers } from './lineup.js';
-import { aerial, heightFactor, attrOf } from './attributes.js';
+import { aerial, heightFactor, attrOf, mentalOf } from './attributes.js';
 import { acwrRisk, physioDays } from './training.js';
 import { moraleFactor } from './morale.js';
 import { pitchOf, pitchTechnique, pitchInjury } from './stadium.js';
@@ -171,13 +171,30 @@ export function sideStrength(game, side) {
   const midAtt = mix(lines.M, 0.65) * lineCount(lines.M.length, 4);
   const f = mix(lines.F, 0.6) * lineCount(lines.F.length, 2);
   const outfield = mix([...lines.D, ...lines.M, ...lines.F], 0.5);
-  // Captain on the pitch and teamwork (0..100 -> -3%..+3%) scale every line.
-  const capt = (side.slots.includes(side.captainId) ? 1.015 : 1) * (0.97 + 0.0006 * side.teamwork);
+  // Mental attributes, compared with what a player of his skill usually has
+  // (so they reward the player beyond his number, not the stronger side twice).
+  const year = game.season.year;
+  const rel = (pred, k) => {
+    const xs = side.slots.filter((id, i) => id && pred(side.slotPos[i])).map((id) => {
+      const pl = game.players[id];
+      return mentalOf(pl, k, year) - (0.55 * pl.skill + 22);
+    });
+    return xs.length ? avg(xs) : 0;
+  };
+  const cre = rel((p) => p === 'M' || p === 'F', 'cre');
+  const pos = rel((p) => p === 'D' || p === 'M', 'pos');
+  const gkPos = rel((p) => p === 'G', 'pos');
+  const tw = rel((p) => p !== 'G', 'tw');
+  // The captain on the pitch (up to +3% with great leadership), the club's
+  // understanding (0..100 -> -3%..+3%) and the players' teamwork scale every line.
+  const cap = side.slots.includes(side.captainId) ? game.players[side.captainId] : null;
+  const capt = (cap ? 1 + 0.03 * clamp((mentalOf(cap, 'ldr', year) - 30) / 60, 0, 1) : 1)
+    * (0.97 + 0.0006 * side.teamwork) * clamp(1 + 0.0015 * tw, 0.96, 1.04);
   const s = {
-    gk: (lines.G.length ? mix(lines.G, 0.5) : outfield * 0.45) * capt,
-    def: (d * 0.75 + midDef * 0.25) * capt,
+    gk: (lines.G.length ? mix(lines.G, 0.5) : outfield * 0.45) * capt * clamp(1 + 0.0015 * gkPos, 0.96, 1.04),
+    def: (d * 0.75 + midDef * 0.25) * capt * clamp(1 + 0.002 * pos, 0.95, 1.05),
     mid: (midPoss * 0.8 + d * 0.1 + f * 0.1) * capt,
-    att: (f * 0.7 + midAtt * 0.3) * capt,
+    att: (f * 0.7 + midAtt * 0.3) * capt * clamp(1 + 0.002 * cre, 0.95, 1.05),
     wide: wide.length ? avg(wide) : outfield * 0.85,
     pace: lines.F.length ? avg(lines.F.map((a) => a.pac)) : outfield,
     defPace: lines.D.length ? avg(lines.D.map((a) => a.pac)) : outfield,

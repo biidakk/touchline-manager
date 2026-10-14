@@ -21,6 +21,7 @@ import { moraleBadge, showPlayer } from '../components/playercard.js';
 import { talkTo, showAdvice } from '../components/talk.js';
 import { editClub } from '../components/clubeditor.js';
 import { clubRepLevel } from '../../core/facilities.js';
+import { attrOf, mentalOf } from '../../core/attributes.js';
 
 const POS_ORDER = { G: 0, D: 1, M: 2, F: 3 };
 
@@ -95,8 +96,9 @@ export function render(root, ctx) {
     const inXI = club.lineup.slots.includes(p.id);
     const status = p.injuryDays > 0 ? `<span class="bad">Injured, ${p.injuryDays} days</span>`
       : p.suspension > 0 ? `<span class="bad">Suspended, ${p.suspension} match(es)</span>` : '<span class="good">Available</span>';
+    const roleTip = { captainId: `Leadership ${mentalOf(p, 'ldr', year)}`, setPieceId: `Crossing ${attrOf(p, 'cro')}`, penaltyId: `Finishing ${attrOf(p, 'fin')}` };
     const roleBtn = (key, label) => `<button class="btn btn-small btn-blue ${club.lineup[key] === p.id || (!club.lineup[key] && roles[key] === p.id) ? 'on' : ''}"
-      data-action="role" data-key="${key}" ${inXI ? '' : 'disabled'}>${label}</button>`;
+      data-action="role" data-key="${key}" title="${roleTip[key]}" ${inXI ? '' : 'disabled'}>${label}</button>`;
     // It takes the whole column under the money panel (the club buttons come back when it is closed),
     // so the bigger phone text never pushes its buttons over anything else.
     return `<div class="panel player-card" style="left:984px;top:290px;width:280px;height:414px;padding:10px 14px;overflow-y:auto">
@@ -106,6 +108,7 @@ export function render(root, ctx) {
       <div class="fin-list" style="margin-top:6px;grid-template-columns:auto 1fr">
         <span>Skill / potential</span><b>${p.skill} / ${potText(g, p)} ${formArrow(p.form)}</b>
         <span class="phone-hide">TEC · PHY · height</span><b class="phone-hide">${p.tec} · ${p.phy} · ${p.height} cm</b>
+        <span>Leadership</span><b>${mentalOf(p, 'ldr', year)}</b>
         <span>Morale</span><b><button class="linkbtn" data-action="talk" title="Talk to him">${moraleBadge(p, true)}</button></b>
         <span>Value · wage</span><b>${fmtMoneyShort(p.value)} · ${fmtMoneyShort(p.wage)}</b>
         <span>Contract · status</span><b>${p.contractEnd}${contractBadge(p)} · ${status}</b>

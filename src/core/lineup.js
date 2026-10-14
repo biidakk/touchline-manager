@@ -3,7 +3,7 @@
 
 import { FORMATIONS, ROLE_POS } from './data.js';
 import { positionFit, isAvailable, autoLineup } from './ai.js';
-import { aerial, attrOf } from './attributes.js';
+import { aerial, attrOf, mentalOf } from './attributes.js';
 
 export const BENCH_SIZE = 7;
 
@@ -144,7 +144,7 @@ export function roleTakers(game, lineup) {
   const best = (pred, key) => xi.filter(pred).sort((a, b) => key(b) - key(a))[0]?.id ?? null;
   const year = game.season.year;
   return {
-    captainId: lineup.captainId ?? best(() => true, (p) => p.skill + Math.min(10, year - p.birthYear - 20)),
+    captainId: lineup.captainId ?? best(() => true, (p) => mentalOf(p, 'ldr', year) + 0.2 * p.skill),
     setPieceId: lineup.setPieceId ?? best((p) => p.pos !== 'G', (p) => attrOf(p, 'cro') + 0.5 * attrOf(p, 'fin')),
     penaltyId: lineup.penaltyId ?? best((p) => p.pos === 'F' || p.pos === 'M', (p) => attrOf(p, 'fin')),
   };

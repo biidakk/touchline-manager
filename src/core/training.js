@@ -12,12 +12,13 @@
 // High physical ability means less fatigue and faster recovery.
 
 import { Rng, clamp } from './rng.js';
-import { syncSkill, deriveSkill, markSkillChange, ATTR_WEIGHT, groupOf, shiftAttr, attrOf, ATTRS, ATTR_LABEL } from './attributes.js';
+import { syncSkill, deriveSkill, markSkillChange, ATTR_WEIGHT, groupOf, shiftAttr, attrOf, ATTRS, ATTR_LABEL, isMental, MENTAL_LABEL,
+  addMental, mentalOf } from './attributes.js';
 import { playerValue } from './valuation.js';
 import { addNews } from './season.js';
 import { personName } from './names.js';
 import { moraleDevFactor } from './morale.js';
-import { expectedWageBill } from './finance.js';
+import { expectedWageBill, costScale } from './finance.js';
 import { money } from './currency.js';
 import { academyGrowth } from './facilities.js';
 
@@ -211,17 +212,41 @@ const focusAge = (a) => (a <= 21 ? 1 : a <= 25 ? 0.7 : a <= 29 ? 0.45 : 0.3);
 // still grow, but cost some of his normal development.
 const OFF_POSITION_COST = 0.8;
 
+// Creativity and positioning can be trained too (slower, and at some cost to
+// his technical development); teamwork and leadership come with experience.
+export const MENTAL_FOCUS = ['cre', 'pos'];
+const MENTAL_FOCUS_COST = 0.85;
+
 export function setFocus(game, p, k) {
-  if (k && !ATTRS.includes(k)) return false;
+  if (k && !ATTRS.includes(k) && !MENTAL_FOCUS.includes(k)) return false;
   if (!k) delete p.focus; else p.focus = k;
   p.fx = 0;
   return true;
 }
-export const focusLabel = (p) => (p.focus ? ATTR_LABEL[p.focus] : 'None');
+export const focusLabel = (p) => (p.focus ? ATTR_LABEL[p.focus] || MENTAL_LABEL[p.focus] : 'None');
 
 // The attributes as they were at the start of the season (own players: the
 // season's progress arrows on the player card).
-export const snapshotAttrs = (p) => { p.at0 = ATTRS.map((k) => attrOf(p, k)); };
+export function snapshotAttrs(p, year) {
+  p.at0 = ATTRS.map((k) => attrOf(p, k));
+  p.mn0 = ['cre', 'pos', 'tw', 'ldr'].map((k) => mentalOf(p, k, year));
+}
+
+// A leadership course: once a season for a player of 20 or more, +3 leadership.
+export const courseCost = (game, club) => Math.round((40000 * costScale(game, club)) / 1000) * 1000;
+export const courseOk = (game, p) => game.season.year - p.birthYear >= 20 && p.course !== game.season.year;
+export function leadershipCourse(game, p) {
+  const club = game.clubs[game.userClubId];
+  if (p.clubId !== club.id) return { ok: false, message: 'Only for your own players.' };
+  if (!courseOk(game, p)) return { ok: false, message: game.season.year - p.birthYear < 20 ? 'He is too young for the course.' : 'He has been on a course this season.' };
+  const cost = courseCost(game, club);
+  if (club.budget < cost) return { ok: false, message: 'You cannot afford the course.' };
+  club.budget -= cost;
+  club.finance.season.staff = (club.finance.season.staff || 0) + cost;
+  p.course = game.season.year;
+  addMental(p, 'ldr', 3, game.season.year);
+  return { ok: true, message: `${p.first} ${p.last} has finished a leadership course: leadership ${mentalOf(p, 'ldr', game.season.year)}.` };
+}
 
 // ---- plans ----
 
@@ -295,7 +320,7 @@ export function trainingDay(game) {
       if (!p) continue;
       if (!p.xp) p.xp = { tec: 0, phy: 0 };
       if (!p.load) p.load = { acute: 1.5, chronic: 1.5 };
-      if (club.id === user && !p.at0) snapshotAttrs(p);
+      if (club.id === user && (!p.at0 || !p.mn0)) snapshotAttrs(p, year);
       const age = year - p.birthYear;
       const injured = p.injuryDays > 0;
       if (injured) p.injuryDays--;
@@ -342,11 +367,17 @@ export function trainingDay(game) {
         const playF = 0.8 + 0.5 * clamp((p.stats.season.apps + 0.7 * (p.stats.season.youthApps || 0)) / teamPlayed, 0, 1);
         const fresh = p.energy / 100;
         const mind = moraleDevFactor(p);
-        const focusGrp = p.focus && club.id === user ? groupOf(p.focus) : null;
+        const mentalFocus = p.focus && club.id === user && isMental(p.focus);
+        const focusGrp = p.focus && club.id === user && !mentalFocus ? groupOf(p.focus) : null;
+        if (mentalFocus) {
+          p.fx = (p.fx || 0) + FOCUS_RATE * 0.7 * I.gain * (academy.has(id) ? youthCoach : coach.tec) * focusAge(age) * fresh * mind;
+          if (p.fx >= 1) { p.fx -= 1; addMental(p, p.focus, 1, year); }
+        }
         for (const attr of ['tec', 'phy']) {
           // The academy is run by the youth coach.
           const cf = academy.has(id) ? youthCoach : p.pos === 'G' ? coach.gk : coach[attr];
           let xp = K * share[attr] * I.gain * cf * ageCurve[attr](age) * gap * playF * fresh * mind * (1 + 0.1 * (p.form || 0));
+          if (mentalFocus && attr === 'tec') xp *= MENTAL_FOCUS_COST;
           if (focusGrp === attr) {
             if (!ATTR_WEIGHT[p.pos][p.focus]) xp *= OFF_POSITION_COST;
             // The focus attribute pulls ahead of the rest of his group.

@@ -657,3 +657,21 @@ html.phone .attr-grid .a-d { font-size: 15px; }
 .train-table .focus-btn { min-width: 0; width: 50px; height: 24px; padding: 0; font-size: 12px; }
 html.phone .train-table .focus-col { width: 70px; }
 html.phone .train-table .focus-btn { width: 62px; height: 32px; font-size: 15px; }
+
+/* ---------- transfer market fixes (phones) ---------- */
+.filters > * { flex-shrink: 0; }
+.tag-listed { display: inline-block; background: #f0a020; color: #fff; font-size: 10.5px; font-weight: 900; letter-spacing: 0.04em;
+  padding: 1px 5px; border-radius: 3px; vertical-align: 1px; }
+html.phone .tag-listed { font-size: 14px; padding: 2px 6px; }
+.deal-panel { overflow-y: auto; }
+.deal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.deal-btns .btn { min-width: 0; width: 100%; padding: 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-name { max-width: 210px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html.phone .m-name { max-width: 190px; }
+/* hub competition tiles: two lines at most, so five competitions fit */
+.comp-tile span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.15; }
+html.phone .comp-tiles { gap: 4px; padding: 8px; }
+html.phone .comp-tile { font-size: 14px; gap: 2px; padding: 2px; }
+html.phone .comp-tile .ico.big { width: 26px; height: 26px; }
+.attr-grid.five { grid-template-columns: repeat(5, 1fr); }
+html.phone .attr-grid.five { gap: 4px 12px; font-size: 16.5px; }

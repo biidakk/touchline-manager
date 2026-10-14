@@ -18,7 +18,7 @@ import { ageReports, potText, potEstimate } from './scouting.js';
 import { returnLoans } from './loans.js';
 import { closeNational } from './national.js';
 import { seasonEndStaff, snapshotAttrs } from './training.js';
-import { shiftAttr } from './attributes.js';
+import { shiftAttr, ageMental, mentalOf } from './attributes.js';
 import { clubRepLevel } from './facilities.js';
 import { seasonEndMorale } from './morale.js';
 import { seasonEndBoard, newSeasonBoard } from './board.js';
@@ -242,6 +242,18 @@ export function endSeason(game) {
     addNews(game, `${club.name} sell ${star.first} ${star.last} to ${buyer.name} for ${money(game, fee)} to ease their debts.`, 'transfer');
   }
 
+  // ---- mental attributes grow with age and experience; captains grow as
+  // leaders, and young players learn from a squad with strong leaders ----
+  const leaders = {};
+  for (const club of Object.values(game.clubs)) {
+    const ldr = club.squad.map((id) => game.players[id]).filter(Boolean).map((p) => mentalOf(p, 'ldr', year)).sort((a, b) => b - a);
+    leaders[club.id] = { captainId: club.lineup?.captainId, mentors: ldr.length >= 3 && (ldr[0] + ldr[1] + ldr[2]) / 3 >= 68 };
+  }
+  for (const p of Object.values(game.players)) {
+    const L = leaders[p.clubId];
+    ageMental(p, nextYear, { apps: p.stats.season.apps, captain: L?.captainId === p.id, mentors: !!L?.mentors });
+  }
+
   // ---- reset season state on players ----
   for (const p of Object.values(game.players)) {
     p.stats.season = { apps: 0, goals: 0, assists: 0, yellow: 0, red: 0 };
@@ -251,7 +263,7 @@ export function endSeason(game) {
     // Pace goes first: from 29 a little of it turns into strength and stamina.
     const age = nextYear - p.birthYear;
     if (age >= 29) shiftAttr(p, 'pac', age >= 32 ? -2 : -1);
-    if (p.clubId === userId) snapshotAttrs(p); else delete p.at0;
+    if (p.clubId === userId) snapshotAttrs(p, nextYear); else { delete p.at0; delete p.mn0; }
     p.yellows = 0;
     p.suspension = 0;
     p.form = 0;

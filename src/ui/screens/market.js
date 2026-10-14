@@ -66,11 +66,11 @@ export function render(root, ctx, params = {}) {
 
   function playerRows(list) {
     return list.map(({ p, price }) => `<tr class="click ${st.sel === p.id ? 'sel' : ''}" data-action="pick" data-id="${p.id}">
-      <td><b>${esc(fullName(p))}</b>${p.listed ? ' <span class="badge list">$</span>' : ''}</td><td class="c">${p.pos}</td>
+      <td class="m-name"><b>${esc(fullName(p))}</b></td><td class="c">${p.pos}</td>
       <td class="num">${ageOf(p, year)}</td><td class="num">${p.height}</td><td>${flag(g.nations[p.nationId].flag, 18)}</td>
       <td>${clubLink(g, p.clubId, { crest: 18, short: true })}</td>
       <td class="num">${p.skill}</td><td class="num">${potText(g, p)}</td><td class="c">${formArrow(p.form)}</td>
-      <td class="num">${willJoin(g, p, user).ok ? fmtMoneyShort(price) : `<span class="muted" title="He won't drop down to a club of your stature">won't join</span>`}</td></tr>`).join('');
+      <td class="num">${p.listed ? '<span class="tag-listed" title="On the transfer list: his club wants to sell">LISTED</span> ' : ''}${willJoin(g, p, user).ok ? fmtMoneyShort(price) : `<span class="muted" title="He won't drop down to a club of your stature">won't</span>`}</td></tr>`).join('');
   }
 
   const head = (k, label, cls = '') => `<th class="${cls}" data-action="sort" data-k="${k}">${label}${st.sortKey === k ? (st.sortDir > 0 ? ' ▲' : ' ▼') : ''}</th>`;
@@ -122,17 +122,17 @@ export function render(root, ctx, params = {}) {
           <button class="btn btn-small btn-blue" data-action="reject" data-id="${o.id}">Reject</button></td></tr>`;
       }).join('') || '<tr><td class="empty">No offers at the moment. List players to attract bids (only during a transfer window).</td></tr>'}</table>
       <h2>Your players on the transfer list</h2>
-      <table class="data">${listed.map((p) => `<tr><td><b>${esc(fullName(p))}</b></td><td class="c">${p.pos}</td><td class="num">${ageOf(p, year)}</td>
+      <table class="data">${listed.map((p) => `<tr><td class="m-name"><b>${esc(fullName(p))}</b></td><td class="c">${p.pos}</td><td class="num">${ageOf(p, year)}</td>
         <td class="num">${p.skill}/${potText(g, p)}</td><td class="num">asking <b>${fmtMoney(p.askingPrice)}</b></td><td class="muted">value ${fmtMoneyShort(p.value)}</td>
         <td class="num"><button class="btn btn-small btn-blue" data-action="unlist" data-id="${p.id}">Remove</button></td></tr>`).join('')
         || '<tr><td class="empty">Nobody listed. Use the player card in My Team to put a player on the transfer list.</td></tr>'}</table>
       <h2 style="margin-top:14px">Loans</h2>
       <table class="data">${[
-        ...user.squad.map((id) => g.players[id]).filter((p) => p.loanListed).map((p) => `<tr><td><b>${esc(fullName(p))}</b></td><td>on the loan list</td><td></td>
+        ...user.squad.map((id) => g.players[id]).filter((p) => p.loanListed).map((p) => `<tr><td class="m-name"><b>${esc(fullName(p))}</b></td><td>on the loan list</td><td></td>
           <td class="num"><button class="btn btn-small btn-blue" data-action="unlistloan" data-id="${p.id}">Remove</button></td></tr>`),
-        ...loanedOutBy(g, user.id).map((p) => `<tr><td><b>${esc(fullName(p))}</b></td><td>loaned to ${clubLink(g, p.clubId, { crest: 18 })}</td>
+        ...loanedOutBy(g, user.id).map((p) => `<tr><td class="m-name"><b>${esc(fullName(p))}</b></td><td>loaned to ${clubLink(g, p.clubId, { crest: 18 })}</td>
           <td class="muted">${p.stats.season.apps} apps, skill ${p.skill} (${p.skill - p.seasonStart >= 0 ? '+' : ''}${p.skill - p.seasonStart})</td><td></td></tr>`),
-        ...user.squad.map((id) => g.players[id]).filter((p) => p.loan).map((p) => `<tr><td><b>${esc(fullName(p))}</b></td><td>borrowed from ${clubLink(g, p.loan.parentId, { crest: 18 })}</td>
+        ...user.squad.map((id) => g.players[id]).filter((p) => p.loan).map((p) => `<tr><td class="m-name"><b>${esc(fullName(p))}</b></td><td>borrowed from ${clubLink(g, p.loan.parentId, { crest: 18 })}</td>
           <td class="muted">${p.stats.season.apps} apps · you pay ${Math.round(p.loan.wageShare * 100)}% of his wage</td><td></td></tr>`),
       ].join('') || '<tr><td class="empty">No loans. Loan players out from their card in My Team, or ask for a loan in the search.</td></tr>'}</table>`;
   }
@@ -159,38 +159,36 @@ export function render(root, ctx, params = {}) {
     const price = askingPrice(g, p);
     const wage = wageDemand(g, p, user);
     const short = g.shortlist.includes(p.id);
-    return `<div class="panel" style="left:900px;top:92px;width:360px;height:540px">
+    return `<div class="panel deal-panel" style="left:900px;top:92px;width:360px;height:540px">
       <div class="row" style="justify-content:space-between"><span style="font-size:20px;font-weight:900">${esc(fullName(p))}</span>${flag(g.nations[p.nationId].flag, 26)}</div>
       <div class="row muted" style="margin:4px 0 12px">${clubLink(g, club.id, { crest: 22 })} · #${p.number}</div>
       <div class="fin-list">
         <span>Position · age</span><b>${{ G: 'Goalkeeper', D: 'Defender', M: 'Midfielder', F: 'Forward' }[p.pos]} · ${ageOf(p, year)}</b>
         <span>Skill / potential</span><b>${p.skill} / ${potText(g, p)} ${formArrow(p.form)}</b>
         <span>TEC · PHY · height</span><b>${attrText(g, p, 'tec')} · ${attrText(g, p, 'phy')} · ${p.height} cm</b>
-        <span>Scouting</span><b>${scoutStatus(g, p)}</b>
-        <span>Season</span><b>${s.apps} apps, ${s.goals} goals</b>
+        <span class="phone-hide">Scouting</span><b class="phone-hide">${scoutStatus(g, p)}</b>
+        <span class="phone-hide">Season</span><b class="phone-hide">${s.apps} apps, ${s.goals} goals</b>
         <span>Contract until</span><b>${p.contractEnd}</b>
-        <span>Market value</span><b>${fmtMoney(p.value)}</b>
+        <span class="phone-hide">Market value</span><b class="phone-hide">${fmtMoney(p.value)}</b>
         <span>Asking price</span><b>${fmtMoney(price)}</b>
-        <span>Wage demand / year</span><b>${fmtMoney(wage)}</b>
+        <span>Wage demand</span><b>${fmtMoney(wage)}</b>
         <span>Your money</span><b class="${user.budget < price ? 'bad' : ''}">${fmtMoney(user.budget)}</b>
       </div>
       <label class="lbl" style="margin-top:16px">Your offer (${esc(currencySymbol(g))})</label>
-      <div class="row"><input class="field" id="bid" style="flex:1" value="${st.bid ?? Math.round(toShown(g, price))}">
+      <div class="row"><input class="field" id="bid" style="flex:1;min-width:0" value="${st.bid ?? Math.round(toShown(g, price))}">
         <select class="field" id="years">${[1, 2, 3, 4, 5].map((y) => `<option value="${y}" ${y === 3 ? 'selected' : ''}>${y} yr</option>`).join('')}</select></div>
-      <div class="row" style="margin-top:6px"><label class="lbl" style="margin:0 6px 0 0">Swap</label>
-        <select class="field" id="swap" style="flex:1" title="Offer one of your players as part of the deal">
+      <div class="row" style="margin-top:6px"> <label class="lbl" style="margin:0 6px 0 0">Swap</label>
+        <select class="field" id="swap" style="flex:1;min-width:0" title="Offer one of your players as part of the deal">
           <option value="">No player</option>
           ${user.squad.map((id) => g.players[id]).filter((x) => !x.loan).sort((a, b) => b.skill - a.skill)
             .map((x) => `<option value="${x.id}" ${st.swap === x.id ? 'selected' : ''}>${esc(x.last)} (${x.pos}, ${x.skill}) · worth ${fmtMoneyShort(swapWorth(g, x, C(p.clubId)))}</option>`).join('')}
         </select></div>
       ${st.msg ? `<div class="notice-inline">${esc(st.msg)}</div>` : ''}
-      <div class="row" style="margin-top:12px">
+      <div class="deal-btns">
         <button class="btn btn-small" data-action="offer" ${openWindow(g) ? '' : 'disabled'}>Make offer</button>
-        <button class="btn btn-small btn-blue" data-action="short">${short ? 'Remove from shortlist' : 'Add to shortlist'}</button>
         <button class="btn btn-small btn-blue" data-action="scout">Scout</button>
-      </div>
-      <div class="row" style="margin-top:8px">
-        <button class="btn btn-small btn-blue" data-action="askloan" ${openWindow(g) ? '' : 'disabled'} title="Loan fee ${fmtMoney(loanFee(g, p))}">Ask for loan (${fmtMoneyShort(loanFee(g, p))})</button>
+        <button class="btn btn-small btn-blue ${short ? 'on' : ''}" data-action="short" title="${short ? 'Remove from shortlist' : 'Add to shortlist'}">${short ? 'Shortlisted ✓' : 'Shortlist +'}</button>
+        <button class="btn btn-small btn-blue" data-action="askloan" ${openWindow(g) ? '' : 'disabled'} title="Ask for a loan: fee ${fmtMoney(loanFee(g, p))}">Loan · ${fmtMoneyShort(loanFee(g, p))}</button>
       </div>
     </div>`;
   }
@@ -224,7 +222,7 @@ export function render(root, ctx, params = {}) {
       <h2 style="margin-top:12px">Reports (${reports.length})</h2>
       <div class="scroll" style="flex:1"><table class="data">
         <thead><tr><th>Player</th><th class="c">Pos</th><th class="num">Age</th><th>Club</th><th class="num">Skill</th><th class="num">Potential</th><th class="num">Price</th><th>Season</th></tr></thead>
-        <tbody>${reports.map(({ p, r }) => `<tr class="click" data-action="pickreport" data-id="${p.id}"><td><b>${esc(fullName(p))}</b></td><td class="c">${p.pos}</td>
+        <tbody>${reports.map(({ p, r }) => `<tr class="click" data-action="pickreport" data-id="${p.id}"><td class="m-name"><b>${esc(fullName(p))}</b></td><td class="c">${p.pos}</td>
           <td class="num">${ageOf(p, year)}</td><td>${p.clubId ? clubLink(g, p.clubId, { short: true }) : '-'}</td><td class="num">${p.skill}</td>
           <td class="num"><b>${potText(g, p)}</b></td><td class="num">${p.clubId === user.id ? '-' : fmtMoneyShort(askingPrice(g, p))}</td>
           <td class="muted">${r.year}/${String(r.year + 1).slice(2)}</td></tr>`).join('') || '<tr><td colspan="8" class="empty">No reports yet.</td></tr>'}</tbody>

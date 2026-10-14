@@ -18,6 +18,7 @@ import { FORMATIONS, ROLE_POS } from './data.js';
 import { playerWage } from './valuation.js';
 import { addNews, sortedTable } from './season.js';
 import { DAY_MS } from './calendar.js';
+import { mentalOf } from './attributes.js';
 
 export const PERSONALITIES = ['professional', 'ambitious', 'loyal', 'temperamental', 'easygoing'];
 export const PERSONALITY_LABEL = {
@@ -93,8 +94,13 @@ const EXPECT = { starter: 0.75, rotation: 0.4, backup: 0.12, prospect: 0.1 };
 // ---- staff hooks (assistant manager) ----
 
 const assistantStars = (game, club) => (club.id === game.userClubId ? club.staff?.assistant?.stars || 0 : 3);
-// A good assistant keeps the dressing room calm: bad news hits softer.
-const calm = (game, club) => 1.15 - 0.06 * assistantStars(game, club);
+// A good assistant and a captain with leadership keep the dressing room calm:
+// bad news hits softer.
+function calm(game, club) {
+  const cap = game.players[club.lineup?.captainId];
+  const ldr = cap && cap.clubId === club.id ? mentalOf(cap, 'ldr', game.season.year) : 50;
+  return (1.15 - 0.06 * assistantStars(game, club)) * (1.08 - 0.0016 * ldr);
+}
 
 // ---- after each user match ----
 

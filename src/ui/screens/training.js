@@ -2,13 +2,13 @@
 // fatigue, workload and development progress.
 
 import { ROLES, ROLE_LABEL, ROLE_INFO, FOCI, FOCUS_LABEL, INTENSITIES, INTENSITY_LABEL, hireCoach, fireCoach, severance, planFor,
-  extendQuote, extendCoach,
+  extendQuote, extendCoach, focusLabel,
   acwr, defaultTraining, starsFor, coachFactor, physioDays } from '../../core/training.js';
 import { ageOf } from '../../core/valuation.js';
 import { potText } from '../../core/scouting.js';
 import { battery, skillMark } from '../components/pitch.js';
 import { chooseFocus } from '../components/playercard.js';
-import { ATTR_SHORT, ATTR_LABEL } from '../../core/attributes.js';
+import { ATTR_SHORT } from '../../core/attributes.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
 import { esc, fmtMoney, fmtMoneyShort, bindActions, fullName } from '../util.js';
 
@@ -86,7 +86,7 @@ export function render(root, ctx) {
             <td class="num phone-hide">${p.tec}</td><td class="num phone-hide">${p.phy}</td>
             <td class="c">${delta(p.tec - (p.tecStart ?? p.tec))} / ${delta(p.phy - (p.phyStart ?? p.phy))}</td>
             <td>${battery(p.energy)}</td><td class="c">${light(p)}</td>
-            <td class="c"><button class="btn btn-small btn-blue focus-btn ${p.focus ? 'on' : ''}" data-action="focus" data-id="${p.id}" title="${p.focus ? `Focus: ${ATTR_LABEL[p.focus]}` : 'No individual focus'}">${p.focus ? ATTR_SHORT[p.focus] : '+'}</button></td>
+            <td class="c"><button class="btn btn-small btn-blue focus-btn ${p.focus ? 'on' : ''}" data-action="focus" data-id="${p.id}" title="${p.focus ? `Focus: ${focusLabel(p)}` : 'No individual focus'}">${p.focus ? ATTR_SHORT[p.focus] || p.focus.toUpperCase() : '+'}</button></td>
             <td>${planSelect(`data-player="${p.id}"`, p.train, `= ${planText(eff)}`)}</td></tr>`;
         }).join('')}</tbody>
       </table></div>

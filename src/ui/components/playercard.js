@@ -10,8 +10,8 @@ import { formArrow, skillMark } from './pitch.js';
 import { esc, fmtMoney, fullName } from '../util.js';
 import { clubLink, playerLink } from './links.js';
 import { setPlayerName } from '../../core/renames.js';
-import { ATTRS, ATTR_LABEL, ATTR_WEIGHT, attrOf, groupOf } from '../../core/attributes.js';
-import { setFocus, focusLabel } from '../../core/training.js';
+import { ATTRS, ATTR_LABEL, ATTR_WEIGHT, attrOf, groupOf, MENTAL, MENTAL_LABEL, MENTAL_KEY, mentalOf } from '../../core/attributes.js';
+import { setFocus, focusLabel, MENTAL_FOCUS, courseCost, courseOk, leadershipCourse } from '../../core/training.js';
 
 const POS = { G: 'Goalkeeper', D: 'Defender', M: 'Midfielder', F: 'Forward' };
 
@@ -111,10 +111,22 @@ export function attributesHtml(game, p, { focusButton = false } = {}) {
       <span>${ATTR_LABEL[k]}</span><b class="${attrClass(a.v)}">${a.text}</b>${arrow}</div>`;
   };
   const known = mine || attrValue(game, p, 'pas').v != null;
-  return `<div class="attr-grid">${groups.map(([name, ks]) => `<div class="a-grp"><div class="a-head">${name}</div>${ks.map(cell).join('')}</div>`).join('')}</div>
+  const year = game.season.year;
+  const scouted = !!game.clubs[game.userClubId]?.scouting?.reports?.[p.id];
+  const mcell = (k, i) => {
+    const v = mentalOf(p, k, year);
+    const text = mine ? String(v) : scouted ? `~${Math.round(v / 5) * 5}` : '?';
+    const d = mine && p.mn0 ? v - p.mn0[i] : 0;
+    const arrow = d > 0 ? ` <span class="good a-d">▲${d}</span>` : d < 0 ? ` <span class="bad a-d">▼${-d}</span>` : '';
+    return `<div class="a-row${MENTAL_KEY[p.pos].includes(k) ? ' key' : ''}${p.focus === k && mine ? ' focus' : ''}">
+      <span>${MENTAL_LABEL[k]}</span><b class="${attrClass(mine || scouted ? v : null)}">${text}</b>${arrow}</div>`;
+  };
+  const mental = `<div class="a-grp"><div class="a-head">Mental</div>${MENTAL.map(mcell).join('')}</div>`;
+  return `<div class="attr-grid${p.pos === 'G' ? '' : ' five'}">${groups.map(([name, ks]) => `<div class="a-grp"><div class="a-head">${name}</div>${ks.map(cell).join('')}</div>`).join('')}${mental}</div>
     ${!known ? '<p class="muted" style="font-size:12.5px;margin-top:4px">Scout him to see his attributes.</p>' : ''}
     ${mine ? `<div class="row" style="gap:10px;margin-top:6px;font-size:14px"><span class="muted">Training focus:</span><b>${focusLabel(p)}</b>
       ${focusButton ? '<button class="btn btn-small btn-blue" style="min-width:0;padding:0 12px" data-pa="focus">Change</button>' : ''}
+      ${focusButton && courseOk(game, p) ? `<button class="btn btn-small btn-blue" style="min-width:0;padding:0 12px" data-pa="course" title="+3 leadership, once a season">Leadership course · ${fmtMoney(courseCost(game, game.clubs[p.clubId]))}</button>` : ''}
       ${p.at0 ? '<span class="muted phone-hide" style="font-size:12px">▲▼ this season</span>' : ''}</div>` : ''}`;
 }
 
@@ -122,8 +134,10 @@ export function attributesHtml(game, p, { focusButton = false } = {}) {
 export async function chooseFocus(ctx, p) {
   const W = ATTR_WEIGHT[p.pos];
   const order = ATTRS.filter((k) => W[k]).concat(ATTRS.filter((k) => !W[k] && !(p.pos !== 'G' && (k === 'ref' || k === 'han'))));
+  const year = ctx.game.season.year;
   const opts = [{ key: '!none', label: `No focus${p.focus ? '' : ' (now)'}` }]
-    .concat(order.map((k) => ({ key: k, label: `${ATTR_LABEL[k]} (${attrOf(p, k)})${W[k] ? '' : ' · slows his other training'}${p.focus === k ? ' · now' : ''}` })));
+    .concat(order.map((k) => ({ key: k, label: `${ATTR_LABEL[k]} (${attrOf(p, k)})${W[k] ? '' : ' · slows his other training'}${p.focus === k ? ' · now' : ''}` })))
+    .concat(MENTAL_FOCUS.map((k) => ({ key: k, label: `${MENTAL_LABEL[k]} (${mentalOf(p, k, year)}) · mental, slower${p.focus === k ? ' · now' : ''}` })));
   const k = await ctx.choose(`Training focus for ${p.first} ${p.last}: one attribute he works on extra. It pulls ahead of the others in its group (young players fastest). His overall development stays the same.`, opts);
   if (!k) return false;
   setFocus(ctx.game, p, k === '!none' ? null : k);
@@ -222,6 +236,14 @@ export async function showPlayer(ctx, playerId) {
     node.closest('.modal-bg').querySelector('[data-close]').click();
   });
   await done;
+  if (action === 'course') {
+    const club = g.clubs[p.clubId];
+    if (await ctx.confirm(`Send ${p.first} ${p.last} on a leadership course for ${fmtMoney(courseCost(g, club))}? His leadership rises by 3 (once a season).`, { ok: 'Send him' })) {
+      ctx.toast(leadershipCourse(g, p).message);
+    }
+    showPlayer(ctx, playerId);
+    return;
+  }
   if (action === 'focus') {
     if (await chooseFocus(ctx, p)) ctx.toast(`${p.last}: training focus ${focusLabel(p).toLowerCase()}`);
     showPlayer(ctx, playerId);

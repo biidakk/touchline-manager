@@ -163,3 +163,70 @@ export function shiftAttr(p, k, amount) {
 
 // Rounded offsets for the save (normalising leaves tenths).
 export const tidyProfile = (p) => { if (p.at) p.at = p.at.map((v) => Math.round(v * 10) / 10); };
+
+// ---- mental attributes ----
+//
+// Creativity, positioning, teamwork and leadership (p.mn, absolute values).
+// They are not part of skill: they are a player's extra strengths and
+// weaknesses. They grow with age and experience rather than in training
+// (creativity and positioning can be a training focus), peak around 30 and
+// fade only a little late in a career.
+//  - Creativity: midfielders' and forwards' chance creation.
+//  - Positioning: defending (defenders, midfielders) and keepers' saves.
+//  - Teamwork: how well the XI plays together.
+//  - Leadership: what the captain is worth, on the pitch and in the dressing room.
+
+export const MENTAL = ['cre', 'pos', 'tw', 'ldr'];
+const MI = { cre: 0, pos: 1, tw: 2, ldr: 3 };
+export const MENTAL_LABEL = { cre: 'Creativity', pos: 'Positioning', tw: 'Teamwork', ldr: 'Leadership' };
+export const isMental = (k) => k in MI;
+// What a position needs most (shown bright on the player card).
+export const MENTAL_KEY = { G: ['pos', 'ldr'], D: ['pos', 'tw'], M: ['cre', 'tw'], F: ['cre'] };
+
+const MENTAL_POS = { G: { cre: -18, pos: 6 }, D: { cre: -8, pos: 6 }, M: { cre: 5, pos: 0 }, F: { cre: 4, pos: -8 } };
+const MENTAL_PERS = {
+  professional: { tw: 8, ldr: 5 }, loyal: { tw: 4, ldr: 4 }, ambitious: { tw: -2, ldr: 4, cre: 2 },
+  temperamental: { tw: -10, ldr: -4, cre: 3 }, easygoing: { tw: 1, ldr: -6 },
+};
+
+export function makeMental(p, year) {
+  const rng = new Rng({ s: hashSeed(`${p.id}:mental:${p.last}`) });
+  const age = year - p.birthYear;
+  const exp = clamp(age - 24, -7, 9);
+  const per = MENTAL_PERS[p.personality] || {};
+  const pos = MENTAL_POS[p.pos];
+  const base = 0.55 * p.skill + 22;
+  p.mn = [
+    base + pos.cre + (per.cre || 0) + 0.6 * exp + rng.normal(0, 9),
+    base + pos.pos + 1.2 * exp + rng.normal(0, 8),
+    base - 4 + (per.tw || 0) + 0.5 * exp + rng.normal(0, 9),
+    0.4 * p.skill + 22 + (per.ldr || 0) + 2 * exp + rng.normal(0, 11),
+  ].map((v) => Math.round(clamp(v, 5, 97)));
+  return p.mn;
+}
+
+// year: the current season (players without mental attributes get theirs on first use).
+export function mentalOf(p, k, year) {
+  if (!p.mn) makeMental(p, year);
+  return Math.round(p.mn[MI[k]]);
+}
+
+export function addMental(p, k, amount, year) {
+  if (!p.mn) makeMental(p, year);
+  p.mn[MI[k]] = Math.round(clamp(p.mn[MI[k]] + amount, 1, 99) * 10) / 10;
+}
+
+// One season of growing up (or older), at the end of the season.
+// apps: league appearances this season; captain: he led the team.
+export function ageMental(p, year, { apps = 0, captain = false, mentors = false } = {}) {
+  if (!p.mn) makeMental(p, year);
+  const age = year - p.birthYear;
+  const play = Math.min(1, apps / 30);
+  const add = (k, v) => addMental(p, k, v, year);
+  add('cre', age <= 23 ? 1.2 + play : age <= 28 ? 0.5 + 0.5 * play : age <= 32 ? 0 : -0.8);
+  add('pos', age <= 23 ? 1.5 + play : age <= 30 ? 0.8 + 0.7 * play : age <= 33 ? 0.3 : -0.8);
+  add('tw', age <= 31 ? 0.3 + 1.5 * play : age <= 34 ? 0.3 * play : -0.5);
+  add('ldr', age < 22 ? 0.3 : age <= 33 ? 0.6 + 0.8 * play + (captain ? 2 : 0) : 0.3 * play + (captain ? 1 : 0));
+  // Young players learn from the leaders around them.
+  if (mentors && age <= 21) { add('tw', 1); add('pos', 0.5); }
+}

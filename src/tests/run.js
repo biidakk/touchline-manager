@@ -32,6 +32,7 @@ import './features27.test.js';
 import './features28.test.js';
 import './features29.test.js';
 import './features30.test.js';
+import './features31.test.js';
 
 const out = document.getElementById('results');
 const summary = document.getElementById('summary');

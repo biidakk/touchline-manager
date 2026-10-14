@@ -19,7 +19,7 @@ import { ACADEMY_MAX_AGE } from './development.js';
 import { decisionsDue } from './commercial.js';
 import { openWindow } from './transfers.js';
 import { dayOf } from './calendar.js';
-import { attrOf } from './attributes.js';
+import { attrOf, mentalOf } from './attributes.js';
 
 const BEATEN_BY = { crosses: 'passing', through: 'crosses', passing: 'through' };
 const avg = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
@@ -176,6 +176,15 @@ export function clubChecklist(game) {
   if (game.season.phase !== 'over' && game.day >= dayOf(year + 1, 1, 1)) {
     const ending = ROLES.filter((r) => club.staff?.[r] && club.staff[r].until <= year);
     if (ending.length) add('warn', `Staff contract${ending.length > 1 ? 's' : ''} ending this summer: ${ending.map((r) => `${club.staff[r].name} (${ROLE_LABEL[r].toLowerCase()})`).join(', ')}. Extend ${ending.length > 1 ? 'them' : 'it'} under Staff.`, 'training', { title: 'Training', milestone: 10 });
+  }
+  // A captain who can't lead, when someone in the XI could.
+  const xiP = club.lineup.slots.map(P).filter(Boolean);
+  const cap = P(club.lineup.captainId);
+  if (cap && xiP.length) {
+    const best = xiP.slice().sort((x, y) => mentalOf(y, 'ldr', year) - mentalOf(x, 'ldr', year))[0];
+    if (best !== cap && mentalOf(cap, 'ldr', year) < 50 && mentalOf(best, 'ldr', year) - mentalOf(cap, 'ldr', year) >= 15) {
+      add('info', `${cap.first} ${cap.last} is captain but has little leadership (${mentalOf(cap, 'ldr', year)}). ${best.first} ${best.last} (${mentalOf(best, 'ldr', year)}) would lead the team better.`, 'myteam');
+    }
   }
   const vacant = ROLES.filter((r) => !club.staff?.[r]);
   if (vacant.length) add('info', `Staff vacancies: ${vacant.join(', ')} coach${vacant.length > 1 ? 'es' : ''}.`, 'training', { title: 'Training', milestone: 10 });

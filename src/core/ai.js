@@ -1,6 +1,7 @@
 // AI decisions. For now: picking a lineup for a formation.
 
 import { FORMATIONS, ROLE_POS } from './data.js';
+import { mentalOf } from './attributes.js';
 
 // A player outside his natural position plays at 70% of his skill; a keeper
 // playing outfield, or an outfield player in goal, at only 25%.
@@ -66,7 +67,7 @@ export function autoLineup(game, club, formation = club.tactics?.formation || '4
 
   const xi = slots.filter(Boolean).map((id) => game.players[id]);
   const captain = xi.reduce((b, p) => {
-    const s = p.skill + Math.min(10, (game.season.year - p.birthYear) - 20);
+    const s = mentalOf(p, 'ldr', game.season.year) + 0.2 * p.skill;
     return !b || s > b.s ? { s, id: p.id } : b;
   }, null);
 
