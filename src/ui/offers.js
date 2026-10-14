@@ -36,7 +36,7 @@ export async function marketPopups(ctx) {
   if (news) {
     delete g.windowNews;
     await ctx.confirm(news.name === 'summer'
-      ? 'The summer transfer window has closed. No more offers until it opens again on 1 January.'
+      ? 'The summer transfer window has closed. No more offers until it opens again on 27 December.'
       : 'The winter transfer window has closed. No more offers until the summer.', { ok: 'OK', cancel: null });
   }
   return reviewOffers(ctx);

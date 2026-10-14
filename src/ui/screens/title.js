@@ -19,26 +19,28 @@ export function render(root, ctx) {
     <div class="title-kits">${kits}</div>
     <div class="title-menu">
       <button class="btn" data-action="continue" id="btn-continue" disabled>Continue career</button>
+      <button class="btn btn-blue" data-action="load" id="btn-load" disabled>Load career</button>
       <button class="btn btn-blue" data-action="new">New career</button>
       <button class="btn btn-blue" data-action="import">Import save file</button>
     </div>
-    <div class="version">v2.7</div>
+    <div class="version">v2.8</div>
   </div>`;
 
   ctx.hasSave().then((has) => {
-    const b = root.querySelector('#btn-continue');
-    if (b) b.disabled = !has;
+    for (const id of ['#btn-continue', '#btn-load']) {
+      const b = root.querySelector(id);
+      if (b) b.disabled = !has;
+    }
   });
 
   bindActions(root, {
     continue: async () => {
       try { await ctx.load(); } catch (e) { ctx.confirm(e.message, { cancel: null }); }
     },
+    load: () => ctx.go('saves'),
     new: async () => {
-      if (await ctx.hasSave() && !(await ctx.confirm(
-        'Starting a new career will replace your saved career in this browser once you start. Export it first if you want to keep it.',
-        { ok: 'Continue', cancel: 'Cancel' }))) return;
-      ctx.go('newgame');
+      const slot = await ctx.pickSlot('All three save slots are in use. Which career should the new one replace? (Its last save is kept as a backup.)');
+      if (slot) ctx.go('newgame', { slot });
     },
     import: () => ctx.importSave(),
   });

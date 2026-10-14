@@ -321,7 +321,7 @@ export function advanceToUserMatch(game, { stopForOffers = false } = {}) {
     }
     if (game.day === winter.open) {
       game.stopReason = 'window';
-      addNews(game, 'The winter transfer window is open until 31 January.', 'transfer');
+      addNews(game, 'The winter transfer window is open until 7 February.', 'transfer');
       return null;
     }
     if (stopForOffers && game.windowNews) {

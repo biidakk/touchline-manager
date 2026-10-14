@@ -7,6 +7,7 @@ import { makePlayer } from './worldgen.js';
 import { addNews } from './season.js';
 import { splitSkill } from './attributes.js';
 import { starsFor, aiStars } from './training.js';
+import { costScale } from './finance.js';
 
 export const TICKS_PER_SEASON = 9; // 1st of Sep, Oct, ..., May
 
@@ -77,6 +78,19 @@ export function retireChance(p, age) {
 
 const YOUTH_POS = [['G', 1], ['D', 3], ['M', 3], ['F', 2]];
 
+// The user's youth recruitment plan (Youth academy screen):
+//   focus   'any' or a position: half the intake is found for it
+//   region  'home' (the club's country) or 'abroad': half the intake from other
+//           countries, a wider spread of talent (more gems and more misses)
+//   effort  'normal' or 'extra': one more youngster, slightly better on
+//           average, for a yearly fee charged at the intake
+export const YOUTH_FOCUS = { any: 'Any position', G: 'Goalkeepers', D: 'Defenders', M: 'Midfielders', F: 'Forwards' };
+export const youthPlanOf = (club) => ({ focus: 'any', region: 'home', effort: 'normal', ...(club.youthPlan || {}) });
+export const youthEffortCost = (game, club) => Math.round((costScale(game, club) * 300000) / 1000) * 1000;
+export function setYouthPlan(club, plan) {
+  club.youthPlan = { ...youthPlanOf(club), ...plan };
+}
+
 // New youth players for a club: 3-6 per season, potential tied to reputation.
 // AI clubs put them straight into the squad; the user's go to the academy
 // (club.youth) until promoted.
@@ -86,17 +100,27 @@ export function youthIntake(game, club, rng, toAcademy = false) {
   // each star more or less moves the intake's potential by 2.5.
   const isUser = club.id === game.userClubId;
   const coachEdge = isUser ? starsFor(game, club, 'youth') - aiStars(club) : 0;
-  const n = (toAcademy ? rng.int(3, 6) : rng.int(2, 5)) + (isUser && coachEdge >= 1 && rng.chance(0.5) ? 1 : 0);
+  const plan = isUser ? youthPlanOf(club) : youthPlanOf({});
+  const extra = plan.effort === 'extra';
+  if (extra) {
+    const fee = youthEffortCost(game, club);
+    club.budget -= fee;
+    if (club.finance?.season) club.finance.season.scouting = (club.finance.season.scouting || 0) + fee;
+  }
+  const n = (toAcademy ? rng.int(3, 6) : rng.int(2, 5)) + (isUser && coachEdge >= 1 && rng.chance(0.5) ? 1 : 0) + (extra ? 1 : 0);
+  const abroad = plan.region === 'abroad';
+  const foreign = Object.keys(game.nations).filter((id) => id !== nation.id && game.nations[id].leagueIds?.length);
   const made = [];
   for (let i = 0; i < n; i++) {
-    const pos = rng.weighted(YOUTH_POS, (x) => x[1])[0];
-    const natId = rng.chance(0.9) ? nation.id : rng.pick(Object.keys(game.nations));
+    const pos = plan.focus !== 'any' && rng.chance(0.5) ? plan.focus : rng.weighted(YOUTH_POS, (x) => x[1])[0];
+    const natId = abroad ? (rng.chance(0.5) && foreign.length ? rng.pick(foreign) : nation.id)
+      : rng.chance(0.9) ? nation.id : rng.pick(Object.keys(game.nations));
     const p = makePlayer(game, rng, { nationId: natId, pos, meanSkill: 40, age: rng.int(16, 17), clubId: club.id });
     // Potential centred a little below the club's level: clubs keep their best
     // youngsters and release the rest, so the ones who stay end up around it.
     // (Centring it higher makes the whole world inflate over the years.)
     const level = 30 + club.reputation * 0.55 + (game.nations[club.nationId].strength || 0);
-    p.potential = Math.round(clamp(rng.normal(level - 5 + 2.5 * coachEdge, 7), 30, 95));
+    p.potential = Math.round(clamp(rng.normal(level - 5 + 2.5 * coachEdge + (extra ? 2 : 0), abroad ? 9 : 7), 30, 95));
     p.skill = Math.round(clamp(p.potential - rng.normal(22, 5), 15, p.potential));
     splitSkill(p, rng);
     p.seasonStart = p.skill;

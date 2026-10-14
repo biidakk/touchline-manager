@@ -16,7 +16,7 @@ function stars(rep) {
   return '★'.repeat(n) + '<span class="dim">' + '★'.repeat(5 - n) + '</span>';
 }
 
-export function render(root, ctx) {
+export function render(root, ctx, params = {}) {
   const st = { manager: 'Manager', seed: randomSeed(), world: null, nationId: 'ENG', tier: 1, clubId: null, real: !!ctx.realPack, realInfo: null };
 
   function generate() {
@@ -144,6 +144,8 @@ export function render(root, ctx) {
     start: async () => {
       const name = st.manager.trim() || 'Manager';
       ctx.game = startCareer(st.world, st.clubId, name);
+      ctx.slot = params.slot || null;
+      ctx.game.tips = { off: false, seen: {} };
       startAcademy(ctx.game);
       await ctx.save({ silent: true });
       ctx.home('hub');

@@ -9,7 +9,7 @@ import { formArrow, skillMark } from '../components/pitch.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
 import { showPlayer } from '../components/playercard.js';
 import { esc, fmtMoneyShort, bindActions, fullName } from '../util.js';
-import { setClubName } from '../../core/renames.js';
+import { editClub } from '../components/clubeditor.js';
 import { recordsHtml, clubSeasonsHtml } from '../components/records.js';
 import { clubHistoryHtml, loadHistory } from '../components/clubhistory.js';
 import { GUEST_COMP_ID } from '../../core/guests.js';
@@ -54,7 +54,7 @@ export function render(root, ctx, params = {}) {
         ${crest(club.crest, 110)}${jersey({ colors: club.colors, number: 10, size: 80 })}
         <div style="flex:1">
           <div class="row" style="gap:12px"><span style="font-size:26px;font-weight:900">${esc(club.name)}</span>
-            <button class="linkbtn muted" style="font-size:13px" data-action="rename" title="Rename this club (your copy only)">Rename</button></div>
+            <button class="linkbtn muted" style="font-size:13px" data-action="rename" title="Name, stadium, kit and crest (your copy only)">Edit</button></div>
           <div class="row muted">${flag(nation.flag, 18)} ${esc(nation.name)} · ${guests ? esc(continentalOf(g, club.id)?.name || 'no European football this season') : `${esc(comp.name)} · ${pos}. place`} · Manager: ${esc(club.id === g.userClubId ? g.manager.name : club.manager?.name || 'caretaker')}</div>
           <div class="row" style="gap:28px;margin-top:12px;align-items:flex-start">
             <div class="fin-list" style="width:260px"><span>Stadium</span><b>${esc(club.stadium.name)}</b><span>Capacity</span><b>${club.stadium.capacity.toLocaleString('en-US')}</b>
@@ -106,12 +106,8 @@ export function render(root, ctx, params = {}) {
     tab: (el) => { st.tab = el.dataset.v; draw(); },
     player: (el) => showPlayer(ctx, el.dataset.id),
     rename: async () => {
-      const club = g.clubs[st.clubId];
-      const name = await ctx.prompt('Club name:', club.name, { ok: 'Next' });
-      if (name === null || !name.trim()) return;
-      const short = await ctx.prompt('Short name (tables, tickers):', club.short, { ok: 'Rename' });
-      setClubName(g, club, name.trim(), short?.trim() || null);
-      ctx.toast('Club renamed. For a permanent name in every new world, add it to names.json.');
+      if (!(await editClub(ctx, g.clubs[st.clubId]))) return;
+      ctx.toast('Club updated. For a permanent name in every new world, add it to names.json.');
       draw();
     },
     back: () => ctx.back(),

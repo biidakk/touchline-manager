@@ -49,7 +49,7 @@ The published game uses near-real club names and generated players. For your own
 `names.json` (in the game folder, or next to `TouchlineManager.exe`) maps the game's names to yours, for example `"clubs": { "Manchester Blue": { "name": "...", "short": "...", "stadium": "...", "manager": "..." } }`. It also covers nations, leagues, cups and players ("Old Name": "New Name").
 - **When it applies:** when a world is created and every time a career is loaded, so you can edit it at any time.
 - **Format:** the file explains itself and has examples. Keep it valid JSON (quotes, commas) and save it as UTF-8. If it can't be read, the title screen says so.
-- **In the game:** use **Rename** on any player card, or on a club in Other Teams.
+- **In the game:** use **Edit** on any player card (name, and shirt number at your club: taking a used number swaps the two), **Edit** on a club in Other Teams, or **Edit club** in My Team (name, short name, stadium name, kit colours and pattern, crest colours, shape and pattern, with a live preview).
 - **Older careers:** saves from before v2.0 keep their fictional world.
 
 ## How to play
@@ -58,6 +58,9 @@ The published game uses near-real club names and generated players. For your own
    - **Menu:** My Team, Other Teams, Season Schedule, My Career, Search, Transfer Market, Training, Finances, plus your league and cup.
    - **Panels:** your last result and next three fixtures (Full schedule for the rest), news (filter tabs All · Games · Deals · Squad · Club; important items such as board, contract, injury and offer news are marked), the transfer ticker, your club card and the season table.
    - **CONTINUE** plays the calendar up to your next match. It also stops when the winter transfer window opens (27 December, until 7 February) or a window closes (both announced in a pop-up), when a club makes an offer for one of your players (at most once a week, see Selling), and at the end of the season. At the start of a season (and after taking over a club) it reads **PREPARE SEASON** first: see Season preparations below.
+   - **SIM** (next to Continue) plays further ahead with instant results: the next match only, one week, to the end of the month, to the transfer window (until it opens, or closes when it is open) or to the end of the season. You keep your lineup (injured and suspended players are replaced), or let the assistant pick the best fresh XI before every match. The run stops early for an offer for one of your players, a window closing, the winter window opening, a sacking or the end of the season, and **Stop** halts it at any time. A summary lists the results and your league position.
+   - **To do** (above the news) is your assistant's list of things that need attention, each one a link to the screen that deals with it: ticket prices and sponsor, empty places or unavailable players in the XI, tired starters, offers waiting for an answer, contracts that run out (from 1 January), players who want to leave or are unhappy (with an assistant), a squad short of keepers, defenders, midfielders or forwards, debt, low board confidence, staff vacancies, free scouts and academy players in their last year.
+   - **Tips:** in a new career each screen explains itself the first time you open it (**No more tips** turns them off; **To do → Show tips again** brings them back). Careers from before v2.8 start with tips off.
 3. **My Team:**
    - **Picking the team:** drag players between the squad list and the pitch, or click two players to swap them. Choose a formation (4-4-2, 4-3-3, 4-5-1, 3-5-2, 5-3-2) or use **Auto pick**.
    - **Out of position:** a player outside his natural position plays at 70 % of his skill, and at 25 % in or out of goal.
@@ -77,6 +80,7 @@ The published game uses near-real club names and generated players. For your own
    - **Selling:** list players with **Sell…**. Each new offer, for a sale or a loan, pops up in the middle of the screen: **Sell** (or **Loan him**), **Reject**, or **Decide later** (it stays under Transfer Market → Selling until it runs out after a week). Nobody bids during the pre-season friendlies, and offers come only while a window is open: when it closes, open offers lapse. If several clubs bid within a week, the later ones wait for your next match day. A club that really wants the player may come back a few days after a rejection with a better bid, 10–25 % higher, at most twice; the more he would improve their team, the more likely they are to come back.
    - **Swap deals, sell-on clauses, options:** a bid can include one of your players (**Swap**): the selling club values him at 90 % of his worth if he would help them (not if he is 8 or more below their level), so only the cash part is paid. When you sell, you can take 10 % less for a **15 % sell-on clause** (paid to you when he is sold on). When you borrow, you can add an **option to buy** at today's asking price (loan fee +25 %), taken up any time during the loan from his player card.
    - **Contracts:** expiring contracts must be renewed, or the player leaves for free in the summer. From seven league games before the end, an amber **document icon** in front of the name marks a contract that runs out; three games before the end a pop-up lists them (Later / Go to My Team).
+   - **Youth recruitment** (Youth): what your youth scouts look for in next summer's intake. **Position:** half the intake is found for the chosen position. **Region:** home only, or home and abroad (half the youngsters from other league countries, with a wider spread of talent: more gems and more misses). **Effort:** normal, or extra (one more youngster, slightly better on average, for a yearly fee that grows with the club, paid at the intake).
    - **U-19 league** (Youth → U-19 league): the clubs of your league play a U-19 league on Sundays (simulated). Your U-19 side is your academy plus first-team players you send down (**U-19** button); players are eligible if they are 19 or younger at the start of the season, and the best eleven fit ones play. U-19 games count towards development (70 % of a first-team game); other clubs' sides are rated from their reputation.
 6. **Loans and B-team cooperation:**
    - **Loaning out:** use **Loan…** on a player's card in My Team. It offers up to three ways: send him to your **B-team partner** (if you have one), **choose a club now** from up to six clubs of his level that want him (each shows whether he would start, the loan fee and the share of his wage they pay; the list changes weekly), or put him on the **loan list** and wait for offers, which pop up like transfer offers. Loans are agreed only during a transfer window.
@@ -173,12 +177,13 @@ The published game uses near-real club names and generated players. For your own
    - **Development:** players develop through daily training and matches. Young players who play regularly improve fastest. From age 30 physique declines first, technique later.
 
 ## Saving
-- **Save** (top bar) stores the career in the browser's IndexedDB, and the game also saves automatically after matches and at season end. **Continue career** on the title screen loads it.
+- **Save** (top bar) stores the career in the browser's IndexedDB, and the game also saves automatically after matches and at season end. **Continue career** on the title screen loads the career saved last.
+- **Save slots:** three careers fit side by side. **New career** and **Import** use a free slot, or ask which career to replace. **Load career** shows the slots with club, season, game date and when they were saved: **Load**, **Export**, **Delete**, and the **backups**: every week of game time the save being replaced is kept (the last two per slot). **Restore** goes back to a backup; the save it replaces becomes the newest backup, so nothing is lost. A career from before v2.8 is in slot 1.
 - **Export** downloads the career as a `.json` file, and **Import** loads one. Use this for backups or to move a career to another browser; clearing the browser's site data deletes the in-browser save.
 - Save files are versioned, and older saves are upgraded automatically.
 
 ## Tests
-With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 141 tests. They cover:
+With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 149 tests. They cover:
 - **World generation:** world, fixtures, cup draws.
 - **Lineup rules.**
 - **Live-match mechanics.**
@@ -194,6 +199,7 @@ With the server running, open http://localhost:8765/tests.html. The page title s
 - **Club and season decisions:** small grounds miss stands and corners need their neighbours; a new stand and the stadium fund; pitch costs, wear and match effects; ticket prices move price and demand; sponsor offers (short pays more, long has a bonus) are paid and saved; asking the board works once a season and a broken promise means the sack.
 - **Real teams:** a real-teams file renames clubs, replaces squads with its players in rating order, keeps the leagues' balance, adds players-only nations without national teams, reports unusable clubs, and a career with it plays a season and saves.
 - **History and records:** skill-change marks last two matches; a mid-season transfer splits a player's season into two rows; departed players stay in club records; biggest wins, record crowd, national team scorers and caps; the Ballon d'Or and Golden Shoe podiums; federations only approach a manager who is doing well or out of work; old saves are upgraded.
+- **v2.8:** quick sim (one match, a week, the end of the month, a whole season with the assistant picking the team, a started match day played first), the youth recruitment plan (position focus, scouting abroad, extra effort and its fee), the to-do list, and save slots with weekly backups (on test-only keys, so real careers are never touched).
 - **A full season.**
 - **A 20-season career run:** league sizes, squads, ages and league strength stay stable, the countries keep their character, club money stays healthy, the run takes about 25–45 s depending on the machine, and the save is about 9 MB (of which about 1.5 MB is history and records).
 
@@ -219,8 +225,9 @@ src/core/                     game logic: no DOM access, testable
   training.js     staff (coaches, physio, youth coach, assistant), training plans, daily fatigue/workload/development
   morale.js       personalities, morale and its reasons, transfer requests, promises
   board.js        board confidence, sackings, manager reputation, vacancies, job offers, changing clubs, AI managers
-  assistant.js    the assistant manager's pre-match advice
-  development.js  youth academy, retirements, AI squads
+  assistant.js    the assistant manager's pre-match advice and the hub's to-do list
+  quicksim.js     quick sim: playing ahead with instant results, and when to stop
+  development.js  youth academy and recruitment plan, retirements, AI squads
   seasonend.js    end of season: history, awards, prizes, promotion/relegation, contracts, new season
   transfers.js    windows, prices, offers, AI deals, contracts, market search
   finance.js      gate receipts, TV & sponsors, wages, running costs, prizes
@@ -239,6 +246,9 @@ src/core/                     game logic: no DOM access, testable
   valuation.js    player value and wages
   save.js         save format and migrations
 src/ui/                       screens and components (SVG jerseys, crests, flags, icons, pitch, match animation)
+  slots.js        save slots and weekly backups in IndexedDB (storage.js)
+  quicksim.js     the hub's Sim dialog, progress and summary
+  tips.js         first-season tips
 src/tests/                    tests run by tests.html
 names.json                    your own names (see above)
 desktop/launcher.py           the desktop app (local server + its own window); desktop/build_exe.bat builds app/TouchlineManager.exe

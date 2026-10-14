@@ -19,6 +19,7 @@ import { toShown, toEuros } from '../../core/currency.js';
 import { moraleOf, moraleLevel, personalityOf, PERSONALITY_LABEL } from '../../core/morale.js';
 import { moraleBadge, showPlayer } from '../components/playercard.js';
 import { talkTo, showAdvice } from '../components/talk.js';
+import { editClub } from '../components/clubeditor.js';
 
 const POS_ORDER = { G: 0, D: 1, M: 2, F: 3 };
 
@@ -191,6 +192,7 @@ export function render(root, ctx) {
       </div>
     </div>
     ${sel ? playerCard(sel, roles) : `<div class="panel stadium-card" style="left:984px;top:300px;width:280px;height:234px">
+      <button class="btn btn-small btn-blue" style="position:absolute;left:8px;top:8px;min-width:0" data-action="editclub" title="Club name, stadium, kit and crest">Edit club</button>
       <button class="btn btn-small" style="position:absolute;right:8px;top:8px;min-width:0" data-action="stadium">Stadium</button>
       ${stadiumArt(club, 280, 168)}
       <div class="info"><div class="fin-list"><span>Stadium</span><b>${esc(club.stadium.name)}</b>
@@ -378,6 +380,7 @@ export function render(root, ctx) {
     },
     soon: (el) => ctx.go('soon', { title: el.dataset.title, milestone: Number(el.dataset.m) }),
     youth: () => ctx.go('youth'),
+    editclub: async () => { if (await editClub(ctx, club)) { await ctx.save({ silent: true }); ctx.toast('Club updated'); ctx.render(); } },
     stadium: () => ctx.go('stadium'),
     training: () => ctx.go('training'),
     talk: async () => { await talkTo(ctx, st.sel); draw(); },

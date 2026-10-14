@@ -49,6 +49,10 @@ export async function get(key) {
 }
 export const remove = (key) => tx('readwrite', (s) => s.delete(key));
 
+// The stored value as it is (compressed or not), for copying saves to backups.
+export const getRaw = (key) => tx('readonly', (s) => s.get(key));
+export const putRaw = (key, value) => tx('readwrite', (s) => s.put(value, key));
+
 export function downloadText(filename, text) {
   const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
   const a = document.createElement('a');

@@ -612,3 +612,16 @@ html.phone .news-tabs button { font-size: 14px; padding: 3px 0; }
 .fame-ach { padding: 6px 8px; border-radius: 6px; background: rgba(3, 25, 70, 0.35); opacity: 0.55; }
 .fame-ach.on { opacity: 1; background: rgba(47, 134, 239, 0.35); box-shadow: inset 0 0 0 1px var(--gold); }
 html.phone .fame-achs { grid-template-columns: 1fr; }
+
+/* v2.8: assistant's to-do list, save slots, editor */
+.todo-list { display: flex; flex-direction: column; gap: 6px; max-height: 380px; overflow-y: auto; }
+.todo-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; background: rgba(255, 255, 255, .08); cursor: pointer; font-weight: 600; }
+.todo-item:hover { background: rgba(255, 255, 255, .16); }
+.todo-dot { width: 12px; height: 12px; border-radius: 50%; background: #3a7bd5; flex: none; }
+.todo-dot.warn { background: #e0a020; }
+.todo-dot.bad { background: #d23a3a; }
+.save-actions { display: flex; gap: 8px; margin: 12px 0 4px; }
+.save-actions .btn { flex: 1; }
+.edit-grid { display: grid; grid-template-columns: auto 1fr; gap: 8px 10px; align-items: center; }
+.edit-grid input[type=color] { width: 56px; height: 32px; padding: 0; border: 1px solid var(--seg-line); border-radius: 6px; background: none; }
+.edit-preview { display: flex; gap: 14px; align-items: center; justify-content: center; margin-bottom: 10px; }

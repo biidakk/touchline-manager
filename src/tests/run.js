@@ -29,6 +29,7 @@ import './coefficients.test.js';
 import './currency.test.js';
 import './youthleague.test.js';
 import './features27.test.js';
+import './features28.test.js';
 
 const out = document.getElementById('results');
 const summary = document.getElementById('summary');

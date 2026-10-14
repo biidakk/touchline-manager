@@ -1,6 +1,7 @@
 // App shell: stage scaling, screen router, save/load, toasts and dialogs.
 
 import * as storage from './storage.js';
+import * as slots from './slots.js';
 import { serialize, deserialize } from '../core/save.js';
 import { generateWorld, startCareer } from '../core/worldgen.js';
 import { startAcademy } from '../core/development.js';
@@ -32,12 +33,13 @@ import * as preseason from './screens/preseason.js';
 import * as rankings from './screens/rankings.js';
 import * as u19 from './screens/u19.js';
 import * as fame from './screens/fame.js';
+import * as saves from './screens/saves.js';
 import { esc, setMoneyGame } from './util.js';
 import { showPlayer } from './components/playercard.js';
+import { showTip } from './tips.js';
 
 const SCREENS = { title, newgame, hub, tables, soon, schedule, myteam, tactics, match, review, youth, career, cup, market,
-  finances, otherteams, search, stadium, national, training, natteam, deals, preseason, rankings, u19, fame };
-const SAVE_KEY = 'career';
+  finances, otherteams, search, stadium, national, training, natteam, deals, preseason, rankings, u19, fame, saves };
 const PACK_KEY = 'realpack';
 
 const stage = document.getElementById('stage');
@@ -91,6 +93,9 @@ const ctx = {
     if (this.cleanup) this.cleanup();
     setMoneyGame(this.game);
     this.cleanup = SCREENS[this.current.name].render(fresh, this, this.current.params) || null;
+    // First-season tips (the hub shows its own after its pop-ups).
+    const name = this.current.name;
+    if (this.game && name !== 'hub') setTimeout(() => { if (this.current?.name === name) showTip(this, name); }, 250);
   },
 
   toast(msg) {
@@ -214,26 +219,52 @@ const ctx = {
     });
   },
 
+  // The save slot of the career being played (see slots.js).
+  slot: null,
+
   async hasSave() {
-    try { return !!(await storage.get(SAVE_KEY)); } catch { return false; }
+    try {
+      const meta = await slots.listSlots();
+      return slots.SLOTS.some((n) => meta[n]);
+    } catch { return false; }
   },
 
-  async save({ silent = false } = {}) {
+  async save({ silent = false, backup = false } = {}) {
     // The ?dev=1 shortcut plays a throwaway career and must never overwrite the real save.
     if (this.dev) { if (!silent) this.toast('Dev mode: not saved'); return; }
     try {
-      await storage.put(SAVE_KEY, serialize(this.game));
-      if (!silent) this.toast('Game saved');
+      if (!this.slot) this.slot = slots.freeSlot(await slots.listSlots()) || 1;
+      await slots.writeSlot(this.slot, this.game, serialize(this.game), { force: backup });
+      if (!silent) this.toast(`Game saved (slot ${this.slot})`);
     } catch (e) {
       console.error(e);
       this.toast('Saving failed: ' + e.message);
     }
   },
 
-  async load() {
-    const text = await storage.get(SAVE_KEY);
+  // Loads slot n (default: the slot saved last).
+  async load(n) {
+    if (!n) {
+      const meta = await slots.listSlots();
+      n = meta.last && meta[meta.last] ? meta.last : slots.SLOTS.find((x) => meta[x]);
+    }
+    const text = n && await slots.readSlot(n);
     if (!text) throw new Error('No saved career found.');
-    this.game = deserialize(text);
+    this.open(deserialize(text), n);
+  },
+
+  // A backup of slot n: it becomes the slot's career, and the save it
+  // replaces is kept as the newest backup.
+  async loadBackup(n, i) {
+    const text = await slots.readBackup(n, i);
+    if (!text) throw new Error('That backup is missing.');
+    this.open(deserialize(text), n);
+    await this.save({ silent: true, backup: true });
+  },
+
+  open(game, n) {
+    this.game = game;
+    this.slot = n;
     startAcademy(this.game); // careers from before milestone 5 get their first academy intake
     this.applyNames();
     this.home('hub');
@@ -313,25 +344,47 @@ const ctx = {
     this.toast('Save file exported');
   },
 
+  // A save file into a slot: the first free one, or one the user picks to replace.
   async importSave() {
     const text = await storage.pickFile();
     if (!text) return;
     try {
-      this.game = deserialize(text);
-      startAcademy(this.game);
-      this.applyNames();
+      const game = deserialize(text);
+      const n = await this.pickSlot('Import into which slot? The career in it will be replaced (its last save is kept as a backup).');
+      if (!n) return;
+      this.open(game, n);
       await this.save({ silent: true });
-      this.home('hub');
-      this.toast('Career imported');
+      this.toast(`Career imported into slot ${n}`);
     } catch (e) {
       await this.confirm(`Import failed: ${e.message}`, { cancel: null });
     }
+  },
+
+  // A free slot, else the one the user chooses to replace (null: cancelled).
+  async pickSlot(question) {
+    const meta = await slots.listSlots();
+    const free = slots.freeSlot(meta);
+    if (free) return free;
+    const k = await this.choose(question, slots.SLOTS.map((n) => ({ key: String(n),
+      label: `Slot ${n}: ${meta[n].club}, ${meta[n].year}/${String(Number(meta[n].year) + 1).slice(2)}` })));
+    return k ? Number(k) : null;
+  },
+
+  async exportSlot(n) {
+    const text = await slots.readSlot(n);
+    if (!text) return;
+    const g = deserialize(text);
+    const club = g.clubs[g.userClubId];
+    const name = `touchline-${(club?.short || 'career').toLowerCase()}-${g.season.year}.json`.replace(/[^a-z0-9.-]/g, '');
+    storage.downloadText(name, text);
+    this.toast('Save file exported');
   },
 
   async quit() {
     if (await this.confirm('Return to the title screen? Unsaved progress since your last save will be lost.',
       { ok: 'Quit', cancel: 'Stay' })) {
       this.game = null;
+      this.slot = null;
       this.home('title');
     }
   },

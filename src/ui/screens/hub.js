@@ -19,6 +19,9 @@ import { newOffers } from '../../core/transfers.js';
 import { marketPopups } from '../offers.js';
 import { contractReminder } from '../contracts.js';
 import { takeAchievementQueue } from '../../core/achievements.js';
+import { runQuickSim } from '../quicksim.js';
+import { clubChecklist } from '../../core/assistant.js';
+import { showTip, tipsOn, setTips } from '../tips.js';
 
 // News filter tabs: each news kind belongs to one group; some kinds are marked as important.
 const NEWS_TABS = [['all', 'All'], ['match', 'Games'], ['transfer', 'Deals'], ['squad', 'Squad'], ['club', 'Club']];
@@ -120,6 +123,10 @@ export function render(root, ctx, params = {}) {
       <div class="comp-tile" data-action="comp" data-id="${c.id}" title="${esc(c.name)}">
         ${icon(c.type === 'league' ? 'table' : c.type === 'continental' ? 'star' : 'trophy', 'ico big')}<span>${esc(c.name)}</span></div>`).join('');
 
+    const prepare = g.season.phase !== 'over' && (decisionsDue(g).any || tourDue(g));
+    const simOk = g.season.phase !== 'over' && !prepare;
+    const todo = clubChecklist(g);
+
     root.innerHTML = `${clubTopbar(ctx)}
     <div class="panel" style="left:20px;top:92px;width:282px;height:394px">
       <ul class="menu-list">
@@ -138,7 +145,8 @@ export function render(root, ctx, params = {}) {
       <button class="btn btn-small btn-blue" style="margin-top:auto" data-action="menu" data-screen="schedule" data-title="Season Schedule" data-m="2">Full schedule</button></div>
 
     <div class="panel" style="left:660px;top:92px;width:332px;height:282px;display:flex;flex-direction:column">
-      <h2 style="margin:0 0 4px">News</h2>
+      <div class="panel-head" style="margin:0 0 4px"><h2>News</h2>
+        <button class="btn btn-small ${todo.some((t) => t.tone === 'bad') ? '' : 'btn-blue'}" data-action="todo" title="Your assistant's list of things that need attention">To do${todo.length ? ` (${todo.length})` : ''}</button></div>
       <div class="seg full news-tabs">${NEWS_TABS.map(([k, l]) => `<button class="${st.newsFilter === k ? 'on' : ''}" data-action="newsfilter" data-v="${k}">${l}</button>`).join('')}</div>
       <div class="scroll" style="flex:1;margin-top:6px">${news || '<div class="empty">No news here.</div>'}</div>
       <div class="row" style="justify-content:space-between;font-weight:800;margin-top:6px">
@@ -185,7 +193,8 @@ export function render(root, ctx, params = {}) {
       </table>
     </div>
 
-    <button class="btn" style="position:absolute;left:1030px;top:644px;width:210px;height:48px;font-size:18px" data-action="continue">${g.season.phase !== 'over' && (decisionsDue(g).any || tourDue(g)) ? 'Prepare season' : 'Continue'}</button>`;
+    ${simOk ? `<button class="btn btn-blue" style="position:absolute;left:1030px;top:644px;width:62px;min-width:0;padding:0;height:48px;font-size:16px" data-action="sim" title="Quick sim: play ahead with instant results">Sim</button>` : ''}
+    <button class="btn" style="position:absolute;left:${simOk ? 1100 : 1030}px;top:644px;width:${simOk ? 140 : 210}px;min-width:0;padding:0;height:48px;font-size:18px" data-action="continue">${prepare ? 'Prepare season' : 'Continue'}</button>`;
   }
 
   bindTopbar(root, ctx);
@@ -207,6 +216,35 @@ export function render(root, ctx, params = {}) {
     morenews: () => { st.newsLimit += 4; draw(); },
     tscope: (el) => { st.transferScope = el.dataset.v; st.transferPage = 0; draw(); },
     tpage: (el) => { st.transferPage = Number(el.dataset.p); draw(); },
+    todo: async () => {
+      const items = clubChecklist(ctx.game);
+      const tone = { bad: 'bad', warn: 'warn', info: '' };
+      const html = items.length ? `<div class="todo-list">${items.map((t, i) => `<div class="todo-item" data-k="${i}">
+          <span class="todo-dot ${tone[t.tone]}"></span><span style="flex:1">${esc(t.text)}</span><span class="muted">›</span></div>`).join('')}</div>`
+        : '<p class="good">Nothing needs your attention right now.</p>';
+      const k = await ctx.dialog(html, [
+        { key: 'tips', label: tipsOn(ctx.game) ? 'Turn tips off' : 'Show tips again', blue: true },
+        { key: 'close', label: 'Close' },
+      ], { title: 'To do' });
+      if (k === 'tips') {
+        const on = !tipsOn(ctx.game);
+        setTips(ctx.game, on);
+        ctx.toast(on ? 'Tips are on: each screen explains itself the next time you open it.' : 'Tips are off.');
+        return;
+      }
+      const t = items[Number(k)];
+      if (t) ctx.go(t.screen, t.params || {});
+    },
+    sim: async (el) => {
+      el.disabled = true;
+      const sim = await runQuickSim(ctx);
+      if (sim?.stop === 'sacked') {
+        await ctx.confirm(`${ctx.game.manager.sacked.clubName} have sacked you ${ctx.game.manager.sacked.why}. Choose your next club from the offers.`, { ok: 'Find a new job', cancel: null });
+        ctx.home('career');
+        return;
+      }
+      ctx.home('hub', { seasonOver: ctx.game.season.phase === 'over' });
+    },
     continue: async (el) => {
       const g = ctx.game;
       // Ticket prices (and a sponsor, when the old deal has run out) come first.
@@ -234,7 +272,7 @@ export function render(root, ctx, params = {}) {
       } else if (g.stopReason) {
         delete g.stopReason;
         draw();
-        await ctx.confirm('The winter transfer window is open until 31 January. Clubs can make offers for your players again.', { ok: 'OK', cancel: null });
+        await ctx.confirm('The winter transfer window is open until 7 February. Clubs can make offers for your players again.', { ok: 'OK', cancel: null });
       } else finishSeason();
     },
   });
@@ -263,7 +301,8 @@ export function render(root, ctx, params = {}) {
         .then((k) => { if (k === 'fame') ctx.go('fame'); });
       await ctx.save({ silent: true });
     }
-    if (await contractReminder(ctx)) { await ctx.save({ silent: true }); ctx.go('myteam'); }
+    if (await contractReminder(ctx)) { await ctx.save({ silent: true }); ctx.go('myteam'); return; }
+    await showTip(ctx, 'hub');
   })();
   if (params.seasonOver) ctx.toast('The season is over. Press Continue for the season review.');
 }

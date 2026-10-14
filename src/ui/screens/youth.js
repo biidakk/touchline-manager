@@ -1,7 +1,7 @@
 // Youth academy and B-team cooperation: promote or release academy players,
 // pick a partner club and send young players there for match practice.
 
-import { promoteYouth, releasePlayer, ACADEMY_MAX_AGE } from '../../core/development.js';
+import { promoteYouth, releasePlayer, ACADEMY_MAX_AGE, YOUTH_FOCUS, youthPlanOf, setYouthPlan, youthEffortCost } from '../../core/development.js';
 import { partnerCandidates, partnerOf, setPartner, loanToPartner, loanedOutBy } from '../../core/loans.js';
 import { openWindow } from '../../core/transfers.js';
 import { ageOf } from '../../core/valuation.js';
@@ -9,7 +9,7 @@ import { potText, potEstimate } from '../../core/scouting.js';
 import { formArrow } from '../components/pitch.js';
 import { crest, flag, jersey } from '../components/svg.js';
 import { clubTopbar, bindTopbar } from '../components/chrome.js';
-import { esc, bindActions, fullName } from '../util.js';
+import { esc, bindActions, fullName, fmtMoneyShort } from '../util.js';
 
 export function render(root, ctx) {
   const g = ctx.game;
@@ -36,14 +36,27 @@ export function render(root, ctx) {
           <button class="btn btn-small btn-blue" data-action="release" data-id="${p.id}">Release</button></td></tr>`;
     };
     const cands = partnerCandidates(g);
+    const plan = youthPlanOf(club);
 
     root.innerHTML = `${clubTopbar(ctx, { title: 'Youth academy' })}
-    <div class="panel" style="left:20px;top:92px;width:760px;height:540px;display:flex;flex-direction:column">
+    <div class="panel" style="left:20px;top:92px;width:760px;height:430px;display:flex;flex-direction:column">
       <div class="panel-head"><h2>Academy (${ps.length})</h2><span class="muted" style="font-size:12.5px">New players arrive every summer. Promote them by age ${ACADEMY_MAX_AGE}, or they leave.</span></div>
       <div class="scroll" style="flex:1"><table class="data">
         <thead><tr><th></th><th>Player</th><th class="c">Pos</th><th class="num">Age</th><th class="phone-hide">Nat</th><th class="num">Skill</th><th class="num">Pot</th><th class="c phone-hide">Form</th><th class="num">+Season</th><th></th></tr></thead>
         <tbody>${ps.map(row).join('') || '<tr><td colspan="10" class="empty">The academy is empty. New players arrive at the start of next season.</td></tr>'}</tbody>
       </table></div>
+    </div>
+    <div class="panel" style="left:20px;top:534px;width:760px;height:98px">
+      <div class="panel-head"><h2>Youth recruitment</h2><span class="muted" style="font-size:12.5px">For next summer's intake</span></div>
+      <div class="row" style="gap:8px">
+        <select class="field" data-plan="focus" style="flex:1;min-width:0;height:32px">${Object.entries(YOUTH_FOCUS).map(([k, l]) => `<option value="${k}" ${plan.focus === k ? 'selected' : ''}>${l}</option>`).join('')}</select>
+        <select class="field" data-plan="region" style="flex:1;min-width:0;height:32px" title="Abroad: half the youngsters from other countries, with more gems and more misses">
+          <option value="home" ${plan.region === 'home' ? 'selected' : ''}>Scout at home</option>
+          <option value="abroad" ${plan.region === 'abroad' ? 'selected' : ''}>Home and abroad</option></select>
+        <select class="field" data-plan="effort" style="flex:1;min-width:0;height:32px" title="Extra effort: one more youngster a year, slightly better on average">
+          <option value="normal" ${plan.effort === 'normal' ? 'selected' : ''}>Normal effort</option>
+          <option value="extra" ${plan.effort === 'extra' ? 'selected' : ''}>Extra effort (${fmtMoneyShort(youthEffortCost(g, club))}/yr)</option></select>
+      </div>
     </div>
     <div class="panel" style="left:796px;top:92px;width:464px;height:300px;display:flex;flex-direction:column">
       <h2>B-team partner</h2>
@@ -69,6 +82,12 @@ export function render(root, ctx) {
     <button class="btn" style="position:absolute;left:820px;top:648px;width:210px" data-action="u19">U-19 league</button>
     <button class="btn btn-blue" style="position:absolute;left:1050px;top:648px;width:210px" data-action="back">Back</button>`;
 
+    for (const sel of root.querySelectorAll('[data-plan]')) {
+      sel.addEventListener('change', () => {
+        setYouthPlan(club, { [sel.dataset.plan]: sel.value });
+        ctx.toast('Youth recruitment plan updated');
+      });
+    }
     root.querySelector('#partner').addEventListener('change', (e) => {
       setPartner(g, e.target.value || null);
       ctx.toast(e.target.value ? `B-team cooperation with ${g.clubs[e.target.value].name}` : 'No partner club');

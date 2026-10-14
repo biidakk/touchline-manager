@@ -12,6 +12,13 @@ import { acwr } from './training.js';
 import { moraleOf, moraleFactor } from './morale.js';
 import { lineupQuality } from './ratings.js';
 import { nextUserFixture } from './matchday.js';
+import { ROLES } from './training.js';
+import { confidence } from './board.js';
+import { scoutingOf, LEVELS } from './scouting.js';
+import { ACADEMY_MAX_AGE } from './development.js';
+import { decisionsDue } from './commercial.js';
+import { openWindow } from './transfers.js';
+import { dayOf } from './calendar.js';
 
 const BEATEN_BY = { crosses: 'passing', through: 'crosses', passing: 'through' };
 const avg = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
@@ -111,4 +118,68 @@ export function assistantAdvice(game) {
   }
   if (!items.length) add('good', 'Everything looks fine. The team is ready.');
   return { name: a.name, stars, items };
+}
+
+// The assistant's to-do list for the hub: things worth the manager's
+// attention today, each with the screen that deals with it. Unlike the
+// match advice it needs no assistant (the club secretary keeps the list), but
+// an assistant adds the squad's moods.
+// Items: { tone: 'bad' | 'warn' | 'info', text, screen, params? }
+export function clubChecklist(game) {
+  const club = game.clubs[game.userClubId];
+  if (!club) return [];
+  const items = [];
+  const add = (tone, text, screen, params) => items.push({ tone, text, screen, params });
+  const P = (id) => game.players[id];
+  const year = game.season.year;
+  const sq = club.squad.map(P).filter(Boolean);
+  const stars = club.staff?.assistant?.stars || 0;
+
+  if (game.season.phase !== 'over' && decisionsDue(game).any) add('bad', "Set this season's ticket prices and choose a sponsor.", 'deals');
+
+  const l = club.lineup;
+  const empty = l.slots.filter((id) => !id).length;
+  const out = l.slots.map(P).filter((p) => p && (p.injuryDays > 0 || p.suspension > 0));
+  if (empty || out.length) {
+    add('bad', `The starting XI has ${empty ? `${empty} empty place${empty > 1 ? 's' : ''}` : ''}${empty && out.length ? ' and ' : ''}${out.length ? `${list(out)} unavailable` : ''}.`, 'myteam');
+  }
+  const tired = l.slots.map(P).filter((p) => p && !out.includes(p) && (p.energy ?? 100) < 70);
+  if (tired.length) add('warn', `${list(tired)} ${tired.length > 1 ? 'are' : 'is'} tired (energy under 70%).`, 'myteam');
+
+  const offers = (game.offers || []).filter((o) => P(o.playerId)?.clubId === club.id);
+  if (offers.length) add('warn', `${offers.length} offer${offers.length > 1 ? 's' : ''} for your players ${offers.length > 1 ? 'are' : 'is'} waiting for an answer.`, 'market', { tab: 'selling' });
+
+  // Expiring contracts from New Year on (renewals are cheaper than replacements).
+  if (game.season.phase !== 'over' && game.day >= dayOf(year + 1, 1, 1)) {
+    const exp = sq.filter((p) => p.contractEnd <= year && !p.loan);
+    if (exp.length) add('warn', `Contract${exp.length > 1 ? 's' : ''} ending this summer: ${list(exp)}.`, 'myteam');
+  }
+
+  if (stars >= 1) {
+    const requests = sq.filter((p) => p.mood?.request);
+    if (requests.length) add('bad', `${list(requests)} ${requests.length > 1 ? 'want' : 'wants'} to leave.`, 'myteam');
+    const unhappy = sq.filter((p) => p.mood && !p.mood.request && moraleOf(p) < 40);
+    if (unhappy.length) add('warn', `${list(unhappy)} ${unhappy.length > 1 ? 'are' : 'is'} unhappy.`, 'myteam');
+  }
+
+  const count = (pos) => sq.filter((p) => p.pos === pos && !p.loan).length;
+  const need = { G: 2, D: 6, M: 6, F: 3 };
+  const short = Object.entries(need).filter(([pos, n]) => count(pos) < n).map(([pos]) => ({ G: 'goalkeepers', D: 'defenders', M: 'midfielders', F: 'forwards' })[pos]);
+  if (short.length) add('warn', `The squad is short of ${short.join(' and ')}.${openWindow(game) ? '' : ' Sign players when the window opens.'}`, 'market', { tab: 'search' });
+
+  if (club.budget < 0) add('bad', 'The club is in debt. Sell players or cut wages before the board steps in.', 'finances', { title: 'Finances', milestone: 6 });
+  const conf = confidence(game);
+  if (conf < 40) add('bad', `The board's confidence is low (${conf}). Results have to improve.`, 'career', { title: 'My Career', milestone: 5 });
+
+  const vacant = ROLES.filter((r) => !club.staff?.[r]);
+  if (vacant.length) add('info', `Staff vacancies: ${vacant.join(', ')} coach${vacant.length > 1 ? 'es' : ''}.`, 'training', { title: 'Training', milestone: 10 });
+
+  const sc = scoutingOf(game);
+  const free = (LEVELS[sc.level]?.slots || 1) - (sc.assignments || []).length;
+  if (free > 0) add('info', `${free} scout${free > 1 ? 's are' : ' is'} free. Send ${free > 1 ? 'them' : 'him'} to watch a player.`, 'market', { tab: 'scouting' });
+
+  const last = (club.youth || []).map(P).filter((p) => p && year - p.birthYear >= ACADEMY_MAX_AGE);
+  if (last.length) add('warn', `${list(last)} must be promoted from the academy this season or ${last.length > 1 ? 'they leave' : 'he leaves'}.`, 'youth');
+
+  return items;
 }

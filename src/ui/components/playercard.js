@@ -138,7 +138,7 @@ export async function showPlayer(ctx, playerId) {
   const forSale = !own && p.clubId && g.clubs[p.clubId].squad.includes(p.id) && !p.loan;
   g.shortlist = g.shortlist || [];
   const listed = g.shortlist.includes(p.id);
-  const rename = '<button class="btn btn-small btn-blue" data-pa="rename" title="Rename this player (your copy only)">Rename</button>';
+  const rename = '<button class="btn btn-small btn-blue" data-pa="rename" title="Name and shirt number (your copy only)">Edit</button>';
   const extra = forSale
     ? `<div class="row" style="margin-top:14px;gap:10px"><button class="btn btn-small" data-pa="offer">Make offer</button>
         <button class="btn btn-small btn-blue" data-pa="short">${listed ? 'Remove from shortlist' : 'Add to shortlist'}</button>
@@ -168,11 +168,26 @@ export async function showPlayer(ctx, playerId) {
   });
   await done;
   if (action === 'rename') {
-    const name = await ctx.prompt('Player name (first name and surname):', `${p.first} ${p.last}`, { ok: 'Rename' });
-    if (name && setPlayerName(p, name)) {
-      ctx.toast(`Renamed to ${p.first} ${p.last}`);
-      ctx.render();
+    const club = g.clubs[p.clubId];
+    const html = `<div class="edit-grid">
+      <label class="lbl">Name</label><input class="field" name="name" value="${esc(`${p.first} ${p.last}`.trim())}" maxlength="40">
+      ${club ? `<label class="lbl">Shirt number</label><input class="field" name="number" type="number" min="1" max="99" value="${p.number || ''}">` : ''}</div>`;
+    const { key, values } = await ctx.form(html, [{ key: 'cancel', label: 'Cancel', blue: true }, { key: 'save', label: 'Save' }], { title: 'Edit player' });
+    if (key !== 'save') return;
+    const notes = [];
+    if (values.name && values.name.trim() !== `${p.first} ${p.last}`.trim() && setPlayerName(p, values.name)) notes.push(`renamed to ${p.first} ${p.last}`);
+    const num = Number(values.number);
+    if (club && values.number !== undefined && num !== p.number) {
+      const taken = club.squad.map((id) => g.players[id]).find((q) => q.id !== p.id && q.number === num);
+      if (!(num >= 1 && num <= 99)) ctx.toast('Shirt numbers go from 1 to 99');
+      else if (taken) {
+        // The two players swap numbers.
+        taken.number = p.number;
+        p.number = num;
+        notes.push(`#${num} (${taken.last} takes #${taken.number})`);
+      } else { p.number = num; notes.push(`#${num}`); }
     }
+    if (notes.length) { ctx.toast(`${p.last}: ${notes.join(', ')}`); ctx.render(); }
     return;
   }
   if (action === 'offer') {
