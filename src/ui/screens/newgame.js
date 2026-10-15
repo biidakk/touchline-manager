@@ -18,7 +18,7 @@ function stars(rep) {
 }
 
 export function render(root, ctx, params = {}) {
-  const st = { manager: 'Manager', seed: randomSeed(), world: null, nationId: 'ENG', tier: 1, clubId: null, real: !!ctx.realPack, realInfo: null };
+  const st = { manager: 'Manager', seed: randomSeed(), world: null, nationId: 'ENG', tier: 1, clubId: null, real: !!ctx.realPack, realInfo: null, tips: true };
 
   function generate() {
     st.world = generateWorld({ seed: st.seed, managerName: st.manager });
@@ -40,6 +40,7 @@ export function render(root, ctx, params = {}) {
 
     root.innerHTML = `
     <div class="topbar"><div class="title">New career</div><div class="spacer"></div>
+      <label class="row ng-tips" title="The assistant explains each screen the first time you open it"><input type="checkbox" id="tips" ${st.tips ? 'checked' : ''}> Tips for new players</label>
       <button class="top-action" data-action="back">Back</button></div>
 
     <div class="panel" style="left:24px;top:92px;width:290px;height:604px">
@@ -95,6 +96,7 @@ export function render(root, ctx, params = {}) {
     <button class="btn" style="position:absolute;left:946px;top:640px;width:310px;height:56px;font-size:20px" data-action="start">Start career</button>`;
 
     root.querySelector('#mgr').addEventListener('input', (e) => { st.manager = e.target.value; });
+    root.querySelector('#tips').addEventListener('change', (e) => { st.tips = e.target.checked; });
     root.querySelector('#real')?.addEventListener('change', (e) => { st.real = e.target.checked; regenerate(); });
   }
 
@@ -146,7 +148,7 @@ export function render(root, ctx, params = {}) {
       const name = st.manager.trim() || 'Manager';
       ctx.game = startCareer(st.world, st.clubId, name);
       ctx.slot = params.slot || null;
-      ctx.game.tips = { off: false, seen: {} };
+      ctx.game.tips = { off: !st.tips, seen: {} };
       startAcademy(ctx.game);
       await ctx.save({ silent: true });
       ctx.home('hub');

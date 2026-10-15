@@ -60,7 +60,7 @@ The published game uses near-real club names and generated players. For your own
    - **CONTINUE** plays the calendar up to your next match. It also stops when the winter transfer window opens (27 December, until 7 February) or a window closes (both announced in a pop-up), when a club makes an offer for one of your players (at most once a week, see Selling), and at the end of the season. At the start of a season (and after taking over a club) it reads **PREPARE SEASON** first: see Season preparations below.
    - **SIM** (next to Continue) plays further ahead with instant results: the next match only, one week, to the end of the month, to the transfer window (until it opens, or closes when it is open) or to the end of the season. You keep your lineup (injured and suspended players are replaced), or let the assistant pick the best fresh XI before every match. The run stops early for an offer for one of your players, a window closing, the winter window opening, a sacking or the end of the season, and **Stop** halts it at any time. A summary lists the results and your league position.
    - **To do** (above the news) is your assistant's list of things that need attention, each one a link to the screen that deals with it: ticket prices and sponsor, empty places or unavailable players in the XI, tired starters, offers waiting for an answer, contracts that run out (from 1 January), players who want to leave or are unhappy (with an assistant), a squad short of keepers, defenders, midfielders or forwards, debt, low board confidence, staff vacancies, free scouts and academy players in their last year.
-   - **Tips:** in a new career each screen explains itself the first time you open it (**No more tips** turns them off; **To do → Show tips again** brings them back). Careers from before v2.8 start with tips off.
+   - **Tips:** in a new career each screen explains itself the first time you open it, including the stadium and the player card (attributes, mental stats, focus). **No more tips** turns them off, **To do → Show tips again** brings them back, and the **?** in the top bar (and on the player card) shows a screen's tip at any time. Experienced players can untick **Tips for new players** when starting a career. Careers from before v2.8 start with tips off.
 3. **My Team:**
    - **Picking the team:** drag players between the squad list and the pitch, or click two players to swap them. Choose a formation (4-4-2, 4-3-3, 4-5-1, 3-5-2, 5-3-2) or use **Auto pick**.
    - **Out of position:** a player outside his natural position plays at 70 % of his skill, and at 25 % in or out of goal.
@@ -193,7 +193,7 @@ The published game uses near-real club names and generated players. For your own
 - Save files are versioned, and older saves are upgraded automatically.
 
 ## Tests
-With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 165 tests. They cover:
+With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 167 tests. They cover:
 - **World generation:** world, fixtures, cup draws.
 - **Lineup rules.**
 - **Live-match mechanics.**

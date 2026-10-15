@@ -8,6 +8,7 @@ import { ageOf } from '../../core/valuation.js';
 import { crest, flag } from './svg.js';
 import { formArrow, skillMark } from './pitch.js';
 import { esc, fmtMoney, fullName } from '../util.js';
+import { showTip } from '../tips.js';
 import { clubLink, playerLink } from './links.js';
 import { setPlayerName } from '../../core/renames.js';
 import { ATTRS, ATTR_LABEL, ATTR_WEIGHT, attrOf, groupOf, MENTAL, MENTAL_LABEL, MENTAL_KEY, mentalOf } from '../../core/attributes.js';
@@ -207,12 +208,14 @@ export async function showPlayer(ctx, playerId) {
   const forSale = !own && p.clubId && g.clubs[p.clubId].squad.includes(p.id) && !p.loan;
   g.shortlist = g.shortlist || [];
   const listed = g.shortlist.includes(p.id);
-  const rename = '<button class="btn btn-small btn-blue" data-pa="rename" title="Name and shirt number (your copy only)">Edit</button>';
+  const rename = '<button class="btn btn-small btn-blue" data-pa="rename" title="Name and shirt number (your copy only)">Edit</button>'
+    + '<button class="btn btn-small btn-blue pc-help" data-pa="help" title="What the numbers mean">?</button>';
   const extra = forSale
     ? `<div class="row" style="margin-top:14px;gap:10px"><button class="btn btn-small" data-pa="offer">Make offer</button>
         <button class="btn btn-small btn-blue" data-pa="short">${listed ? 'Remove from shortlist' : 'Add to shortlist'}</button>
         <button class="btn btn-small btn-blue" data-pa="scout">Scout</button>${rename}</div>`
     : `<div class="row" style="margin-top:14px;gap:10px">${rename}</div>`;
+  await showTip(ctx, 'player');
   let action = null;
   const html = `<div data-player-modal>${playerDetailHtml(g, p)}${extra}</div>`;
   const done = ctx.modal(html, { title: own ? 'Your player' : 'Player' });
@@ -236,6 +239,11 @@ export async function showPlayer(ctx, playerId) {
     node.closest('.modal-bg').querySelector('[data-close]').click();
   });
   await done;
+  if (action === 'help') {
+    await showTip(ctx, 'player', { force: true });
+    showPlayer(ctx, playerId);
+    return;
+  }
   if (action === 'course') {
     const club = g.clubs[p.clubId];
     if (await ctx.confirm(`Send ${p.first} ${p.last} on a leadership course for ${fmtMoney(courseCost(g, club))}? His leadership rises by 3 (once a season).`, { ok: 'Send him' })) {
