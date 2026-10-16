@@ -1,10 +1,10 @@
 // Main hub, modelled on the reference layout.
 
 import { upcomingForClub, sortedTable, leagueProgress, clubFixtures } from '../../core/season.js';
-import { advanceToUserMatch, pendingUserFixture } from '../../core/matchday.js';
+import { advanceToUserMatch, pendingUserFixture, nextUserFixture } from '../../core/matchday.js';
 import { endSeason } from '../../core/seasonend.js';
 import { confidence, confidenceLevel } from '../../core/board.js';
-import { teamOf } from '../../core/national.js';
+import { teamOf, runningTournament, TOURN_IDS, LEVELS } from '../../core/national.js';
 import { decisionsDue } from '../../core/commercial.js';
 import { tourDue } from '../../core/preseason.js';
 import { continentalOf } from '../../core/continental.js';
@@ -123,7 +123,11 @@ export function render(root, ctx, params = {}) {
       <div class="comp-tile" data-action="comp" data-id="${c.id}" title="${esc(c.name)}">
         ${icon(c.type === 'league' ? 'table' : c.type === 'continental' ? 'star' : 'trophy', 'ico big')}<span>${esc(c.name)}</span></div>`).join('');
 
-    const prepare = g.season.phase !== 'over' && (decisionsDue(g).any || tourDue(g));
+    // This summer's international finals, once drawn: a tile of their own (in
+    // place of All leagues), and Continue follows them after the club season.
+    const finals = LEVELS.map((l) => g.competitions[TOURN_IDS[l]]).find((t) => t.year === g.season.year + 1 && t.groups.length);
+    const toFinals = !!runningTournament(g) && !nextUserFixture(g) && !pendingUserFixture(g);
+    const prepare = g.season.phase !== 'over' && !toFinals && (decisionsDue(g).any || tourDue(g));
     const simOk = g.season.phase !== 'over' && !prepare;
     const todo = clubChecklist(g);
 
@@ -138,7 +142,8 @@ export function render(root, ctx, params = {}) {
     </div>
     <div class="panel comp-tiles" style="left:20px;top:500px;width:282px;height:200px;grid-template-columns:repeat(3,1fr)">
       ${compTiles}
-      <div class="comp-tile" data-action="comp" data-id="" title="All leagues">${icon('flag', 'ico big')}<span>All leagues</span></div>
+      ${finals ? `<div class="comp-tile" data-action="comp" data-id="${finals.id}" title="${esc(finals.name)}">${icon('trophy', 'ico big')}<span>${esc(finals.name)}</span></div>`
+        : `<div class="comp-tile" data-action="comp" data-id="" title="All leagues">${icon('flag', 'ico big')}<span>All leagues</span></div>`}
     </div>
 
     <div class="panel hub-fixtures" style="left:320px;top:92px;width:322px;height:608px;display:flex;flex-direction:column">${lastHtml}${upcoming || '<div class="empty">No fixtures left this season.</div>'}
@@ -194,7 +199,7 @@ export function render(root, ctx, params = {}) {
     </div>
 
     ${simOk ? `<button class="btn btn-blue" style="position:absolute;left:1030px;top:644px;width:62px;min-width:0;padding:0;height:48px;font-size:16px" data-action="sim" title="Quick sim: play ahead with instant results">Sim</button>` : ''}
-    <button class="btn" style="position:absolute;left:${simOk ? 1100 : 1030}px;top:644px;width:${simOk ? 140 : 210}px;min-width:0;padding:0;height:48px;font-size:18px" data-action="continue">${prepare ? 'Prepare season' : 'Continue'}</button>`;
+    <button class="btn" style="position:absolute;left:${simOk ? 1100 : 1030}px;top:644px;width:${simOk ? 140 : 210}px;min-width:0;padding:0;height:48px;font-size:18px" data-action="continue">${prepare ? 'Prepare season' : toFinals ? esc(runningTournament(g).name) : 'Continue'}</button>`;
   }
 
   bindTopbar(root, ctx);
@@ -204,6 +209,7 @@ export function render(root, ctx, params = {}) {
     comp: (el) => {
       const c = ctx.game.competitions[el.dataset.id];
       if (!c || c.type === 'league') ctx.go('tables', { compId: el.dataset.id || null });
+      else if (c.type === 'national') ctx.go('euro', { compId: c.id });
       else ctx.go('cup', { compId: c.id });
     },
     dismiss: (el) => {
@@ -247,6 +253,9 @@ export function render(root, ctx, params = {}) {
     },
     continue: async (el) => {
       const g = ctx.game;
+      // The club season is done but the international finals are on: follow them.
+      const finals = g.season.phase !== 'over' && runningTournament(g);
+      if (finals && !nextUserFixture(g) && !pendingUserFixture(g)) { ctx.go('euro', { compId: finals.id }); return; }
       // Ticket prices (and a sponsor, when the old deal has run out) come first.
       if (g.season.phase !== 'over' && decisionsDue(g).any) { ctx.go('deals'); return; }
       if (g.season.phase !== 'over' && tourDue(g)) { ctx.go('preseason'); return; }

@@ -23,7 +23,7 @@ export const ACHIEVEMENTS = [
   { id: 'survival', title: 'Great escape', text: 'Stay up with a club whose board only asked you to avoid relegation.' },
   { id: 'graduate', title: 'Made in the academy', text: 'An academy graduate plays 20 or more league games in a season.' },
   { id: 'u19', title: 'Youth champions', text: 'Win the U-19 league.' },
-  { id: 'national', title: 'National hero', text: 'Win the Nations Championship as a national team coach.' },
+  { id: 'national', title: 'National hero', text: 'Win the Euro or the Nations League as a national team coach.' },
   { id: 'wins100', title: 'Century of wins', text: 'Win 100 league matches in your career.' },
   { id: 'seasons10', title: 'Long service', text: 'Manage for ten seasons.' },
   { id: 'countries3', title: 'Globetrotter', text: 'Manage clubs in three different countries.' },

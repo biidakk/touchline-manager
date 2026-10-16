@@ -55,7 +55,7 @@ export function render(root, ctx) {
   <div class="mbuttons">
     <button class="btn btn-blue btn-small" data-action="lineups">Lineups</button>
     <button class="btn btn-blue btn-small" data-action="pause" id="pause">Pause</button>
-    <button class="btn btn-small" data-action="tactics" title="Substitutions, positions, intent and style">Tactics &amp; subs</button>
+    ${M.spectator ? '' : '<button class="btn btn-small" data-action="tactics" title="Substitutions, positions, intent and style">Tactics &amp; subs</button>'}
     <div class="seg" id="speed">${[1, 2, 4].map((s) => `<button data-action="speed" data-v="${s}">${s}×</button>`).join('')}</div>
     <button class="btn btn-blue btn-small" data-action="instant">Instant result</button>
   </div>`;
@@ -226,7 +226,7 @@ export function render(root, ctx) {
     instant: () => {
       clearTimeout(timer);
       M.paused = true;
-      m.sides[M.userSide].ai = true; // the assistant takes over for the rest of the match
+      if (M.userSide != null) m.sides[M.userSide].ai = true; // the assistant takes over for the rest of the match
       runToEnd(g, m);
       finishMatch(ctx, f, m);
     },

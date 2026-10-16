@@ -124,6 +124,13 @@ const MIGRATIONS = {
     if (game.nations.ENG) addLeagueCountries(game);
     game.version = 16;
   },
+  // v17: national teams for all the European league countries, the Nations
+  // League, the Euro and U21 Euro (qualifiers and finals). This season's
+  // internationals finish as they are; the new format starts next season.
+  16: (game) => {
+    if (game.national) createNational(game);
+    game.version = 17;
+  },
 };
 
 // Fractions are kept to three decimals (energy, fatigue, training progress,

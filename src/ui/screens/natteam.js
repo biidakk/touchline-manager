@@ -3,7 +3,7 @@
 // matches (pre-match tactics, live view or instant result).
 
 import { FORMATION_NAMES, PLAY_STYLES, PLAY_STYLE_LABELS } from '../../core/data.js';
-import { nationalCandidates, suggestSquad, refreshUserSquad, nationalTable, NAT_IDS } from '../../core/national.js';
+import { nationalCandidates, suggestSquad, refreshUserSquad, nationalTable, groupOf, NAT_IDS, TOURN_IDS } from '../../core/national.js';
 import { managedTeam, resignNational } from '../../core/nationaljob.js';
 import { autoLineup, isAvailable } from '../../core/ai.js';
 import { ageOf } from '../../core/valuation.js';
@@ -35,8 +35,10 @@ export function render(root, ctx) {
     const list = all.filter((p) => st.pos === 'all' || p.pos === st.pos);
     const count = (pos) => team.picks.filter((id) => g.players[id]?.pos === pos).length;
     const comp = g.competitions[NAT_IDS[team.level]];
-    const pos = comp.table[team.id]?.p ? nationalTable(g, comp).findIndex((r) => r.clubId === team.id) + 1 : 0;
-    const next = comp.fixtureIds.map((id) => g.fixtures[id]).filter((f) => !f.result && (f.homeId === team.id || f.awayId === team.id))
+    const group = groupOf(comp, team.id);
+    const pos = comp.table[team.id]?.p ? nationalTable(g, comp, group?.ids).findIndex((r) => r.clubId === team.id) + 1 : 0;
+    const fin = g.competitions[TOURN_IDS[team.level]];
+    const next = [...comp.fixtureIds, ...fin.fixtureIds].map((id) => g.fixtures[id]).filter((f) => f && !f.result && (f.homeId === team.id || f.awayId === team.id))
       .sort((a, b) => a.day - b.day)[0];
     const opp = next ? g.national.teams[next.homeId === team.id ? next.awayId : next.homeId] : null;
     const caps = (p) => (p.intl ? (team.level === 'senior' ? p.intl.caps : p.intl.u21Caps) : 0);
@@ -63,7 +65,7 @@ export function render(root, ctx) {
     </div>
     <div class="panel" style="left:816px;top:92px;width:444px;height:540px;display:flex;flex-direction:column;gap:10px">
       <div class="row" style="gap:12px">${flag(nation.flag, 44)}<div><div style="font-size:20px;font-weight:900">${esc(team.name)}</div>
-        <div class="muted">${esc(comp.name)}${pos ? ` · ${pos}. place` : ''}</div></div></div>
+        <div class="muted">${esc(comp.name)}${pos ? ` · ${pos}. place${group ? ` in ${esc(group.name)}` : ''}` : ''}</div></div></div>
       <div class="fin-list">
         <span>Head coach since</span><b>${n.from}/${String(n.from + 1).slice(2)}</b>
         <span>Matches</span><b>${n.p} (W ${n.w} · D ${n.d} · L ${n.l})</b>
@@ -75,7 +77,7 @@ export function render(root, ctx) {
       <div class="seg full">${Array.from({ length: 11 }, (_, k) => k * 10).map((v) => `<button class="${team.tactics.intent === v ? 'on' : ''}" data-action="intent" data-v="${v}">${v}</button>`).join('')}</div>
       <h2 style="margin:6px 0 0;font-size:15px">Play style</h2>
       <div class="seg full">${PLAY_STYLES.map((s) => `<button class="${team.tactics.style === s ? 'on' : ''}" data-action="style" data-v="${s}">${PLAY_STYLE_LABELS[s]}</button>`).join('')}</div>
-      <p class="hint" style="margin-top:auto">The starting XI is picked from the squad for your formation; you can still swap players on the pre-match screen. Finish last in the ${esc(comp.name)} and the federation lets you go; win it and your reputation grows.</p>
+      <p class="hint" style="margin-top:auto">The starting XI is picked from the squad for your formation; you can still swap players on the pre-match screen. Finish last in your group and the federation lets you go; win a title (the Euro, the Nations League) and your reputation grows.</p>
       <button class="btn btn-small btn-blue" style="align-self:flex-start" data-action="resign">Step down</button>
     </div>
     <button class="btn btn-blue" style="position:absolute;left:1050px;top:648px;width:210px" data-action="back">Back</button>`;

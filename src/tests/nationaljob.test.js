@@ -66,7 +66,7 @@ test('the national team manager picks the squad, sets the tactics and plays the 
   simulateRestOfSeason(g);
   const s = endSeason(g);
   assert(s.nationalJob, 'no national verdict');
-  info(`Nations Championship: ${s.nationalJob.teamName} ${s.nationalJob.pos}. (${s.nationalJob.verdict}); record ${JSON.stringify(g.manager.national || g.manager.natHistory.at(-1))}`);
+  info(`National verdict: ${s.nationalJob.teamName} ${s.nationalJob.pos}. (${s.nationalJob.verdict}); record ${JSON.stringify(g.manager.national || g.manager.natHistory.at(-1))}`);
   if (s.nationalJob.verdict === 'sacked') assert(!g.manager.national && g.manager.natHistory.length === 1, 'dismissal not recorded');
   else assertEq(g.manager.national.teamId, teamId);
   const back = deserialize(serialize(g));

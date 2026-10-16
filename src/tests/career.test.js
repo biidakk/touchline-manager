@@ -110,7 +110,11 @@ test('career history, trophies and records are kept', () => {
   assertEq(g.manager.history.length, SEASONS, 'manager seasons');
   const user = g.clubs[g.userClubId];
   assertEq(user.history.length, SEASONS, 'club history');
-  for (const c of Object.values(g.competitions).filter((x) => x.type !== 'guest' && x.type !== 'friendly')) assertEq(c.history.length, SEASONS, `${c.name} history`);
+  for (const c of Object.values(g.competitions).filter((x) => x.type !== 'guest' && x.type !== 'friendly' && !x.tournament)) assertEq(c.history.length, SEASONS, `${c.name} history`);
+  // The finals: the Euro every four years, the U21 Euro every two.
+  assertEq(g.competitions.EURO.history.length, 5, 'Euros in 20 seasons');
+  assertEq(g.competitions.EURO21.history.length, 10, 'U21 Euros in 20 seasons');
+  info(`Euro winners: ${g.competitions.EURO.history.map((h) => `${h.year} ${g.national.teams[h.championId].name}`).join(', ')}`);
   const won = g.manager.history.reduce((a, h) => a + h.trophies.length, 0);
   assertEq(g.history.trophies.length, won, 'trophies list');
   info(`User club: ${user.name}; trophies ${won}; finishes: ${g.manager.history.map((h) => `${h.tier}.${h.pos}`).join(' ')}`);

@@ -13,7 +13,10 @@ export function roundLabel(game, f) {
     if (f.phase === 'league') return `League phase · Matchday ${f.round}`;
     return f.group !== undefined ? `Group ${c.groups[f.group].name} · Matchday ${f.round}` : c.rounds[f.cupRound].name + leg;
   }
-  if (c.type === 'national') return `Matchday ${f.round}`;
+  if (c.type === 'national') {
+    if (f.stage) return f.stage;
+    return f.group !== undefined && c.groups?.[f.group] ? `${c.groups[f.group].name} · Matchday ${f.round}` : `Matchday ${f.round}`;
+  }
   if (c.type === 'friendly') return `${f.winter ? 'Winter break' : 'Pre-season'} ${f.round}/3`;
   return c.type === 'cup' ? c.rounds[f.cupRound].name + leg : `Round ${f.round}`;
 }

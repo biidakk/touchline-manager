@@ -292,6 +292,20 @@ function gainAttr(p, attr, amount) {
 }
 
 // One day for every player at every club. Call before the day's matches.
+// A day of the summer break (while the international finals are on): no
+// training and no development, just rest and treatment for everyone.
+export function summerDay(game) {
+  for (const club of Object.values(game.clubs)) {
+    for (const id of [...club.squad, ...(club.youth || [])]) {
+      const p = game.players[id];
+      if (!p) continue;
+      if (p.injuryDays > 0) p.injuryDays--;
+      p.fatigue = (p.fatigue || 0) * 0.75;
+      p.energy = Math.min(100 - p.fatigue, (p.energy ?? 100) + 12);
+    }
+  }
+}
+
 export function trainingDay(game) {
   const rng = new Rng(game.rng);
   const year = game.season.year;

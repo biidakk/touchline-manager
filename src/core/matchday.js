@@ -5,7 +5,7 @@ import { createMatch, runToEnd, winnerSide } from './engine.js';
 import { autoLineup } from './ai.js';
 import { repairLineup, updateTeamwork } from './lineup.js';
 import { drawCupRound, decidesTie, DAY_MS } from './calendar.js';
-import { trainingDay, matchLoad } from './training.js';
+import { trainingDay, summerDay, matchLoad } from './training.js';
 import { moraleDay, moraleAfterMatch } from './morale.js';
 import { boardDay, boardAfterMatch, aiBoardAfterMatch } from './board.js';
 import { receiveGate, payPrize, cupRoundPrize, monthlyFinances } from './finance.js';
@@ -15,7 +15,7 @@ import { checkContinental, applyContinentalResult } from './continental.js';
 import { progressConstruction } from './stadium.js';
 import { progressFacilities } from './facilities.js';
 import { progressScouting } from './scouting.js';
-import { isNational, playNationalFixture, prepareNational, applyNationalResult } from './national.js';
+import { isNational, playNationalFixture, prepareNational, applyNationalResult, nationalMatchOpts, checkNational } from './national.js';
 import { nationalAfterMatch, nationalDay } from './nationaljob.js';
 import { addNews, sortedTable } from './season.js';
 import { Rng } from './rng.js';
@@ -54,7 +54,7 @@ export function createFixtureMatch(game, f, opts = {}) {
   const comp = game.competitions[f.compId];
   if (comp.type === 'national') {
     const [home, away] = prepareNational(game, f);
-    return createMatch(game, f, { homeClub: home, awayClub: away, keepEvents: isUserFixture(game, f), ...opts });
+    return createMatch(game, f, { homeClub: home, awayClub: away, keepEvents: isUserFixture(game, f) || f.id === game.watchId, ...nationalMatchOpts(f), ...opts });
   }
   for (const id of [f.homeId, f.awayId]) prepareLineup(game, game.clubs[id]);
   // Second legs carry the first-leg score (this home side was away then).
@@ -222,6 +222,12 @@ function checkCup(game, comp) {
 }
 
 export function dailyUpdate(game) {
+  // June and July (the international finals): holidays for the clubs.
+  if (game.day > game.season.end) {
+    summerDay(game);
+    nationalDay(game);
+    return;
+  }
   // Training, fatigue, recovery, injuries healing and development for every player.
   trainingDay(game);
   moraleDay(game);
@@ -256,11 +262,13 @@ const fixturesOn = (game, day) => Object.values(game.fixtures).filter((f) => f.d
 // Moves to the next day and plays every fixture on it except the user's,
 // which is returned (unplayed) so the UI can show it.
 export function startDay(game) {
+  settleWatched(game);
   game.day++;
   dailyUpdate(game);
   let userFixture = null;
   for (const f of fixturesOn(game, game.day)) {
-    if (isUserFixture(game, f)) { userFixture = f; continue; }
+    // The user's match (or one he chose to watch) waits for the UI.
+    if (isUserFixture(game, f) || f.id === game.watchId) { userFixture = f; continue; }
     if (isNational(game, f)) { playNationalFixture(game, f); continue; }
     const m = runToEnd(game, createFixtureMatch(game, f));
     applyResult(game, f, m);
@@ -273,6 +281,7 @@ export function startDay(game) {
 export function endDay(game) {
   for (const comp of Object.values(game.competitions)) if (comp.type === 'cup') checkCup(game, comp);
   checkContinental(game, new Rng(game.rng));
+  checkNational(game);
   afterDay(game);
   if (seasonComplete(game) && game.season.phase === 'season') {
     game.season.phase = 'over';
@@ -294,7 +303,7 @@ export function nextUserFixture(game) {
 
 export function seasonComplete(game) {
   return Object.values(game.fixtures).every((f) => f.result)
-    && Object.values(game.competitions).every((c) => c.type === 'league' || c.type === 'national' || c.type === 'friendly' || c.type === 'guest' || c.winnerId
+    && Object.values(game.competitions).every((c) => c.type === 'league' || (c.type === 'national' && !c.active) || c.type === 'friendly' || c.type === 'guest' || c.winnerId
       || (c.type === 'cup' && !c.rounds.length) // a cup added in mid-season starts next season
       || (c.type === 'continental' && !c.clubIds.length));
 }
@@ -339,6 +348,34 @@ export function advanceToUserMatch(game, { stopForOffers = false } = {}) {
     }
   }
   throw new Error('advanceToUserMatch: calendar did not progress');
+}
+
+// International finals: plays on to the end of the competition's next match
+// day (or, with watchId, up to that match, which is returned unplayed for the
+// live view). The user's own match comes back first if it is sooner.
+export function advanceIntl(game, compId, { watchId = null } = {}) {
+  settleWatched(game);
+  const pending = pendingUserFixture(game);
+  if (pending) return pending;
+  const days = game.competitions[compId].fixtureIds.map((id) => game.fixtures[id]).filter((f) => f && !f.result).map((f) => f.day);
+  const target = watchId ? game.fixtures[watchId].day : Math.min(...days);
+  if (!days.length || !(target > game.day)) return null;
+  game.watchId = watchId;
+  for (let guard = 0; guard < 400 && game.day < target; guard++) {
+    const f = startDay(game);
+    if (f) return f;
+  }
+  game.watchId = null;
+  return null;
+}
+
+// A match the user left while watching it (the app was closed): played out
+// instantly, so the day can finish.
+function settleWatched(game) {
+  const f = game.watchId && game.fixtures[game.watchId];
+  if (!f || f.day > game.day) return;
+  game.watchId = null;
+  if (!f.result) finishUserMatch(game, f, runToEnd(game, createFixtureMatch(game, f)));
 }
 
 // The user's fixture today that hasn't been played yet (after startDay).

@@ -37,6 +37,11 @@ const TIPS = {
   tables: ['League tables', '<p>Tables, results and top scorers for every league. Tap a club to look at it.</p>'],
   schedule: ['Schedule', '<p>All our matches this season, in every competition, with the results so far.</p>'],
   cup: ['Cups', '<p>The national cup is a straight knockout. The continental cups start with a league phase, then knockout rounds over two legs.</p>'],
+  national: ['National teams', `<p>25 European countries play internationals on Thursdays in five breaks a season. Their coaches call up the best players, so yours may come back tired or injured.</p>
+    <p>In the seasons before a Euro, the teams play qualifiers in groups; the others play the Nations League. The U21 teams do the same, with an U21 Euro every two years.</p>`],
+  euro: ['The Euro', `<p>The finals are played in June, after the club season. Groups of four, then knockouts.</p>
+    <p>Pick any match of the next match day and <b>Watch</b> it live, play the day with instant results, or <b>Sim to end</b> for the final result.</p>
+    <p><b>Scorers</b> lists the top scorers and assists of the tournament.</p>`],
   otherteams: ['Other teams', '<p>Look at any club in the world: its squad, finances and reputation. Tap a player to open his card or make an offer.</p>'],
 };
 

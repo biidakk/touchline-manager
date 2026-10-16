@@ -89,5 +89,5 @@ test('a finished season survives a save round-trip', () => {
   assertEq(again.replace(/"savedAt":"[^"]*"/, ''), text.replace(/"savedAt":"[^"]*"/, ''));
   const back = deserialize(text);
   assertEq(Object.keys(back.players).length, Object.keys(g.players).length, 'players');
-  assertEq(back.clubs[g.userClubId].budget, g.clubs[g.userClubId].budget, 'money');
+  assertEq(back.clubs[g.userClubId].budget, Math.round(g.clubs[g.userClubId].budget * 1000) / 1000, 'money (to three decimals)');
 });

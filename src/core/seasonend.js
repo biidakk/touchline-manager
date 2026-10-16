@@ -268,6 +268,8 @@ export function endSeason(game) {
     p.suspension = 0;
     p.form = 0;
     p.energy = 100;
+    // Back late from the international finals: pre-season starts a little tired.
+    if (p.finalsTired) { p.fatigue = 12; p.energy = 88; delete p.finalsTired; }
     p.value = playerValue(p, nextYear);
   }
 

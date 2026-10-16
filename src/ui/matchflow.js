@@ -7,6 +7,20 @@ import { matchReport, scoreText, outcomeFor } from './components/report.js';
 
 export async function finishMatch(ctx, f, m) {
   const g = ctx.game;
+  // Watching a match of the international finals: back to the tournament.
+  const watched = ctx.match?.spectator ? ctx.match.back : null;
+  if (watched) {
+    finishUserMatch(g, f, m);
+    g.watchId = null;
+    ctx.match = null;
+    await ctx.save({ silent: true });
+    // Hub underneath, so Back leads home.
+    ctx.stack = [{ name: 'hub', params: {} }];
+    ctx.current = { name: watched.name, params: watched.params };
+    ctx.render();
+    await ctx.modal(matchReport(g, f), { title: 'Full time', button: 'Continue' });
+    return;
+  }
   const national = isNational(g, f);
   const mine = national ? g.manager.national?.teamId : g.userClubId;
   finishUserMatch(g, f, m);

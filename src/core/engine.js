@@ -121,7 +121,10 @@ export function createMatch(game, fixture, opts = {}) {
   const ground = !opts.homeClub && game.clubs[fixture.homeId];
   m.pitch = ground ? pitchOf(ground) : 7;
   const fill = ground && fixture.compId ? Math.min(1, demand(game, fixture) / ground.stadium.capacity) : 0.75;
-  m.homeEdge = HOME_CHANCE * (1 + 0.06 * (fill - 0.75));
+  // Neutral ground (the international finals): no home advantage.
+  // Internationals are tighter than club football (fewer chances).
+  if (opts.tempo) m.tempo = opts.tempo;
+  m.homeEdge = opts.neutral ? 1 : HOME_CHANCE * (1 + 0.06 * (fill - 0.75));
   for (const s of m.sides) s.pitchT = pitchTechnique(m.pitch);
   return m;
 }
@@ -461,6 +464,7 @@ function playMinute(game, m, rng) {
     let rate = CHANCE_RATE * share[i] * Math.pow(ratio, CHANCE_EXP)
       * (1 + 0.32 * myI) * (1 + 0.22 * opI) * styleEdge(me.tactics.style, op.tactics.style);
     if (i === 0) rate *= m.homeEdge ?? HOME_CHANCE;
+    if (m.tempo) rate *= m.tempo;
     // Through-balls live on pace: fast forwards against slow defenders.
     if (me.tactics.style === 'through') rate *= 0.95 * Math.pow(S[i].pace / Math.max(1, S[1 - i].defPace), 0.6);
     if (rng.next() < rate) chance(game, m, rng, i, S);

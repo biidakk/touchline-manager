@@ -6,12 +6,12 @@
 // wants the best-known managers, U21 teams are easier to get. A national team
 // manager picks the squad for each international break (the rest is filled
 // automatically), the formation and tactics, and plays the matches himself.
-// At the end of the season: winning the Nations Championship boosts his
-// reputation, finishing last costs him the job.
+// At the end of the season: a title (the Euro, the Nations League) boosts his
+// reputation, finishing last in the group costs him the job.
 
 import { Rng, clamp, hashSeed } from './rng.js';
 import { addNews } from './season.js';
-import { nationalTable, NAT_IDS } from './national.js';
+import { nationalTable, nationRanking, groupOf, NAT_IDS, TOURN_IDS, LEVELS } from './national.js';
 import { confidence } from './board.js';
 
 const VACANCY_DAYS = 120;
@@ -27,25 +27,14 @@ export const managedTeam = (game) => {
 export const isManagedTeam = (game, id) => !!id && game.manager?.national?.teamId === id;
 
 // Nations ordered by the average skill of their 23 best first-team players.
-export function nationalRanking(game) {
-  const by = {};
-  for (const club of Object.values(game.clubs)) {
-    for (const id of club.squad) {
-      const p = game.players[id];
-      if (p) (by[p.nationId] = by[p.nationId] || []).push(p.skill);
-    }
-  }
-  return Object.keys(game.nations).filter((id) => !game.nations[id].foreign).map((id) => {
-    const top = (by[id] || []).sort((a, b) => b - a).slice(0, 23);
-    return { nationId: id, level: top.reduce((a, b) => a + b, 0) / Math.max(1, top.length) };
-  }).sort((a, b) => b.level - a.level);
-}
+export const nationalRanking = (game) => nationRanking(game);
 
 // The manager reputation a federation looks for.
 export function nationalRequirement(game, teamId, ranking = nationalRanking(game)) {
   const team = game.national.teams[teamId];
-  const rank = ranking.findIndex((r) => r.nationId === team.nationId);
-  return [64, 58, 53, 48, 43, 36][clamp(rank, 0, 5)] - (team.level === 'u21' ? 22 : 0);
+  const rank = clamp(ranking.findIndex((r) => r.nationId === team.nationId), 0, ranking.length - 1);
+  // From 64 for the strongest nation down to 30 for the weakest.
+  return Math.round(64 - (34 * rank) / Math.max(1, ranking.length - 1)) - (team.level === 'u21' ? 22 : 0);
 }
 
 export function ensureNationalJobs(game) {
@@ -171,7 +160,7 @@ const pendingNational = (game) => {
 // After each of the user's internationals.
 export function nationalAfterMatch(game, f) {
   const n = game.manager.national;
-  if (!n) return;
+  if (!n || (f.homeId !== n.teamId && f.awayId !== n.teamId)) return;
   const home = f.homeId === n.teamId;
   const gf = home ? f.result.h : f.result.a;
   const ga = home ? f.result.a : f.result.h;
@@ -179,34 +168,54 @@ export function nationalAfterMatch(game, f) {
   if (gf > ga) n.w++; else if (gf < ga) n.l++; else n.d++;
 }
 
-// End of season (after the Nations Championships are closed).
+// End of season (after the national competitions are closed).
 export function seasonEndNational(game) {
   ensureNationalJobs(game);
   const m = game.manager;
+  const year = game.season.year;
   const rng = rngFor(game, 'summer');
   const out = {};
-  for (const compId of Object.values(NAT_IDS)) {
-    const comp = game.competitions[compId];
+  for (const level of LEVELS) {
+    const comp = game.competitions[NAT_IDS[level]];
     if (!comp.fixtureIds.length) continue;
-    const rows = nationalTable(game, comp);
-    rows.forEach((r, i) => {
-      if (isManagedTeam(game, r.clubId)) {
-        out.pos = i + 1;
-        out.teamName = teamName(game, r.clubId);
-        if (i === 0) {
-          m.reputation = clamp(m.reputation + (comp.level === 'senior' ? 5 : 2), 1, 100);
-          out.verdict = 'champions';
-        } else if (i === rows.length - 1) {
-          out.verdict = 'sacked';
-          m.reputation = clamp(m.reputation - 2, 1, 100);
-          closeNationalStint(game, 'sacked');
-          addNews(game, `The ${out.teamName} federation has dismissed you after a last-place finish.`, 'national');
-        } else out.verdict = 'kept';
-        return;
+    const t = game.competitions[TOURN_IDS[level]];
+    const finals = t.year === year + 1 && t.winnerId ? t : null;
+    // Each team is judged on its group (older saves: the one table).
+    const groups = comp.groups?.length ? comp.groups.map((g) => g.ids) : [comp.clubIds.filter((id) => comp.table[id])];
+    for (const ids of groups) {
+      const rows = nationalTable(game, comp, ids);
+      rows.forEach((r, i) => {
+        const last = i === rows.length - 1 && rows.length > 2;
+        const won = finals?.winnerId === r.clubId || comp.winnerId === r.clubId || (!comp.format && i === 0);
+        if (isManagedTeam(game, r.clubId)) {
+          out.pos = i + 1;
+          out.group = groupOf(comp, r.clubId)?.name || null;
+          out.teamName = teamName(game, r.clubId);
+          if (won) {
+            m.reputation = clamp(m.reputation + (level === 'senior' ? (finals ? 8 : 5) : 2), 1, 100);
+            out.verdict = 'champions';
+            out.title = finals ? finals.name : comp.name;
+          } else if (last) {
+            out.verdict = 'sacked';
+            m.reputation = clamp(m.reputation - 2, 1, 100);
+            closeNationalStint(game, 'sacked');
+            addNews(game, `The ${out.teamName} federation has dismissed you after a last-place finish.`, 'national');
+          } else out.verdict = 'kept';
+          return;
+        }
+        const p = last ? 0.5 : 0.08;
+        if (rng.chance(p)) openVacancy(game, r.clubId, last ? 'after finishing last in their group' : 'after their coach moved on', rng);
+      });
+    }
+    // The hosts play no qualifiers: only the finals count.
+    if (finals && isManagedTeam(game, finals.hostId) && !out.teamName) {
+      out.teamName = teamName(game, finals.hostId);
+      out.verdict = finals.winnerId === finals.hostId ? 'champions' : 'kept';
+      if (out.verdict === 'champions') {
+        out.title = finals.name;
+        m.reputation = clamp(m.reputation + (level === 'senior' ? 8 : 2), 1, 100);
       }
-      const p = i === rows.length - 1 ? 0.5 : 0.12;
-      if (rng.chance(p)) openVacancy(game, r.clubId, i === rows.length - 1 ? 'after finishing last' : 'after their coach moved on', rng);
-    });
+    }
   }
   return out.teamName ? out : null;
 }

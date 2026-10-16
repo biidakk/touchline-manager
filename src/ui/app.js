@@ -26,6 +26,7 @@ import * as otherteams from './screens/otherteams.js';
 import * as search from './screens/search.js';
 import * as stadium from './screens/stadium.js';
 import * as national from './screens/national.js';
+import * as euro from './screens/euro.js';
 import * as training from './screens/training.js';
 import * as natteam from './screens/natteam.js';
 import * as deals from './screens/deals.js';
@@ -38,7 +39,7 @@ import { esc, setMoneyGame } from './util.js';
 import { showPlayer } from './components/playercard.js';
 import { showTip } from './tips.js';
 
-const SCREENS = { title, newgame, hub, tables, soon, schedule, myteam, tactics, match, review, youth, career, cup, market,
+const SCREENS = { title, newgame, hub, euro, tables, soon, schedule, myteam, tactics, match, review, youth, career, cup, market,
   finances, otherteams, search, stadium, national, training, natteam, deals, preseason, rankings, u19, fame, saves };
 const PACK_KEY = 'realpack';
 

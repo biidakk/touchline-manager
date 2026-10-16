@@ -8,7 +8,7 @@ A football (soccer) management game, inspired by the layout of Czech Soccer Mana
 - **From the source:** download this repository and double-click `start.bat` (needs Python).
 
 **The world:**
-- **Countries:** the 25 strongest UEFA countries by coefficient plus Iran, each with a national cup. England, Spain, Italy, Germany, France and the Czech Republic have two divisions (18 clubs; 16 in the Czech leagues); Portugal, the Netherlands, Belgium, Turkey, Greece, Poland, Denmark, Norway, Cyprus, Switzerland, Austria, Scotland, Sweden, Croatia, Israel, Hungary, Ukraine, Serbia and Romania their top division (10–18 clubs, as in 2026/27; small leagues play each other three or four times); Iran its top two divisions. Only the original six have national teams.
+- **Countries:** the 25 strongest UEFA countries by coefficient plus Iran, each with a national cup. England, Spain, Italy, Germany, France and the Czech Republic have two divisions (18 clubs; 16 in the Czech leagues); Portugal, the Netherlands, Belgium, Turkey, Greece, Poland, Denmark, Norway, Cyprus, Switzerland, Austria, Scotland, Sweden, Croatia, Israel, Hungary, Ukraine, Serbia and Romania their top division (10–18 clubs, as in 2026/27; small leagues play each other three or four times); Iran its top two divisions. All 25 European countries have national teams (senior and U21).
 - **Clubs:** real cities, with names, kit colours and stadiums close to the real clubs (for example "Manchester Blue", "Madrid Blancos", "FC Plzeň"), but not their real names.
 - **Players and managers:** realistic names for each country, combined at random. A combination can occasionally match a real person by chance.
 - **Graphics:** crests are generated from the kit colours (no real logos), and all graphics are CSS/SVG made for this project.
@@ -128,16 +128,22 @@ The published game uses near-real club names and generated players. For your own
    - **Older saves:** a Champions Cup with four groups already under way is played out; the new format starts next season.
    - See it from the hub (★ tile, your club's competition) or the Cup screen.
 11. **National teams** (hub → National Teams):
-    - **Competition:** a senior and an **Under-21** Nations Championship for all six nations, home and away. Ten matchdays on Thursdays across five international breaks, so they never clash with club matches.
+    - **Teams:** 25 European countries, each with a senior and an **Under-21** team. Internationals are on Thursdays across five international breaks, so they never clash with club matches.
+    - **The cycle:**
+      - **Euro** every four years (2028, 2032…) and **U21 Euro** every odd year (2027, 2029…). In the season before, the teams play **qualifiers** in four groups of six, home and away. The hosts qualify automatically (England for Euro 2028, Italy for 2032, then drawn).
+      - The other seasons: the **Nations League** in groups of five by strength (League A the strongest). The two League A group winners meet in a **final** on 7 June.
+    - **The finals** (June, after the club season; the season ends when they do): 16 teams. The hosts, the top three of each qualifying group and the best three fourth-placed teams. Four groups of four, then quarter-finals, semi-finals and the final, one match each with extra time and penalties, on neutral ground (the hosts always play at home). Internationals are a little tighter than club football, the finals most of all.
+    - **Following the finals** (hub → Continue once your club season is over, the Euro tile on the hub, or National Teams → Euro finals): group tables, the knockout bracket, **top scorers and assists**, and past winners with their hosts and top scorers. For the next match day you can **Watch** any match live, **Play match day** with instant results, or **Sim to end**.
+    - **The summer break:** while the finals are on, clubs rest: no training, no development, no wages for June and July (the season's wages are settled as before). Players who played three or more matches at the finals start pre-season a little tired. Everyone who played gains a little teamwork, and the winners a little leadership.
     - **Call-ups:** before each break the best available players of each nationality are called up. The U21 squad takes the best players aged 21 or under who aren't in the senior squad, academy players included.
     - **Your called-up players:** you get news when they're called up, score or are injured. They come back tired, and they collect **caps and international goals** (shown in the player dialog).
-    - **The screen:** tables, results (click for a report), top scorers, past champions, and every nation's squad with your players highlighted.
+    - **The screen:** the group tables (choose a group; the qualifying places are marked), results, top scorers, past winners (the Euros with a trophy), and every nation's squad with your players highlighted.
     - Champions are listed in the season review.
     - **Managing a national team** (alongside your club job):
       - **Getting the job:** federations look for a head coach when their team finishes last or their coach moves on, and two are looking when a career starts. They're listed under My Career → Jobs. Each wants a certain manager reputation: the strongest football nation the most, U21 teams much less. You can always apply. Federations only **approach** you themselves when you're out of work, or when your club is doing well (board delighted, 65+; or satisfied, 55+, after meeting last season's target; or a trophy last season).
       - **Squad:** on the National Team screen (hub → National Teams → Manage) pick up to 23 players from everyone eligible. The squad is called up for every break, and places you leave open (or injured picks) are filled automatically. Also set the formation, intent and style.
       - **Matches:** the calendar stops for your internationals like club matches: pre-match screen, live view, substitutions, or instant result. Squads get their own shirt numbers.
-      - **Verdict:** win the Nations Championship and your reputation grows; finish last and the federation lets you go. You can step down at any time (**Resign** next to the team in My Career, or on the National Team screen).
+      - **Verdict:** win the Euro or the Nations League and your reputation grows (the Euro most); finish last in your group and the federation lets you go. You can step down at any time (**Resign** next to the team in My Career, or on the National Team screen).
     - **Records** (National Teams → Records): each national team's all-time top scorers, most caps, biggest win and heaviest defeat.
     - Every other national team is run by its own (AI) coach.
 12. **Player attributes:**
@@ -179,7 +185,7 @@ The published game uses near-real club names and generated players. For your own
 18. **Real club history** (Other Teams → History): each club's real-world story up to the 2024/25 season: founded, nickname, league and cup titles, European trophies, a short history and its best achievements, next to what it has won in your career. The data is in `data/history/<country>.json` (plain text, one file per country); entries the research could not confirm are marked `"uncertain": true` with a note, so you can check and correct them.
 19. **Club history and records** (Other Teams → pick any club, including your own → Seasons / Records; or My Career → "Club history & records"): season-by-season finishes, and records kept from the first season of your career: all-time top scorers (the club's best historic strikers), most appearances, most goals in one season, biggest wins in the league, the cup and the Champions Cup, heaviest defeat and record crowd. Players who leave or retire stay in the records; current players are marked with a green dot.
 20. **World awards** (League Tables → Ballon d'Or, and the season review):
-    - **Ballon d'Or:** the season's best player across all leagues, from his form (average rating), goals and assists (worth more for defenders and midfielders), the level of his league, and the trophies he won (title, Champions Cup, cup, Nations Championship). Top three listed.
+    - **Ballon d'Or:** the season's best player across all leagues, from his form (average rating), goals and assists (worth more for defenders and midfielders), the level of his league, and the trophies he won (title, Champions Cup, cup, the Euro or the Nations League). Top three listed.
     - **Golden Shoe:** most league goals across all leagues, counted ×2 in the big five top flights, ×1.5 in the Czech top flight and ×1 in second divisions. The live race is shown during the season.
     - Awards (and league awards: top scorer, player and young player of the season) appear on the player's card.
 21. **End of season:**
@@ -193,7 +199,7 @@ The published game uses near-real club names and generated players. For your own
 - Save files are versioned, and older saves are upgraded automatically.
 
 ## Tests
-With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 167 tests. They cover:
+With the server running, open http://localhost:8765/tests.html. The page title shows `PASS n/n` or `FAIL …`; the current suite has 168 tests. They cover:
 - **World generation:** world, fixtures, cup draws.
 - **Lineup rules.**
 - **Live-match mechanics.**
@@ -250,7 +256,7 @@ src/core/                     game logic: no DOM access, testable
   facilities.js   youth academy and stadium facility levels, club reputation levels
   scouting.js     hidden potential, scouting staff levels, assignments and reports
   loans.js        loans in both directions, AI loan offers, B-team partner club
-  national.js     national teams (senior and U21): call-ups, Nations Championship, caps
+  national.js     national teams (senior and U21): call-ups, Nations League, Euro qualifiers and finals, caps
   nationaljob.js  managing a national team: federation vacancies, applications, the season verdict
   records.js      player season rows per club, club and national team records, Ballon d'Or and Golden Shoe
   ratings.js      team numbers (quality, value, age)

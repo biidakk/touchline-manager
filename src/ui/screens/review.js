@@ -40,7 +40,7 @@ export function render(root, ctx) {
       <span>Trophies</span><b>${s.user.trophies.length ? s.user.trophies.map(esc).join(', ') : '-'}</b>
       ${s.user.board ? `<span>Board target</span><b class="${s.user.board.met ? 'good' : 'bad'}" title="${esc(s.user.board.target)}">${s.user.board.met ? 'Met' : 'Missed'}</b>
       <span>Board confidence</span><b>${s.user.board.confidence}/100</b>` : ''}
-      ${s.nationalJob ? `<span>${esc(s.nationalJob.teamName)}</span><b class="${s.nationalJob.verdict === 'sacked' ? 'bad' : s.nationalJob.verdict === 'champions' ? 'good' : ''}">${ord(s.nationalJob.pos)}${s.nationalJob.verdict === 'champions' ? ', champions' : s.nationalJob.verdict === 'sacked' ? ', dismissed' : ''}</b>` : ''}
+      ${s.nationalJob ? `<span>${esc(s.nationalJob.teamName)}</span><b class="${s.nationalJob.verdict === 'sacked' ? 'bad' : s.nationalJob.verdict === 'champions' ? 'good' : ''}">${s.nationalJob.pos ? `${ord(s.nationalJob.pos)}${s.nationalJob.group ? ' in the group' : ''}` : 'Hosts'}${s.nationalJob.verdict === 'champions' ? `, ${s.nationalJob.title ? `${esc(s.nationalJob.title)} winners` : 'champions'}` : s.nationalJob.verdict === 'sacked' ? ', dismissed' : ''}</b>` : ''}
       ${offers && !sacked ? `<span>Job offers</span><b class="warn">${offers} (see My Career)</b>` : ''}
     </div>
     <h2 style="margin-top:8px">Youth intake</h2>
