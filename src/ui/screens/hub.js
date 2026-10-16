@@ -188,7 +188,7 @@ export function render(root, ctx, params = {}) {
       ${g.season.phase === 'over' ? '<div class="banner good-bg" style="font-size:14px;margin-top:8px">Season over: press Continue</div>' : ''}
     </div>
 
-    <div class="panel" style="left:1010px;top:388px;width:250px;height:240px">
+    <div class="panel hub-season" style="left:1010px;top:388px;width:250px;height:240px">
       <h2>Season ${g.season.year}/${String(g.season.year + 1).slice(2)}</h2>
       <div class="row" style="justify-content:space-between;font-weight:800;font-size:13px;margin-bottom:6px">Season done:<div class="bar" style="width:92px"><i style="width:${prog.seasonPct}%"></i><b>${prog.seasonPct}%</b></div></div>
       <div class="row" style="justify-content:space-between;font-weight:800;font-size:13px">Points won:<div class="bar" style="width:92px"><i style="width:${prog.pointsPct}%"></i><b>${prog.pointsPct}%</b></div></div>

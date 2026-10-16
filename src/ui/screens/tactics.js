@@ -73,7 +73,7 @@ export function render(root, ctx, params = {}) {
     const dis = editable ? '' : 'disabled';
     return `<div class="tac-row"><span class="tac-label">Intent %:</span><div class="seg small">${Array.from({ length: 11 }, (_, k) => k * 10)
       .map((v) => `<button class="${t.tactics.intent === v ? 'on' : ''}" ${dis} data-action="intent" data-v="${v}">${v}</button>`).join('')}</div></div>
-      <div class="tac-row"><span class="tac-label">Style:</span><div class="seg small">${PLAY_STYLES
+      <div class="tac-row"><span class="tac-label">Style:</span><div class="seg small styles">${PLAY_STYLES
       .map((s) => `<button class="${t.tactics.style === s ? 'on' : ''}" ${dis} data-action="style" data-v="${s}">${PLAY_STYLE_LABELS[s]}</button>`).join('')}</div></div>`;
   }
 

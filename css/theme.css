@@ -78,7 +78,6 @@ html.phone .fixture .t1, html.phone .job-txt b { font-size: 21px; }
 html.phone .kv { font-size: 20px; grid-template-columns: 104px 1fr; }
 html.phone .menu-list li { font-size: 21px; white-space: nowrap; overflow: hidden; padding: 5px 6px; }
 html.phone .menu-list li.sep { margin-top: 8px; }
-html.phone .comp-tile { font-size: 15px; }
 html.phone .phone-hide { display: none !important; }
 html.phone label.lbl, html.phone .job-head, html.phone .subs-left { font-size: 17px; }
 html.phone .seg button { font-size: 18px; padding: 6px 12px; }
@@ -94,8 +93,25 @@ html.phone .player-card .roles.four { grid-template-columns: 1fr 1fr; }
 html.phone .player-card .roles.four button { font-size: 15px; }
 html.phone .player-card .fin-list { font-size: 17px; }
 html.phone .rec-h, html.phone .ctl-label { font-size: 18px; }
-html.phone .tac-label { width: 76px; font-size: 16px; line-height: 1.1; }
-html.phone .seg.small button { font-size: 15px; padding: 5px 0; }
+html.phone .tac-label { width: 58px; font-size: 15px; line-height: 1.1; }
+html.phone .tac-row { gap: 4px; margin-bottom: 10px; }
+html.phone .seg.small button { font-size: 18px; font-weight: 800; padding: 0; height: 42px; min-width: 0; }
+/* My Team: the four tiles without icons, bigger intent and style buttons. */
+html.phone .tiles > div { gap: 8px; height: 40px; }
+html.phone .ctl-label.tiles-gap { margin-top: 4px; }
+html.phone .tiles .ico { display: none; }
+html.phone .seg.full.big button { font-size: 18px; font-weight: 800; height: 38px; }
+html.phone .seg.full.styles { margin-top: 6px !important; }
+html.phone .seg.styles button { font-size: 16px; line-height: 1.05; padding: 0; }
+/* Hub: competition tiles and the season panel above Sim / Continue. */
+html.phone .comp-tile { min-width: 0; overflow: hidden; font-size: 13.5px; line-height: 1.15; }
+html.phone .comp-tile .ico.big { width: 28px; height: 28px; flex-shrink: 0; }
+html.phone .comp-tile span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+html.phone .hub-season { overflow: hidden; }
+html.phone .hub-season h2 { margin-bottom: 4px; }
+html.phone .hub-season .row { font-size: 16px !important; white-space: nowrap; margin-bottom: 4px !important; }
+html.phone .hub-season table.data { margin-top: 6px !important; }
+html.phone .hub-season table.data td { height: 30px; padding: 0 6px; font-size: 18px; }
 html.phone .tac-actions .btn-small { font-size: 14px; }
 html.phone .bshirt .pinfo .form { display: none; }
 html.phone .cmp-l, html.phone .cmp-head { font-size: 15px; }
@@ -412,6 +428,7 @@ html.phone .badge .ico-badge { width: 14px; height: 14px; }
 .seg-caption { display: flex; font-size: 11.5px; color: var(--muted); margin-top: 3px; }
 .seg-caption span { flex: 1; text-align: center; }
 .ctl-label { font-size: 13px; font-weight: 800; margin: 0 0 4px; text-align: center; }
+.ctl-label.tiles-gap { margin-top: 10px; }
 
 .slots-abc { display: flex; flex-direction: column; gap: 10px; }
 .slot-abc { display: flex; align-items: center; gap: 4px; }

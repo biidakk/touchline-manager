@@ -177,9 +177,9 @@ export function render(root, ctx) {
         <div title="Penalty taker">${icon('trophy')}<span>${num(roles.penaltyId)}</span><span class="lbl">Pen-<br>alties</span></div>
         <div title="Teamwork: rises when the same players keep starting together">${icon('team')}<span>${club.teamwork ?? 60}</span><span class="lbl">Team-<br>work</span></div>
       </div>
-      <div class="ctl-label" style="margin-top:10px">Attacking intent %</div>
-      <div class="seg full">${Array.from({ length: 11 }, (_, i) => i * 10).map((v) => `<button class="${club.tactics.intent === v ? 'on' : ''}" data-action="intent" data-v="${v}">${v}</button>`).join('')}</div>
-      <div class="seg full" style="margin-top:12px">${PLAY_STYLES.map((s) => `<button class="${club.tactics.style === s ? 'on' : ''}" data-action="style" data-v="${s}">${PLAY_STYLE_LABELS[s]}</button>`).join('')}</div>
+      <div class="ctl-label tiles-gap">Attacking intent %</div>
+      <div class="seg full big">${Array.from({ length: 11 }, (_, i) => i * 10).map((v) => `<button class="${club.tactics.intent === v ? 'on' : ''}" data-action="intent" data-v="${v}">${v}</button>`).join('')}</div>
+      <div class="seg full big styles" style="margin-top:12px">${PLAY_STYLES.map((s) => `<button class="${club.tactics.style === s ? 'on' : ''}" data-action="style" data-v="${s}">${PLAY_STYLE_LABELS[s]}</button>`).join('')}</div>
       <div class="seg-caption"><span></span><span>${shares.passing}%</span><span>${shares.crosses}%</span><span>${shares.through}%</span></div>
     </div>
 
