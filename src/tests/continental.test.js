@@ -2,7 +2,7 @@ import { test, assert, assertEq, assertBetween, info } from './harness.js';
 import { generateWorld, startCareer } from '../core/worldgen.js';
 import { simulateRestOfSeason } from '../core/matchday.js';
 import { endSeason } from '../core/seasonend.js';
-import { CONTINENTAL_ID, CONTINENTAL_IDS, FIRST_SEASON, QUOTAS, FULL_SIZE, leagueTable, knockoutSize, matchesFor, continentalOf }
+import { CONTINENTAL_ID, CONTINENTAL_IDS, FIRST_SEASON, QUOTAS, FULL_SIZE, leagueTable, knockoutSize, matchesFor, continentalOf, PRIZES }
   from '../core/continental.js';
 import { GUEST_FIRST_SEASON, GUEST_CLUBS } from '../core/guests.js';
 import { countryRanking } from '../core/coefficients.js';
@@ -77,6 +77,39 @@ test('knockouts: top places straight through, play-offs for the next, two legs, 
     assertEq(c.rounds.at(-1).fixtureIds.length, 1, 'the final is one match');
     info(`${c.name} winner: ${g.clubs[c.winnerId].name}; rounds ${c.rounds.map((r) => r.name).join(', ')}`);
   }
+});
+
+test('prize money as UEFA pays it, at a fifth: starting fee, wins and draws, ranking, each round reached', () => {
+  // Guest clubs earn only European prize money, so their books show it exactly.
+  let checked = 0;
+  for (const c of comps()) {
+    const P = PRIZES[c.id];
+    const order = leagueTable(g, c).map((r) => r.clubId);
+    const K = c.knockout;
+    const reach = (k) => (k === 0 ? P.playoff : [P.final, P.sf, P.qf, P.last16][c.rounds.length - 1 - k]);
+    const inRound = (r, id) => r.byes.includes(id) || r.fixtureIds.some((x) => g.fixtures[x].homeId === id || g.fixtures[x].awayId === id);
+    const expected = (id) => {
+      let sum = P.start;
+      for (const f of Object.values(g.fixtures)) {
+        if (f.compId !== c.id || f.phase !== 'league' || (f.homeId !== id && f.awayId !== id)) continue;
+        const { h, a } = f.result;
+        if (h === a) sum += P.draw;
+        else if ((h > a) === (f.homeId === id)) sum += P.win;
+      }
+      const i = order.indexOf(id);
+      sum += P.share * (order.length - i) + (i < 8 ? P.top8 : i < 16 ? P.top16 : 0);
+      if (i >= K / 2 && i < K / 2 + K) sum += reach(0);
+      c.rounds.forEach((r, k) => { if (k > 0 && inRound(r, id)) sum += reach(k); });
+      if (c.winnerId === id) sum += P.winner;
+      return sum;
+    };
+    for (const id of c.clubIds.filter((x) => g.clubs[x].guest)) {
+      assertBetween(g.clubs[id].finance.season.prizes, expected(id) - 1, expected(id) + 1, `${c.id} ${g.clubs[id].name}`);
+      checked++;
+    }
+    info(`${c.name}: winner earns ${(expected(c.winnerId) / 1e6).toFixed(1)}M, last in the league phase ${(expected(order.at(-1)) / 1e6).toFixed(1)}M`);
+  }
+  assert(checked >= 10, `only ${checked} guest clubs checked`);
 });
 
 test('two-legged ties are decided on aggregate, then extra time and penalties', () => {

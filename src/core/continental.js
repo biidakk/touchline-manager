@@ -20,6 +20,7 @@
 import { newFixture, newTie, decidesTie, cupRoundName } from './calendar.js';
 import { sortedTable, addNews } from './season.js';
 import { payPrize } from './finance.js';
+import { money } from './currency.js';
 import { BREAK_WEEKS } from './national.js';
 import { GUEST_COMP_ID, GUEST_FIRST_SEASON } from './guests.js';
 import { countryRanking, clubTotal, ensureCoefficients } from './coefficients.js';
@@ -27,10 +28,32 @@ import { countryRanking, clubTotal, ensureCoefficients } from './coefficients.js
 export const CONTINENTAL_ID = 'CCC';
 export const CONTINENTAL_IDS = ['CCC', 'CEL', 'CCL'];
 export const CONTINENTAL = {
-  CCC: { level: 1, name: 'Continental Champions Cup', matches: 8, weekday: 3, prize: 2e5, winPrize: 1e5, rep: 3 },
-  CEL: { level: 2, name: 'Continental League', matches: 8, weekday: 5, prize: 8e4, winPrize: 4e4, rep: 2 },
-  CCL: { level: 3, name: 'Continental Conference', matches: 6, weekday: 5, prize: 4e4, winPrize: 2e4, rep: 1 },
+  CCC: { level: 1, name: 'Continental Champions Cup', matches: 8, weekday: 3, rep: 3 },
+  CEL: { level: 2, name: 'Continental League', matches: 8, weekday: 5, rep: 2 },
+  CCL: { level: 3, name: 'Continental Conference', matches: 6, weekday: 5, rep: 1 },
 };
+
+// Prize money: UEFA's 2025/26 distribution (circular 32/2025) at a fifth of
+// the real amounts, to fit the game's club finances (the value pillar is left
+// out). start: paid at the first league-phase match; win/draw: per league-phase
+// match; share: the ranking bonus (last place 1 share, first n shares);
+// top8/top16: extra for those places; then for reaching each knockout round,
+// and a bonus for the winners.
+export const PRIZES = {
+  CCC: { start: 3.724e6, win: 4.2e5, draw: 1.4e5, share: 5.5e4, top8: 4e5, top16: 2e5,
+    playoff: 2e5, last16: 2.2e6, qf: 2.5e6, sf: 3e6, final: 3.7e6, winner: 1.3e6 },
+  CEL: { start: 8.62e5, win: 9e4, draw: 3e4, share: 1.5e4, top8: 1.2e5, top16: 6e4,
+    playoff: 6e4, last16: 3.5e5, qf: 5e5, sf: 8.4e5, final: 1.4e6, winner: 1.2e6 },
+  CCL: { start: 6.34e5, win: 8e4, draw: 2.66e4, share: 5.6e3, top8: 8e4, top16: 4e4,
+    playoff: 4e4, last16: 1.6e5, qf: 2.6e5, sf: 5e5, final: 8e5, winner: 6e5 },
+};
+const prizesOf = (comp) => PRIZES[comp.id] || PRIZES.CCC;
+// Reaching knockout round k (0: the play-offs; the last one is the final).
+function roundPrize(comp, k) {
+  const P = prizesOf(comp);
+  if (k === 0) return P.playoff;
+  return [P.final, P.sf, P.qf, P.last16][comp.rounds.length - 1 - k] ?? P.last16;
+}
 
 // Places per country after the first season, close to what the six countries
 // had in 2026/27 (22 + 14 + 6). The national cup winner takes the first
@@ -292,6 +315,7 @@ export function initContinental(game, dates, rng) {
     comp.table = {};
     comp.rounds = [];
     comp.alive = [];
+    comp.startPaid = [];
     const n = comp.clubIds.length;
     if (n < 4) { comp.clubIds = []; continue; }
     for (const cid of comp.clubIds) comp.table[cid] = emptyRow();
@@ -386,7 +410,11 @@ function checkLeague(game, comp, rng) {
     const K = comp.knockout;
     const direct = order.slice(0, K / 2);
     const playoff = order.slice(K / 2, K / 2 + K);
-    for (const id of direct) payPrize(game.clubs[id], d.prize);
+    // Ranking bonus, the top-16 extras and reaching the knockouts.
+    const P = prizesOf(comp);
+    order.forEach((id, i) => payPrize(game.clubs[id], P.share * (order.length - i) + (i < 8 ? P.top8 : i < 16 ? P.top16 : 0)));
+    for (const id of direct) payPrize(game.clubs[id], roundPrize(comp, 1));
+    for (const id of playoff) payPrize(game.clubs[id], roundPrize(comp, 0));
     // Fewer play-off clubs than places: the best of them go through without playing.
     const byes = playoff.slice(0, Math.max(0, K - playoff.length));
     const rest = playoff.slice(byes.length);
@@ -415,7 +443,9 @@ function checkLeague(game, comp, rng) {
   const winners = fixtures.filter(decidesTie).map((f) => f.result.winner);
   const userTie = fixtures.filter(decidesTie).find((f) => f.homeId === user || f.awayId === user);
   if (userTie && userTie.result.winner !== user) addNews(game, `We are out of the ${comp.name} (${round.name}).`, 'cup');
-  for (const id of winners) payPrize(game.clubs[id], d.prize * 2 ** k);
+  if (k === comp.rounds.length - 1) payPrize(game.clubs[winners[0]], prizesOf(comp).winner);
+  // Play-off winners: the last K (the byes were paid with the play-off clubs, and get that round's money too).
+  else for (const id of [...winners, ...(k === 0 ? round.byes : [])]) payPrize(game.clubs[id], roundPrize(comp, k + 1));
   if (k === comp.rounds.length - 1) {
     comp.winnerId = winners[0];
     comp.alive = winners;
@@ -464,7 +494,19 @@ export function applyContinentalResult(game, f) {
   if (h > a) { rh.w++; ra.l++; rh.pts += 3; rec(rh, 'W'); rec(ra, 'L'); }
   else if (h < a) { ra.w++; rh.l++; ra.pts += 3; rec(rh, 'L'); rec(ra, 'W'); }
   else { rh.d++; ra.d++; rh.pts++; ra.pts++; rec(rh, 'D'); rec(ra, 'D'); }
-  if (h !== a) payPrize(game.clubs[h > a ? f.homeId : f.awayId], (CONTINENTAL[comp.id] || CONTINENTAL.CCC).winPrize);
+  const P = prizesOf(comp);
+  // The starting fee, with each club's first league-phase match.
+  if (f.phase === 'league') {
+    comp.startPaid = comp.startPaid || [];
+    for (const id of [f.homeId, f.awayId]) {
+      if (comp.startPaid.includes(id)) continue;
+      comp.startPaid.push(id);
+      payPrize(game.clubs[id], P.start);
+      if (id === game.userClubId) addNews(game, `${comp.name}: the club receives ${money(game, P.start)} for taking part, plus ${money(game, P.win)} for every win and ${money(game, P.draw)} for every draw.`, 'club');
+    }
+  }
+  if (h !== a) payPrize(game.clubs[h > a ? f.homeId : f.awayId], P.win);
+  else { payPrize(game.clubs[f.homeId], P.draw); payPrize(game.clubs[f.awayId], P.draw); }
 }
 
 // ---- older saves: four groups of four, then quarter-finals ----

@@ -62,7 +62,7 @@ export function render(root, ctx) {
       <span>Shirt sponsor</span><b>${sp ? esc(sp.name) : '<span class="dim">none</span>'}</b>
       ${sp ? `<span>Sponsor pays</span><b>${fmtMoney(sp.perYear)} / season</b><span>Contract</span><b>until ${y(sp.until)}</b>` : ''}
     </div>
-    <p class="hint" style="margin-top:auto">Ticket prices are set each summer, a new sponsor is signed when the contract ends. TV money, wages and costs are paid monthly; league prize money at the end of the season.</p>
+    <p class="hint" style="margin-top:auto">Ticket prices are set each summer, a new sponsor is signed when the contract ends. TV money, wages and costs are paid monthly; league prize money at the end of the season; European prize money after every match and round.</p>
     <div class="row" style="gap:10px;margin:8px 0">
       <span class="muted">Show money in</span>
       <div class="seg small">${[['club', `Club's (${CURRENCIES[nationCurrency(club.nationId)].symbol})`], ['EUR', '€'], ['GBP', '£']].map(([k, l]) =>

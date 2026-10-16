@@ -124,7 +124,9 @@ The published game uses near-real club names and generated players. For your own
    - **Knockouts in spring:** the top places go straight to the last 16; the next places play two-legged **knockout play-offs** (the better-placed club at home in the second leg; when there are fewer clubs than places, the best of them go through without playing); the rest are out. Then round of 16, quarter-finals and semi-finals over **two legs**, and a one-match final.
    - **Two-legged ties:** the aggregate score decides (no away-goals rule). If it's level after the second leg, extra time and penalties follow. The pre-match screen shows the first-leg score, the live match shows the aggregate, and the cup screen lists both legs.
    - The national cups' **semi-finals** are two-legged too; every other round and the final is one match.
-   - **Rewards:** prize money per win and per round (most in the Champions Cup), bigger crowds, and a reputation boost for the winner.
+   - **Rewards:** prize money as UEFA pays it (2025/26 rules, at a fifth of the real amounts): a starting fee, money for every win and draw (a win pays three times a draw), a bonus for the league-phase position (more for the top 8 and top 16), then money for each knockout round reached and a winner's bonus.
+     Champions Cup: 3.7M start, 420k a win, 140k a draw, up to 2.4M for the league position, 2.2M for the last 16, 2.5M for the quarter-finals, 3M for the semi-finals, 3.7M for the final and 1.3M for winning it (about 21M in all for the winners). The Continental League and Conference pay less (about 6M and 3.6M for the winners).
+     Plus bigger crowds, and a reputation boost for the winner.
    - **Older saves:** a Champions Cup with four groups already under way is played out; the new format starts next season.
    - See it from the hub (★ tile, your club's competition) or the Cup screen.
 11. **National teams** (hub → National Teams):
