@@ -150,6 +150,7 @@ const ICONS = {
   power: '<path d="M12 3v8"/><path d="M6.5 6.5a8 8 0 1 0 11 0"/>',
   youth: '<circle cx="12" cy="7" r="3.5"/><path d="M5 21c0-4 3-7 7-7s7 3 7 7"/>',
   star: '<path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/>',
+  chart: '<path d="M3.5 20.5h17"/><rect x="5" y="12" width="3.2" height="8.5"/><rect x="10.4" y="7" width="3.2" height="13.5"/><rect x="15.8" y="3.5" width="3.2" height="17"/>',
   stadium: '<ellipse cx="12" cy="9" rx="9" ry="4"/><path d="M3 9v6c0 2.2 4 4 9 4s9-1.8 9-4V9"/>',
 };
 

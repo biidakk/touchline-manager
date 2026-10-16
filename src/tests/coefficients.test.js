@@ -2,7 +2,7 @@ import { test, assert, assertEq, assertBetween, info } from './harness.js';
 import { generateWorld, startCareer } from '../core/worldgen.js';
 import { simulateRestOfSeason } from '../core/matchday.js';
 import { endSeason } from '../core/seasonend.js';
-import { countryRanking, accessFor, clubTotal, countryTotal, ensureCoefficients } from '../core/coefficients.js';
+import { countryRanking, accessFor, clubTotal, countryTotal, ensureCoefficients, seasonPoints, liveRanking } from '../core/coefficients.js';
 import { CONTINENTAL_IDS, FULL_SIZE } from '../core/continental.js';
 import { meetingsFor } from '../core/calendar.js';
 import { EUROPE_NATIONS } from '../core/europe.js';
@@ -57,8 +57,13 @@ test('a season of results updates the coefficients and the places', () => {
   const before = countryTotal(g, 'ENG', g.season.year + 1);
   simulateRestOfSeason(g);
   const year = g.season.year;
+  // The live view during the season matches what the season end records.
+  const live = seasonPoints(g);
+  const next = liveRanking(g);
   endSeason(g);
   const co = ensureCoefficients(g);
+  for (const n of Object.keys(live.country)) assertEq(co.country[n][year], live.country[n], `${n} live points`);
+  assertEq(next.map((r) => r.nationId).join(), countryRanking(g).map((r) => r.nationId).join(), 'next season as it stood');
   assert(Object.keys(co.country).every((n) => co.country[n][year] !== undefined), 'every country has a score for the season');
   assert(co.country.ENG[year] > 0, 'England scored');
   assert(countryTotal(g, 'ENG') !== before || co.country.ENG[year] === co.country.ENG[year - 5], 'total moved on a season');

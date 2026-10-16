@@ -77,6 +77,19 @@ export function countryRanking(game, year = game.season.year) {
 // Called at the end of the season, before the competitions are reset.
 export function recordSeason(game, year, comps) {
   const co = ensureCoefficients(game);
+  const { clubPts, country } = seasonPoints(game, comps);
+  for (const [id, p] of Object.entries(clubPts)) (co.club[id] = co.club[id] || {})[year] = p;
+  for (const [n, v] of Object.entries(country)) (co.country[n] = co.country[n] || {})[year] = v;
+  // Countries with no club in Europe this season score 0 for it.
+  for (const n of Object.keys(co.country)) if (co.country[n][year] === undefined) co.country[n][year] = 0;
+  // Keep six seasons of club history (five count, one to show the change).
+  for (const rec of Object.values(co.club)) for (const y of Object.keys(rec)) if (Number(y) < year - 6) delete rec[y];
+  for (const rec of Object.values(co.country)) for (const y of Object.keys(rec)) if (Number(y) < year - 9) delete rec[y];
+}
+
+// The season in progress (or just played): club points and country scores so
+// far, from the competitions' fixtures and rounds.
+export function seasonPoints(game, comps = ['CCC', 'CEL', 'CCL'].map((id) => game.competitions[id]).filter(Boolean)) {
   const clubPts = {};
   const entered = {};
   const add = (id, p) => { clubPts[id] = (clubPts[id] || 0) + p; };
@@ -107,16 +120,27 @@ export function recordSeason(game, year, comps) {
   }
   const byCountry = {};
   for (const [id, p] of Object.entries(clubPts)) {
-    (co.club[id] = co.club[id] || {})[year] = p;
     const n = game.clubs[id]?.nationId;
     if (n) byCountry[n] = (byCountry[n] || 0) + p;
   }
-  for (const n of Object.keys(entered)) {
-    (co.country[n] = co.country[n] || {})[year] = Math.round((byCountry[n] / entered[n]) * 1000) / 1000;
-  }
-  // Countries with no club in Europe this season score 0 for it.
-  for (const n of Object.keys(co.country)) if (co.country[n][year] === undefined) co.country[n][year] = 0;
-  // Keep six seasons of club history (five count, one to show the change).
-  for (const rec of Object.values(co.club)) for (const y of Object.keys(rec)) if (Number(y) < year - 6) delete rec[y];
-  for (const rec of Object.values(co.country)) for (const y of Object.keys(rec)) if (Number(y) < year - 9) delete rec[y];
+  const country = {};
+  for (const n of Object.keys(entered)) country[n] = Math.round((byCountry[n] / entered[n]) * 1000) / 1000;
+  return { clubPts, country };
+}
+
+// Next season's country ranking as things stand: the last four seasons plus
+// this season's points so far.
+export function liveRanking(game) {
+  const co = ensureCoefficients(game);
+  const year = game.season.year;
+  const { country } = seasonPoints(game);
+  return Object.keys(co.country)
+    .filter((id) => game.nations[id])
+    .map((nationId) => {
+      const rec = co.country[nationId];
+      const total = [year - 4, year - 3, year - 2, year - 1].reduce((a, y) => a + (rec?.[y] || 0), 0) + (country[nationId] || 0);
+      return { nationId, total };
+    })
+    .sort((a, b) => b.total - a.total || a.nationId.localeCompare(b.nationId))
+    .map((r, i) => ({ ...r, rank: i + 1, places: accessFor(i + 1) }));
 }

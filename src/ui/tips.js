@@ -42,6 +42,9 @@ const TIPS = {
   euro: ['The Euro', `<p>The finals are played in June, after the club season. Groups of four, then knockouts.</p>
     <p>Pick any match of the next match day and <b>Watch</b> it live, play the day with instant results, or <b>Sim to end</b> for the final result.</p>
     <p><b>Scorers</b> lists the top scorers and assists of the tournament.</p>`],
+  rankings: ['Coefficients', `<p>Countries and clubs earn points for European results: 2 for a win, 1 for a draw, and a bonus for each stage reached.</p>
+    <p>The <b>country ranking</b> (the last five seasons) decides how many clubs each country sends to the Champions Cup, Continental League and Conference. <b>So far</b> and <b>Next season</b> show how this season's results are moving it.</p>
+    <p>The <b>club ranking</b> seeds the league-phase draw: a higher coefficient means easier opponents.</p>`],
   otherteams: ['Other teams', '<p>Look at any club in the world: its squad, finances and reputation. Tap a player to open his card or make an offer.</p>'],
 };
 

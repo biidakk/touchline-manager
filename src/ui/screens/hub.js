@@ -43,6 +43,7 @@ const MENU = [
   ['youth', 'Training', 'training', 'Training', 10],
   ['money', 'Finances', 'finances', 'Finances', 6],
   ['flag', 'National Teams', 'national', 'National Teams', 9],
+  ['chart', 'Coefficients', 'rankings', 'Coefficients', 9],
 ];
 
 export function render(root, ctx, params = {}) {
@@ -130,11 +131,13 @@ export function render(root, ctx, params = {}) {
     const prepare = g.season.phase !== 'over' && !toFinals && (decisionsDue(g).any || tourDue(g));
     const simOk = g.season.phase !== 'over' && !prepare;
     const todo = clubChecklist(g);
+    // Coefficients exist in the world of real countries (not the fictional one).
+    const coefOk = !!(g.coefficients || g.nations.ENG);
 
     root.innerHTML = `${clubTopbar(ctx)}
     <div class="panel" style="left:20px;top:92px;width:282px;height:394px">
       <ul class="menu-list">
-        ${MENU.map(([ic, label, screen, title, m]) => `<li data-action="menu" data-screen="${screen}" data-title="${title}" data-m="${m}">${icon(ic)}${label}${screen === 'career' && offerCount ? ` <span class="badge list" title="Job offers">${offerCount}</span>` : ''}</li>`).join('')}
+        ${MENU.filter(([, , screen]) => screen !== 'rankings' || coefOk).map(([ic, label, screen, title, m]) => `<li data-action="menu" data-screen="${screen}" data-title="${title}" data-m="${m}">${icon(ic)}${label}${screen === 'career' && offerCount ? ` <span class="badge list" title="Job offers">${offerCount}</span>` : ''}</li>`).join('')}
         <li class="sep phone-hide" data-action="comp" data-id="${comp.id}">${icon('ball')}${esc(comp.name)}</li>
         <li class="phone-hide" data-action="comp" data-id="${cup.id}">${icon('trophy')}${esc(cup.name)}</li>
         ${cont ? `<li class="phone-hide" data-action="comp" data-id="${cont.id}">${icon('star')}${esc(cont.name)}${cont.clubIds.includes(club.id) ? '' : ' <span class="soon">not qualified</span>'}</li>` : ''}
@@ -144,6 +147,7 @@ export function render(root, ctx, params = {}) {
       ${compTiles}
       ${finals ? `<div class="comp-tile" data-action="comp" data-id="${finals.id}" title="${esc(finals.name)}">${icon('trophy', 'ico big')}<span>${esc(finals.name)}</span></div>`
         : `<div class="comp-tile" data-action="comp" data-id="" title="All leagues">${icon('flag', 'ico big')}<span>All leagues</span></div>`}
+      ${coefOk ? `<div class="comp-tile" data-action="menu" data-screen="rankings" data-title="Coefficients" data-m="9" title="Coefficients">${icon('chart', 'ico big')}<span>Coefficients</span></div>` : ''}
     </div>
 
     <div class="panel hub-fixtures" style="left:320px;top:92px;width:322px;height:608px;display:flex;flex-direction:column">${lastHtml}${upcoming || '<div class="empty">No fixtures left this season.</div>'}
