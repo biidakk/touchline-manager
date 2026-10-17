@@ -1,7 +1,7 @@
 import { test, assert, assertEq, assertBetween, info } from './harness.js';
 import { generateWorld, startCareer } from '../core/worldgen.js';
 import { openWindow, windows, askingPrice, evaluateBid, buyPlayer, listPlayer, acceptOffer, renewContract, searchPlayers,
-  willJoin, rejectOffer, newOffers, leaguePriceFactor, expiringContracts, leagueGamesLeft, contractWish, respondToContract }
+  willJoin, rejectOffer, newOffers, leaguePriceFactor, buyerPriceFactor, expiringContracts, leagueGamesLeft, contractWish, respondToContract }
   from '../core/transfers.js';
 import { ageOf } from '../core/valuation.js';
 import { loanSuitors, loanToClub } from '../core/loans.js';
@@ -302,4 +302,15 @@ test('AI transfer lists: clubs list surplus players for each window; listed play
   while (g.day <= close) startDay(g);
   assertEq(Object.values(g.players).filter((x) => x.aiListed).length, 0, 'the lists end with the window');
   info(`Listed at the start of the summer window: ${listed.length} players`);
+});
+
+test('bids for your players: clubs from richer leagues pay more', () => {
+  const g = career('buyer-price', 'CZE-L1', 0);
+  const f = (buyer, seller) => buyerPriceFactor(g, buyer, seller);
+  assertEq(f('CZE', 'CZE'), 1, 'from home');
+  assert(f('ENG', 'CZE') > 1.5 && f('ENG', 'CZE') <= 2.2, `England for a Czech player: ${f('ENG', 'CZE')}`);
+  assert(f('ENG', 'CZE') > f('POR', 'CZE') && f('POR', 'CZE') > 1, 'the bigger the league, the more');
+  assert(f('CZE', 'ENG') < 1 && f('CZE', 'ENG') >= 0.75, 'a smaller league pays less');
+  assert(Math.abs(f('ESP', 'ENG') - 1) <= 0.25, 'the big leagues among themselves: close');
+  info(`Czech player: England x${f('ENG', 'CZE').toFixed(2)}, Portugal x${f('POR', 'CZE').toFixed(2)}, Austria x${f('AUT', 'CZE').toFixed(2)}`);
 });

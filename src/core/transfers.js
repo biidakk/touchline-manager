@@ -70,15 +70,31 @@ export function askingPrice(game, p) {
 // 11-20 x1.0, below that x0.85 (worlds without coefficients: x1). The ranking
 // only changes at season end, so it is worked out once a season.
 const rankCache = new WeakMap();
-export function leaguePriceFactor(game, nationId) {
-  if (!game.coefficients || !nationId) return 1;
+function countryRank(game, nationId) {
   let c = rankCache.get(game);
   if (!c || c.year !== game.season.year) {
     c = { year: game.season.year, rank: new Map(countryRanking(game).map((r) => [r.nationId, r.rank])) };
     rankCache.set(game, c);
   }
-  const rank = c.rank.get(nationId) || 99;
+  return c.rank.get(nationId) || 99;
+}
+export function leaguePriceFactor(game, nationId) {
+  if (!game.coefficients || !nationId) return 1;
+  const rank = countryRank(game, nationId);
   return rank <= 5 ? 1.35 : rank <= 10 ? 1.15 : rank <= 20 ? 1 : 0.85;
+}
+
+// What a buying club pays for one of your players, against a buyer from your
+// own country: the richer the buyer's league, the more (as in the old CSM,
+// where a bid from one of the big leagues was worth far more than one from
+// home). Each place the buyer's country stands above yours in the coefficient
+// ranking adds 8% (below: 8% less), from x0.75 up to x2.2; e.g. a Czech club
+// (10th) gets about x1.7 from England, x1.3 from Portugal (6th), x0.85 from
+// Austria (12th). Worlds without coefficients: x1.
+export function buyerPriceFactor(game, buyerNationId, sellerNationId) {
+  if (!game.coefficients || !buyerNationId || !sellerNationId || buyerNationId === sellerNationId) return 1;
+  const diff = Math.min(countryRank(game, sellerNationId), 40) - Math.min(countryRank(game, buyerNationId), 40);
+  return Math.min(2.2, Math.max(0.75, 1 + 0.08 * diff));
 }
 
 // Yearly wage a player asks to join (or stay at) a club.
@@ -404,16 +420,26 @@ function aiOffersForUser(game, rng) {
     const chance = p.listed ? 0.08 : wantsOut ? 0.04 : 0.003;
     if (!rng.chance(chance) || game.offers.some((o) => o.playerId === id)) continue;
     const price = p.listed ? p.askingPrice : playerValue(p, game.season.year) * (wantsOut ? rng.float(0.85, 1.15) : rng.float(1.1, 1.5));
-    const fee = Math.round((price * rng.float(p.listed ? 0.75 : 1, p.listed ? 1.05 : 1)) / 1000) * 1000;
-    const buyers = others.filter((c) => c.budget > fee * 1.5 && p.skill >= clubLevel(game, c) - 3 && p.skill <= clubLevel(game, c) + 12);
+    const base = price * rng.float(p.listed ? 0.75 : 1, p.listed ? 1.05 : 1);
+    const feeFor = (c) => Math.round((base * buyerPriceFactor(game, c.nationId, user.nationId)) / 1000) * 1000;
+    // Clubs he would play for; the big clubs also chase a young talent who
+    // isn't good enough for them yet (23 or under, the potential to get there).
+    const young = ageOf(p, game.season.year) <= 23;
+    const fits = (c) => {
+      const lvl = clubLevel(game, c);
+      return (p.skill >= lvl - 3 || (young && p.potential >= lvl - 1 && p.skill >= lvl - 12)) && p.skill <= lvl + 12;
+    };
+    const buyers = others.filter((c) => fits(c) && c.budget > feeFor(c) * 1.5);
     if (!buyers.length) continue;
     const buyer = rng.pick(buyers);
+    const fee = feeFor(buyer);
     // How badly they want him: a player who would walk into their XI, and an unlisted one they had to chase.
     const interest = Math.min(0.9, 0.25 + Math.max(0, p.skill - clubLevel(game, buyer)) * 0.05 + (p.listed ? 0 : 0.2) + rng.float(0, 0.2));
     const offer = { id: 'o' + (game.ids.offer = (game.ids.offer || 0) + 1), playerId: id, clubId: buyer.id, fee, day: game.day,
       expires: game.day + 7, interest, seen: false };
     game.offers.push(offer);
-    addNews(game, `Offer: ${buyer.name} bid ${money(game, fee)} for ${p.first} ${p.last} (valid 7 days).`, 'offer');
+    const abroad = buyer.nationId !== user.nationId ? ` (${game.nations[buyer.nationId]?.name})` : '';
+    addNews(game, `Offer: ${buyer.name}${abroad} bid ${money(game, fee)} for ${p.first} ${p.last} (valid 7 days).`, 'offer');
   }
 }
 
