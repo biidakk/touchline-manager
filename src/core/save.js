@@ -149,7 +149,7 @@ export function deserialize(text) {
   } catch {
     throw new Error('The file is not valid JSON.');
   }
-  if (!data || data.format !== 'touchline-save' || !data.game) throw new Error('This is not a Touchline save file.');
+  if (!data || data.format !== 'touchline-save' || !data.game) throw new Error('This is not a Squadra Manager save file.');
   const game = data.game;
   if (typeof game.version !== 'number' || game.version > GAME_VERSION) {
     throw new Error(`Unsupported save version ${game.version}.`);

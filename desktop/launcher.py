@@ -1,8 +1,8 @@
-"""Touchline Manager desktop app: serves the game files locally and opens them
+"""Squadra Manager desktop app: serves the game files locally and opens them
 in a window of its own (Microsoft Edge WebView2, part of Windows 10/11).
 
 Run from source:   python desktop/launcher.py
-Build the .exe:    desktop\\build_exe.bat   (creates app\\TouchlineManager.exe)
+Build the .exe:    desktop\\build_exe.bat   (creates app\\SquadraManager.exe)
 
 Saves live in the window's own browser storage under
 %APPDATA%\\TouchlineManager (separate from saves made in a normal browser:
@@ -19,7 +19,7 @@ import webview
 
 # Fixed address: the browser storage (saves) belongs to it, so it must not change.
 HOST, PORT = '127.0.0.1', 8766
-TITLE = 'Touchline Manager'
+TITLE = 'Squadra Manager'
 
 
 def game_dir():
@@ -77,6 +77,7 @@ def main():
     webview.settings['ALLOW_DOWNLOADS'] = True  # Export save files
     webview.create_window(TITLE, f'http://{HOST}:{PORT}/index.html', width=1320, height=790, min_size=(960, 560),
                           background_color='#0b2a6b')
+    # The folder keeps the game's old name, so saves made before the rename stay.
     storage = os.path.join(os.environ.get('APPDATA', user_dir()), 'TouchlineManager')
     webview.start(private_mode=False, storage_path=storage)
     if server:

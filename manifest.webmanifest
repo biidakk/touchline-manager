@@ -1,6 +1,6 @@
 {
-  "name": "Touchline Manager",
-  "short_name": "Touchline",
+  "name": "Squadra Manager",
+  "short_name": "Squadra",
   "description": "A football manager game: six countries, your club, your career.",
   "start_url": "./index.html",
   "scope": "./",

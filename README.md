@@ -1,10 +1,10 @@
-# Touchline Manager
+# Squadra Manager
 
 A football (soccer) management game, inspired by the layout of Czech Soccer Manager.
 
 ## Play
 - **In your browser (PC, tablet or phone):** **https://biidakk.github.io/touchline-manager/**. On a phone, turn it sideways and use "Add to Home Screen" to install it as an app; after the first visit it also works offline. Your career is saved in that browser (use Export to keep a backup).
-- **Windows app:** download `TouchlineManager.exe` from the **[latest release](https://github.com/biidakk/touchline-manager/releases/latest)** and run it. Windows may warn about an unknown publisher (the app isn't code-signed): click *More info → Run anyway*.
+- **Windows app:** download `SquadraManager.exe` from the **[latest release](https://github.com/biidakk/touchline-manager/releases/latest)** and run it. Windows may warn about an unknown publisher (the app isn't code-signed): click *More info → Run anyway*.
 - **From the source:** download this repository and double-click `start.bat` (needs Python).
 
 **The world:**
@@ -15,7 +15,7 @@ A football (soccer) management game, inspired by the layout of Czech Soccer Mana
 - **Your own names:** put real or any other names in **`names.json`** (see [Your own names](#your-own-names)).
 
 ## Starting the game
-**Desktop app:** double-click **`app\TouchlineManager.exe`**. The game opens in its own window, with no browser and nothing else to start. It needs Windows 10/11 with the Edge WebView2 runtime, which is normally already installed. Saves are kept under `%APPDATA%\TouchlineManager`.
+**Desktop app:** double-click **`app\SquadraManager.exe`**. The game opens in its own window, with no browser and nothing else to start. It needs Windows 10/11 with the Edge WebView2 runtime, which is normally already installed. Saves are kept under `%APPDATA%\TouchlineManager`.
 
 **In a browser:**
 1. Double-click **`start.bat`**. It starts `python -m http.server 8765` in this folder and opens http://localhost:8765.
@@ -37,7 +37,7 @@ The app and the browser keep separate saves. To move a career between them, use 
 
 ## Real teams and players
 The published game uses near-real club names and generated players. For your own copy you can play with **real clubs and real squads** from a real-teams file (`realpack.json`, format `touchline-realpack`). It is personal-use data and is never published with the game.
-- **On the PC** (`start.bat`, `start-phone.bat` or `TouchlineManager.exe`): put `realpack.json` in the game folder (next to the .exe for the Windows app).
+- **On the PC** (`start.bat`, `start-phone.bat` or `SquadraManager.exe`): put `realpack.json` in the game folder (next to the .exe for the Windows app).
 - **On a phone or any browser:** send the file to the device, then on **New career → Real teams → Load file**. It stays stored in that browser (**Remove** takes it out again).
 - **Sharing with friends (locked copy):** `tools/make_realpack.py` also writes `realpack.enc`, an encrypted copy that can sit on the website, plus a code kept in `private/realpack-code.txt`. A link ending in `#rp=CODE` unlocks the real teams on the device that opens it; in an installed home-screen app, use **New career → Real teams → Enter code**. Without the code the file is unreadable. Anyone you give the link or code can unlock it.
 - **New career:** tick **Real clubs and players**. Clubs get their real names, stadiums and head coaches, and their squads are replaced by the real players (positions, ages, nationalities, heights and shirt numbers). Careers you already play are not changed.
@@ -46,7 +46,7 @@ The published game uses near-real club names and generated players. For your own
 - **Youth players** arriving each summer are still generated.
 - **Making the file:** `tools/make_realpack.py` merges per-league research files (`private/realpack/<LEAGUE>.json`) into `realpack.json` and reports problems. Clubs with fewer than 16 players or 2 keepers keep their generated squad (but take the real name).
 ## Your own names
-`names.json` (in the game folder, or next to `TouchlineManager.exe`) maps the game's names to yours, for example `"clubs": { "Manchester Blue": { "name": "...", "short": "...", "stadium": "...", "manager": "..." } }`. It also covers nations, leagues, cups and players ("Old Name": "New Name").
+`names.json` (in the game folder, or next to `SquadraManager.exe`) maps the game's names to yours, for example `"clubs": { "Manchester Blue": { "name": "...", "short": "...", "stadium": "...", "manager": "..." } }`. It also covers nations, leagues, cups and players ("Old Name": "New Name").
 - **When it applies:** when a world is created and every time a career is loaded, so you can edit it at any time.
 - **Format:** the file explains itself and has examples. Keep it valid JSON (quotes, commas) and save it as UTF-8. If it can't be read, the title screen says so.
 - **In the game:** use **Edit** on any player card (name, and shirt number at your club: taking a used number swaps the two), **Edit** on a club in Other Teams, or **Edit club** in My Team (name, short name, stadium name, kit colours and pattern, crest colours, shape and pattern, with a live preview).
@@ -72,6 +72,7 @@ The published game uses near-real club names and generated players. For your own
    - **Youth:** promote academy players to the first team, or release them.
 4. **Match day:**
    - **Pre-match screen:** both teams side by side. The middle column compares the two captains, set-piece takers, teamwork and goalkeepers (left number: home team, right: away team; the better one is green). Under each pitch: average skill of the eleven, their market value and average age.
+   - **Kick-off:** each match opens on a stadium photo with both crests, the competition and the ground. It starts by itself after a moment, or tap to go straight in.
    - **Live 2D match:** passing moves, corners, free kicks with a wall, penalties, commentary, speed 1×/2×/4×, pause, and **Instant result**.
    - **Tactics & subs** is available at any time, and opens automatically at half-time and when one of your players is injured. Drag a substitute onto a player to bring him on.
 5. **Transfers:**
@@ -226,6 +227,8 @@ With the server running, open http://localhost:8765/tests.html. The page title s
 ## Project layout
 ```
 index.html, css/theme.css     app shell and theme (1280×720 stage, scaled to the window)
+img/bg/                       background photos per screen (Unsplash, blurred so no advertising can be read; CREDITS.md)
+icons/, tools/icon/           app icons; tools/icon/icon.html draws them (rendered to PNG and app.ico)
 src/core/                     game logic: no DOM access, testable
   rng.js          seeded random numbers (state stored in the save)
   data.js         nations, formations, kit colours, save version
@@ -270,7 +273,7 @@ src/ui/                       screens and components (SVG jerseys, crests, flags
   tips.js         first-season tips
 src/tests/                    tests run by tests.html
 names.json                    your own names (see above)
-desktop/launcher.py           the desktop app (local server + its own window); desktop/build_exe.bat builds app/TouchlineManager.exe
+desktop/launcher.py           the desktop app (local server + its own window); desktop/build_exe.bat builds app/SquadraManager.exe
 ```
 
 ## Possible next steps

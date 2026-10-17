@@ -172,7 +172,7 @@ export function nationFor(game, name) {
 // Problems that make a pack unusable (an empty list means it's fine).
 export function checkPack(pack) {
   if (!pack || typeof pack !== 'object') return ['The file is not a real-teams file.'];
-  if (pack.format !== PACK_FORMAT) return ['This is not a Touchline real-teams file (format "touchline-realpack").'];
+  if (pack.format !== PACK_FORMAT) return ['This is not a Squadra Manager real-teams file (format "touchline-realpack").'];
   if (!pack.clubs || typeof pack.clubs !== 'object' || !Object.keys(pack.clubs).length) return ['The file has no clubs.'];
   return [];
 }

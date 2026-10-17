@@ -15,7 +15,7 @@ export function render(root, ctx) {
   })).join('');
 
   root.innerHTML = `<div class="title-screen">
-    <div class="logo">Touchline Manager<small>FOOTBALL MANAGEMENT</small></div>
+    <div class="logo">Squadra Manager<small>FOOTBALL MANAGEMENT</small></div>
     <div class="title-kits">${kits}</div>
     <div class="title-menu">
       <button class="btn" data-action="continue" id="btn-continue" disabled>Continue career</button>
@@ -23,7 +23,7 @@ export function render(root, ctx) {
       <button class="btn btn-blue" data-action="new">New career</button>
       <button class="btn btn-blue" data-action="import">Import save file</button>
     </div>
-    <div class="version">v3.3.3</div>
+    <div class="version">v3.4</div>
   </div>`;
 
   ctx.hasSave().then((has) => {

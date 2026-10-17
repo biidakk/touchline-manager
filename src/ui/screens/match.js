@@ -10,6 +10,8 @@ import { MatchAnim } from '../components/matchanim.js';
 import { finishMatch } from '../matchflow.js';
 import { teamOf } from '../../core/national.js';
 import { esc, bindActions, playerName } from '../util.js';
+import { roundLabel } from '../components/report.js';
+import { photoUrl, stadiumFor } from '../backgrounds.js';
 
 // Real milliseconds per match minute at each speed.
 const MINUTE_MS = { 1: 2000, 2: 1000, 4: 400 };
@@ -35,6 +37,20 @@ export function render(root, ctx) {
   let timer = null;
   let caption = M.caption || 'The players are ready.';
   M.paused = false;
+  // Before kick-off, as in the old CSM: the stadium, both teams and the venue.
+  const splash = m.period === 'PRE' && !M.kickedOff;
+  function kickoffHtml() {
+    const comp = g.competitions[f.compId];
+    const ground = !f.neutral && g.clubs[f.homeId]?.stadium;
+    const venue = ground ? `${esc(ground.name)} · ${ground.capacity.toLocaleString('en-US')} seats` : f.neutral ? 'Neutral ground' : '';
+    const side = (i) => `<div class="ko-team">${crest(clubs[i].crest, 150)}<b>${esc(clubs[i].name)}</b></div>`;
+    return `<div class="kickoff" id="kickoff" data-action="kickoff" style="background-image:url(${photoUrl(stadiumFor(f.id))})">
+      <div class="ko-comp">${esc(comp?.name || '')}<span>${esc(comp ? roundLabel(g, f) : '')}</span></div>
+      <div class="ko-teams">${side(0)}<div class="ko-vs">VS</div>${side(1)}</div>
+      ${venue ? `<div class="ko-venue">${icon('stadium')} ${venue}</div>` : ''}
+      <div class="ko-hint">Tap to start</div>
+    </div>`;
+  }
 
   root.innerHTML = `
   <div class="match-head">
@@ -58,7 +74,7 @@ export function render(root, ctx) {
     ${M.spectator ? '' : '<button class="btn btn-small" data-action="tactics" title="Substitutions, positions, intent and style">Tactics &amp; subs</button>'}
     <div class="seg" id="speed">${[1, 2, 4].map((s) => `<button data-action="speed" data-v="${s}">${s}×</button>`).join('')}</div>
     <button class="btn btn-blue btn-small" data-action="instant">Instant result</button>
-  </div>`;
+  </div>${splash ? kickoffHtml() : ''}`;
 
   const $ = (id) => root.querySelector('#' + id);
   const shirts = new Map();
@@ -211,6 +227,13 @@ export function render(root, ctx) {
   }
 
   bindActions(root, {
+    kickoff: () => {
+      if (M.kickedOff) return;
+      M.kickedOff = true;
+      $('kickoff')?.classList.add('out');
+      setTimeout(() => $('kickoff')?.remove(), 400);
+      later(tick, 500);
+    },
     pause: () => { M.paused = !M.paused; if (!M.paused) later(tick, 50); drawInfo(); },
     speed: (el) => { g.settings.matchSpeed = Number(el.dataset.v); drawInfo(); },
     lineups: async () => {
@@ -235,6 +258,7 @@ export function render(root, ctx) {
   drawPitch(0);
   drawInfo();
   if (m.finished) finishMatch(ctx, f, m);
+  else if (splash) setTimeout(() => { if (root.isConnected && $('kickoff')) $('kickoff').click(); }, 2600);
   else later(tick, m.period === 'PRE' ? 400 : 200);
   return () => clearTimeout(timer);
 }

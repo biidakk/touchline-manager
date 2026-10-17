@@ -7,6 +7,7 @@ import { generateWorld, startCareer } from '../core/worldgen.js';
 import { startAcademy } from '../core/development.js';
 import { applyRenames } from '../core/renames.js';
 import { checkPack } from '../core/realpack.js';
+import { setBackground } from './backgrounds.js';
 import * as title from './screens/title.js';
 import * as newgame from './screens/newgame.js';
 import * as hub from './screens/hub.js';
@@ -94,6 +95,7 @@ const ctx = {
     if (this.cleanup) this.cleanup();
     setMoneyGame(this.game);
     this.cleanup = SCREENS[this.current.name].render(fresh, this, this.current.params) || null;
+    setBackground(this.current.name, this.game);
     // First-season tips (the hub shows its own after its pop-ups).
     const name = this.current.name;
     if (this.game && name !== 'hub') setTimeout(() => { if (this.current?.name === name) showTip(this, name); }, 250);

@@ -1,4 +1,4 @@
-"""Serves Touchline Manager on the home network for phones and tablets.
+"""Serves Squadra Manager on the home network for phones and tablets.
 
 Like `python -m http.server`, but it prints the addresses to open, keeps the log
 quiet, sends no-cache headers (so the phone always gets the latest files), and
@@ -82,7 +82,7 @@ class Server(socketserver.ThreadingMixIn, http.server.HTTPServer):
 def main():
     addrs = lan_addresses()
     print()
-    print('  Touchline Manager for your phone')
+    print('  Squadra Manager for your phone')
     print('  --------------------------------')
     print('  On your phone (same Wi-Fi), type this address exactly, including http://')
     print()

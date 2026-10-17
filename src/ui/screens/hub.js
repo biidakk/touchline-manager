@@ -138,9 +138,6 @@ export function render(root, ctx, params = {}) {
     <div class="panel" style="left:20px;top:92px;width:282px;height:394px">
       <ul class="menu-list">
         ${MENU.filter(([, , screen]) => screen !== 'rankings' || coefOk).map(([ic, label, screen, title, m]) => `<li data-action="menu" data-screen="${screen}" data-title="${title}" data-m="${m}">${icon(ic)}${label}${screen === 'career' && offerCount ? ` <span class="badge list" title="Job offers">${offerCount}</span>` : ''}</li>`).join('')}
-        <li class="sep phone-hide" data-action="comp" data-id="${comp.id}">${icon('ball')}${esc(comp.name)}</li>
-        <li class="phone-hide" data-action="comp" data-id="${cup.id}">${icon('trophy')}${esc(cup.name)}</li>
-        ${cont ? `<li class="phone-hide" data-action="comp" data-id="${cont.id}">${icon('star')}${esc(cont.name)}${cont.clubIds.includes(club.id) ? '' : ' <span class="soon">not qualified</span>'}</li>` : ''}
       </ul>
     </div>
     <div class="panel comp-tiles" style="left:20px;top:500px;width:282px;height:200px;grid-template-columns:repeat(3,1fr)">
