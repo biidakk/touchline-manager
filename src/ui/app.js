@@ -7,7 +7,6 @@ import { generateWorld, startCareer } from '../core/worldgen.js';
 import { startAcademy } from '../core/development.js';
 import { applyRenames } from '../core/renames.js';
 import { checkPack } from '../core/realpack.js';
-import { setBackground } from './backgrounds.js';
 import * as title from './screens/title.js';
 import * as newgame from './screens/newgame.js';
 import * as hub from './screens/hub.js';
@@ -61,6 +60,26 @@ window.addEventListener('resize', fit);
 window.addEventListener('orientationchange', () => setTimeout(fit, 200));
 fit();
 
+// Screens redraw themselves whole (root.innerHTML = ...) when you tap a player,
+// sort a column or open a dialog; without this every list jumps back to the top.
+// A list keeps its place when the redraw has the same list (same position,
+// style and table header); a different tab or table starts at the top.
+const SCROLLERS = '.scroll, [style*="overflow-y:auto"]';
+const nativeHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+function keepScroll(el) {
+  const key = (s, i) => `${i}|${s.getAttribute('style') || ''}|${s.querySelector('thead')?.textContent.trim() || ''}`;
+  Object.defineProperty(el, 'innerHTML', {
+    configurable: true,
+    get() { return nativeHTML.get.call(this); },
+    set(html) {
+      const saved = new Map();
+      this.querySelectorAll(SCROLLERS).forEach((s, i) => { if (s.scrollTop > 0) saved.set(key(s, i), s.scrollTop); });
+      nativeHTML.set.call(this, html);
+      if (saved.size) this.querySelectorAll(SCROLLERS).forEach((s, i) => { const t = saved.get(key(s, i)); if (t) s.scrollTop = t; });
+    },
+  });
+}
+
 let toastTimer = 0;
 
 const ctx = {
@@ -91,11 +110,11 @@ const ctx = {
     const fresh = rootRef.el.cloneNode(false);
     rootRef.el.replaceWith(fresh);
     rootRef.el = fresh;
+    keepScroll(fresh);
     // A screen may return a cleanup function (e.g. to stop the live match clock).
     if (this.cleanup) this.cleanup();
     setMoneyGame(this.game);
     this.cleanup = SCREENS[this.current.name].render(fresh, this, this.current.params) || null;
-    setBackground(this.current.name, this.game);
     // First-season tips (the hub shows its own after its pop-ups).
     const name = this.current.name;
     if (this.game && name !== 'hub') setTimeout(() => { if (this.current?.name === name) showTip(this, name); }, 250);

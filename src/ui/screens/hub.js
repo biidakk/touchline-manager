@@ -46,6 +46,33 @@ const MENU = [
   ['chart', 'Coefficients', 'rankings', 'Coefficients', 9],
 ];
 
+// Competition badges for the hub tiles: a coloured disc with the division
+// number (leagues), a trophy (cups and international finals), stars (the
+// three European competitions, each in its own colour) or a globe (all leagues).
+const TROPHY = '<path d="M7 3h10v2h3v2.5a4.5 4.5 0 0 1-4.3 4.5A5 5 0 0 1 13 15v2h3v2.5H8V17h3v-2a5 5 0 0 1-2.7-3A4.5 4.5 0 0 1 4 7.5V5h3zm-1.2 4v.5a2.5 2.5 0 0 0 1.4 2.2A6 6 0 0 1 7 8V7zm12.4 0H17v1a6 6 0 0 1-.2 1.7 2.5 2.5 0 0 0 1.4-2.2z" fill="currentColor"/>';
+const STAR = (x, y, r) => {
+  const pts = Array.from({ length: 10 }, (_, i) => {
+    const a = (Math.PI / 5) * i - Math.PI / 2;
+    const d = i % 2 ? r * 0.45 : r;
+    return `${(x + d * Math.cos(a)).toFixed(2)},${(y + d * Math.sin(a)).toFixed(2)}`;
+  });
+  return `<polygon points="${pts.join(' ')}" fill="currentColor"/>`;
+};
+const GLOBE = '<g fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5S9.4 5.9 12 3.5z"/></g>';
+const BADGES = {
+  tier1: ['#1f9e45', '#147a33', null], tier2: ['#3f8f5a', '#2a6a40', null],
+  cup: ['#f2b632', '#c47f0a', TROPHY], finals: ['#f2b632', '#c47f0a', TROPHY],
+  CCC: ['#2342a8', '#0d1f63', STAR(12, 6.2, 5.2) + STAR(5.8, 16.2, 5.2) + STAR(18.2, 16.2, 5.2)],
+  CEL: ['#f07a1a', '#b5520a', STAR(12, 12.8, 10)],
+  CCL: ['#12a588', '#0b725d', STAR(7, 12.5, 6.2) + STAR(17, 12.5, 6.2)],
+  all: ['#2a7ae6', '#0d4bb0', GLOBE],
+};
+function compBadge(kind, tier) {
+  const [a, b, art] = BADGES[kind] || BADGES[kind.startsWith('tier') ? 'tier2' : 'cup'];
+  const inner = art ? `<svg viewBox="0 0 24 24" aria-hidden="true">${art}</svg>` : `<b>${tier}</b>`;
+  return `<i class="comp-badge" style="background:linear-gradient(180deg,${a},${b})">${inner}</i>`;
+}
+
 export function render(root, ctx, params = {}) {
   const st = { newsLimit: 4, transferScope: 'all', transferPage: 0, newsFilter: 'all' };
 
@@ -122,7 +149,7 @@ export function render(root, ctx, params = {}) {
     const cont = continentalOf(g, club.id) || g.competitions.CCC;
     const compTiles = [...nation.leagueIds.map((id) => g.competitions[id]), cup, ...(cont ? [cont] : [])].map((c) => `
       <div class="comp-tile" data-action="comp" data-id="${c.id}" title="${esc(c.name)}">
-        ${icon(c.type === 'league' ? 'table' : c.type === 'continental' ? 'star' : 'trophy', 'ico big')}<span>${esc(c.name)}</span></div>`).join('');
+        ${compBadge(c.type === 'league' ? `tier${c.tier}` : c.type === 'continental' ? c.id : 'cup', c.tier)}<span>${esc(c.name.replace(/^Continental (Champions)/, '$1'))}</span></div>`).join('');
 
     // This summer's international finals, once drawn: a tile of their own (in
     // place of All leagues), and Continue follows them after the club season.
@@ -142,9 +169,8 @@ export function render(root, ctx, params = {}) {
     </div>
     <div class="panel comp-tiles" style="left:20px;top:500px;width:282px;height:200px;grid-template-columns:repeat(3,1fr)">
       ${compTiles}
-      ${finals ? `<div class="comp-tile" data-action="comp" data-id="${finals.id}" title="${esc(finals.name)}">${icon('trophy', 'ico big')}<span>${esc(finals.name)}</span></div>`
-        : `<div class="comp-tile" data-action="comp" data-id="" title="All leagues">${icon('flag', 'ico big')}<span>All leagues</span></div>`}
-      ${coefOk ? `<div class="comp-tile" data-action="menu" data-screen="rankings" data-title="Coefficients" data-m="9" title="Coefficients">${icon('chart', 'ico big')}<span>Coefficients</span></div>` : ''}
+      ${finals ? `<div class="comp-tile" data-action="comp" data-id="${finals.id}" title="${esc(finals.name)}">${compBadge('finals')}<span>${esc(finals.name)}</span></div>`
+        : `<div class="comp-tile" data-action="comp" data-id="" title="All leagues">${compBadge('all')}<span>All leagues</span></div>`}
     </div>
 
     <div class="panel hub-fixtures" style="left:320px;top:92px;width:322px;height:608px;display:flex;flex-direction:column">${lastHtml}${upcoming || '<div class="empty">No fixtures left this season.</div>'}

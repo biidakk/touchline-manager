@@ -1,6 +1,6 @@
 {
   "name": "Squadra Manager",
-  "short_name": "Squadra",
+  "short_name": "SM",
   "description": "A football manager game: six countries, your club, your career.",
   "start_url": "./index.html",
   "scope": "./",

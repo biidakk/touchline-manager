@@ -2,8 +2,8 @@
   --deep: #041a44;
   --bg1: #0b3d8f;
   --bg2: #06286a;
-  --panel-top: rgba(40, 110, 215, 0.5);
-  --panel-bot: rgba(12, 58, 145, 0.58);
+  --panel-top: rgba(40, 110, 215, 0.55);
+  --panel-bot: rgba(12, 58, 145, 0.6);
   --panel-line: rgba(150, 200, 255, 0.28);
   --text: #ffffff;
   --muted: #b9cdf0;
@@ -145,14 +145,6 @@ html.phone [style*="font-size:15"] { font-size: 20px !important; }@keyframes tm-
     linear-gradient(180deg, var(--bg1), var(--bg2));
 }
 #screen { position: absolute; inset: 0; }
-/* Background photo (img/bg, set per screen by app.js), tinted to the theme blue. */
-#bg { position: absolute; inset: 0; background: center / cover no-repeat; }
-/* The photos are blurred in the files, so no advertising boards can be read. */
-#bg::after { content: ''; position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse at 70% 0%, rgba(80, 160, 255, 0.28), transparent 60%),
-    linear-gradient(180deg, rgba(10, 55, 140, 0.62), rgba(4, 24, 75, 0.82)); }
-#bg:not([data-pic]) { display: none; }
 
 /* ---------- generic building blocks ---------- */
 .panel {
@@ -162,7 +154,6 @@ html.phone [style*="font-size:15"] { font-size: 20px !important; }@keyframes tm-
   border-radius: 8px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 4px 14px rgba(0, 0, 0, 0.25);
   padding: 14px 18px;
-  -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
 }
 .panel h2 { margin: 0 0 10px; font-size: 19px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); }
@@ -175,7 +166,6 @@ html.phone [style*="font-size:15"] { font-size: 20px !important; }@keyframes tm-
   background: linear-gradient(180deg, rgba(60, 140, 240, 0.55), rgba(14, 70, 160, 0.4));
   border-bottom: 1px solid rgba(160, 210, 255, 0.35);
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
-  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
 }
 .topbar .title { font-size: 24px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; }
 .topbar .sub { font-size: 13px; color: var(--muted); display: flex; gap: 6px; align-items: center; }
@@ -327,9 +317,16 @@ label.lbl { display: block; font-size: 12px; color: var(--muted); margin-bottom:
 .menu-list li .soon { margin-left: auto; font-size: 10px; color: var(--dim); text-transform: uppercase; }
 
 .comp-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; }
-.comp-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
-  border-radius: 4px; cursor: pointer; text-align: center; font-size: 12px; font-weight: 700; padding: 4px; }
-.comp-tile:hover { background: rgba(255, 255, 255, 0.1); }
+.comp-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  border-radius: 8px; cursor: pointer; text-align: center; font-size: 12px; font-weight: 700; padding: 6px 4px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(3, 25, 70, 0.25)); border: 1px solid rgba(160, 205, 255, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08); transition: background 0.15s, transform 0.08s; }
+.comp-tile:hover { background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(3, 25, 70, 0.2)); }
+.comp-tile:active { transform: translateY(1px); }
+.comp-badge { flex: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  color: #fff; font-style: normal; border: 2px solid rgba(255, 255, 255, 0.9); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.3); }
+.comp-badge svg { width: 26px; height: 26px; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35)); }
+.comp-badge b { font-size: 20px; font-weight: 900; line-height: 1; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4); }
 .ico.big { width: 36px; height: 36px; }
 
 .fixture { display: flex; gap: 12px; align-items: flex-start; padding: 6px 0; }
@@ -725,11 +722,12 @@ html.phone .m-name { max-width: 190px; }
 /* hub competition tiles: icons on one line, names of two lines at most below them */
 .comp-tiles { grid-auto-rows: 1fr; }
 .comp-tile { justify-content: flex-start; min-width: 0; overflow: hidden; padding-top: 10px; }
-.comp-tile .ico.big { flex-shrink: 0; }
 .comp-tile span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.15; }
-html.phone .comp-tiles { gap: 4px; padding: 8px; }
-html.phone .comp-tile { font-size: 13.5px; gap: 4px; padding: 8px 2px 2px; }
-html.phone .comp-tile .ico.big { width: 26px; height: 26px; }
+html.phone .comp-tiles { gap: 6px; padding: 8px; }
+html.phone .comp-tile { font-size: 13.5px; gap: 5px; padding: 7px 2px 3px; }
+html.phone .comp-badge { width: 36px; height: 36px; }
+html.phone .comp-badge svg { width: 24px; height: 24px; }
+html.phone .comp-badge b { font-size: 19px; }
 .attr-grid.five { grid-template-columns: repeat(5, 1fr); }
 html.phone .attr-grid.five { gap: 4px 12px; font-size: 16.5px; }
 
