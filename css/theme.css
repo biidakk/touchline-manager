@@ -327,6 +327,30 @@ label.lbl { display: block; font-size: 12px; color: var(--muted); margin-bottom:
   color: #fff; font-style: normal; border: 2px solid rgba(255, 255, 255, 0.9); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.3); }
 .comp-badge svg { width: 26px; height: 26px; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35)); }
 .comp-badge b { font-size: 20px; font-weight: 900; line-height: 1; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4); }
+.comp-badge.flag { overflow: hidden; background: #fff; }
+.comp-badge.flag svg { width: auto; height: 100%; flex: none; filter: none; }
+/* A national team's page: honours as trophy cards. */
+.honours { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.honour { position: relative; height: 150px; border-radius: 8px; padding: 10px 12px 8px; display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: 4px; background: rgba(3, 25, 70, 0.4); border: 1px solid var(--panel-line); }
+.honour.won { background: linear-gradient(180deg, rgba(242, 182, 50, 0.28), rgba(3, 25, 70, 0.35)); border-color: rgba(242, 182, 50, 0.6); }
+.hon-ico svg { width: 26px; height: 26px; color: var(--dim); }
+.honour.won .hon-ico svg { color: var(--gold); }
+.hon-title { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; color: var(--muted); }
+.hon-count { font-size: 30px; font-weight: 900; line-height: 1; color: var(--gold); }
+.hon-years { font-size: 13px; font-weight: 700; line-height: 1.35; }
+.hon-years .career { color: var(--good); }
+.hon-note, .hon-apps { font-size: 11.5px; color: var(--muted); }
+.hon-apps { margin-top: auto; }
+.hon-best { font-size: 14px; font-weight: 700; line-height: 1.3; margin-top: 4px; }
+.nation-facts { display: flex; flex-direction: column; gap: 3px; font-size: 14px; color: var(--muted); }
+.nation-facts b { color: var(--text); }
+html.phone .honour { height: 170px; gap: 2px; padding: 8px 8px 6px; }
+html.phone .hon-count { font-size: 32px; }
+html.phone .hon-title { font-size: 15px; }
+html.phone .hon-years, html.phone .hon-best { font-size: 16px; }
+html.phone .hon-note, html.phone .hon-apps { font-size: 14px; }
+html.phone .nation-facts { font-size: 17px; }
 .ico.big { width: 36px; height: 36px; }
 
 .fixture { display: flex; gap: 12px; align-items: flex-start; padding: 6px 0; }

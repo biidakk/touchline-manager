@@ -131,6 +131,7 @@ The published game uses near-real club names and generated players. For your own
    - **Older saves:** a Champions Cup with four groups already under way is played out; the new format starts next season.
    - See it from the hub (★ tile, your club's competition) or the Cup screen.
 11. **National teams** (hub → National Teams):
+    - **Your country's page** (the flag tile on the hub): today's squad with caps and goals, the team's honours (World Cup, European Championship and Nations League titles, or the best result, with real history up to 2026 and every title won in your career added), the all-time top scorers (the real list plus every goal scored in your career; players who retire stay in it), the team's strength, its group position, the next match and the last five results.
     - **Teams:** 25 European countries, each with a senior and an **Under-21** team. Internationals are on Thursdays across five international breaks, so they never clash with club matches.
     - **The cycle:**
       - **Euro** every four years (2028, 2032…) and **U21 Euro** every odd year (2027, 2029…). In the season before, the teams play **qualifiers** in four groups of six, home and away. The hosts qualify automatically (England for Euro 2028, Italy for 2032, then drawn).

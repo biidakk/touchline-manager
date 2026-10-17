@@ -16,6 +16,7 @@ import './continental.test.js';
 import './stadium.test.js';
 import './loans.test.js';
 import './national.test.js';
+import './nathistory.test.js';
 import './training.test.js';
 import './morale.test.js';
 import './board.test.js';

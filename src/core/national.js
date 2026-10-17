@@ -398,9 +398,15 @@ export function applyNationalResult(game, f, m) {
       matchLoad(p);
       if (comp.tournament) comp.apps[id] = (comp.apps[id] || 0) + 1;
     }
+    // The team's own all-time list (kept when players retire and leave the game).
+    const team = game.national.teams[side.clubId];
+    const book = senior && team ? (team.allTime = team.allTime || {}) : null;
+    const entry = (p) => (book[p.id] = book[p.id] || { name: `${p.first} ${p.last}`, caps: 0, goals: 0 });
+    if (book) for (const id of side.played) entry(game.players[id]).caps++;
     for (const g of f.result.goals.filter((x) => x.side === i)) {
       const p = game.players[g.playerId];
       if (senior) p.intl.goals++; else p.intl.u21Goals++;
+      if (book) entry(p).goals++;
       if (user && p.clubId === user.id) addNews(game, `${p.first} ${p.last} scored for ${game.national.teams[side.clubId].name}.`, 'national');
     }
     for (const inj of side.injured) {

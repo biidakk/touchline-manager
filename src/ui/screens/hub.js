@@ -67,7 +67,8 @@ const BADGES = {
   CCL: ['#12a588', '#0b725d', STAR(7, 12.5, 6.2) + STAR(17, 12.5, 6.2)],
   all: ['#2a7ae6', '#0d4bb0', GLOBE],
 };
-function compBadge(kind, tier) {
+function compBadge(kind, tier, flagDef) {
+  if (kind === 'flag') return `<i class="comp-badge flag">${flag(flagDef, 64)}</i>`;
   const [a, b, art] = BADGES[kind] || BADGES[kind.startsWith('tier') ? 'tier2' : 'cup'];
   const inner = art ? `<svg viewBox="0 0 24 24" aria-hidden="true">${art}</svg>` : `<b>${tier}</b>`;
   return `<i class="comp-badge" style="background:linear-gradient(180deg,${a},${b})">${inner}</i>`;
@@ -160,6 +161,8 @@ export function render(root, ctx, params = {}) {
     const todo = clubChecklist(g);
     // Coefficients exist in the world of real countries (not the fictional one).
     const coefOk = !!(g.coefficients || g.nations.ENG);
+    // Your country's national team (none for countries without one).
+    const natTeam = g.national?.teams[`NT-${club.nationId}`];
 
     root.innerHTML = `${clubTopbar(ctx)}
     <div class="panel" style="left:20px;top:92px;width:282px;height:394px">
@@ -169,6 +172,7 @@ export function render(root, ctx, params = {}) {
     </div>
     <div class="panel comp-tiles" style="left:20px;top:500px;width:282px;height:200px;grid-template-columns:repeat(3,1fr)">
       ${compTiles}
+      ${natTeam ? `<div class="comp-tile" data-action="nation" title="${esc(natTeam.name)} national team">${compBadge('flag', 0, g.nations[natTeam.nationId].flag)}<span>${esc(natTeam.name)}</span></div>` : ''}
       ${finals ? `<div class="comp-tile" data-action="comp" data-id="${finals.id}" title="${esc(finals.name)}">${compBadge('finals')}<span>${esc(finals.name)}</span></div>`
         : `<div class="comp-tile" data-action="comp" data-id="" title="All leagues">${compBadge('all')}<span>All leagues</span></div>`}
     </div>
@@ -233,6 +237,7 @@ export function render(root, ctx, params = {}) {
   bindActions(root, {
     menu: (el) => ctx.go(el.dataset.screen, el.dataset.screen === 'market' ? { tab: el.dataset.title }
       : { title: el.dataset.title, milestone: Number(el.dataset.m) }),
+    nation: () => ctx.go('nation'),
     comp: (el) => {
       const c = ctx.game.competitions[el.dataset.id];
       if (!c || c.type === 'league') ctx.go('tables', { compId: el.dataset.id || null });
